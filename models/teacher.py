@@ -3,6 +3,9 @@
 from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
+from models.subject import subject_teacher
+from models.institution import institution_teacher
+from models.clas import clas_teacher
 
 
 class Teacher(BaseModel, Base):
@@ -24,5 +27,8 @@ class Teacher(BaseModel, Base):
                            cascade="all, delete, delete-orphan")
 
     # many to many relationship's attributes.
-    # subjects = relationship("Subject", secondary=teacher_subject,
-    # viewonly=False)
+    subjects = relationship("Subject", secondary=subject_teacher,
+                            viewonly=True)
+    institutions = relationship('Institution', secondary=institution_teacher,
+                                viewonly=True)
+    classes = relationship('Clas', secondary=clas_teacher, viewonly=True)

@@ -108,3 +108,6 @@ class DBStorage:
             count = len(models.storage.all(cls).values())
 
         return count
+
+    def query(self, cls):
+        return self.__session.query(cls)

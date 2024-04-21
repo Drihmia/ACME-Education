@@ -116,15 +116,16 @@ inst_33.teachers.extend([teacher_3])
 
 
 # Classes: ***********************************
-for clss in class_list:
-    if clss.name == 'CC':
-        clss.lessons.extend(cc_lesson_list)
-        clss.teachers.extend([teacher_1, teacher_2])
-    elif clss.name == '1BAC':
-        clss.lessons.extend(f_lesson_list)
-        clss.teachers.extend([teacher_1, teacher_2])
-    elif clss.name == '2BAC':
-        clss.teachers.extend([teacher_3, teacher_4])
+print(class_list[-1])
+# for clss in class_list:
+    # if clss.name == 'CC':
+        # clss.lessons.extend(cc_lesson_list)
+        # clss.teachers.extend([teacher_1, teacher_2])
+    # elif clss.name == '1BAC':
+        # clss.lessons.extend(f_lesson_list)
+        # clss.teachers.extend([teacher_1, teacher_2])
+    # elif clss.name == '2BAC':
+        # clss.teachers.extend([teacher_3, teacher_4])
 # **********************************************
 
 for subject in subject_list:

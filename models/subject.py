@@ -3,6 +3,7 @@
 from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String, ForeignKey, Table
 from sqlalchemy.orm import relationship
+from models.institution import institution_subject
 
 # A subject can be taught by many teachers as a subject can have many teachers.
 subject_teacher = Table('subject_teacher', Base.metadata,
@@ -37,3 +38,5 @@ class Subject(BaseModel, Base):
     # many to many relationship's attributes.
     teachers = relationship("Teacher", secondary=subject_teacher,
                             viewonly=False)
+    institutions = relationship('Institution', secondary=institution_subject,
+                                viewonly=True)

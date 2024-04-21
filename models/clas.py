@@ -3,6 +3,7 @@
 from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String, ForeignKey, Table
 from sqlalchemy.orm import relationship
+from models.institution import institution_clas
 
 
 # A class can have many lessons as a lesson can belog to many classes.
@@ -58,3 +59,7 @@ lessons = relationship("Lesson", secondary=clas_lesson, viewonly=False)
 
 
 teachers = relationship("Teacher", secondary=clas_teacher, viewonly=False)
+
+
+institutions = relationship('Institution', secondary=institution_clas,
+                            viewonly=True)
