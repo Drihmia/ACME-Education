@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 """ holds class State"""
-from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String, Table, ForeignKey
 from sqlalchemy.orm import relationship
+from models.base_model import BaseModel, Base
+from models.city import cities_institutions
 
 # An institutions can have many teachers as
 # + a teacher can  work in many institutions.
@@ -52,12 +53,21 @@ class Institution(BaseModel, Base):
     __tablename__ = 'institutions'
 
     # Normal attributes
-    city = Column(String(128), nullable=False)
+    # +I've approach it as nullable is False.
     name = Column(String(128), nullable=False)
+
+    # As I've created city's and state's objects, we can set nullable's attribute
+    # +Of state and city to True, so we make them optional.
+    # +For more information see the file : main_test_1.py to see how
     state = Column(String(128), nullable=True)
+    city = Column(String(128), nullable=False)
 
     # One to many relationship's attributes.
     lessons = relationship("Lesson",
+                           backref="institutions",
+                           cascade="all, delete, delete-orphan")
+
+    students = relationship("Student",
                            backref="institutions",
                            cascade="all, delete, delete-orphan")
 
@@ -68,6 +78,5 @@ class Institution(BaseModel, Base):
                             viewonly=False)
     classes = relationship('Clas', secondary=institution_clas, viewonly=False)
 
-    # classes = relationship("Class",
-    # backref="institutions",
-    # cascade="all, delete, delete-orphan")
+    cities = relationship('City', secondary=cities_institutions, viewonly=True,
+                          back_populates="institutions")

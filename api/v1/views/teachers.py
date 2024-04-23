@@ -68,7 +68,8 @@ def teachers_list_institution(id):
     # teacher = storage.query(Teacher).filter(Teacher.id == id).all()
     # lessons = storage.query(Subject).filter(Subject.subject_id == id).all()
 
-    return jsonify([institution.to_dict() for institution in institutions]), 200
+    return jsonify([institution.to_dict() for institution in
+                    institutions]), 200
 
 
 @app_views.route('/teachers/<id>/classes',  methods=['GET'],

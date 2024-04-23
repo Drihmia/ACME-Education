@@ -18,6 +18,19 @@ subject_teacher = Table('subject_teacher', Base.metadata,
                                           ondelete='CASCADE'),
                                primary_key=True))
 
+# A subject can be taught by many students as a subject can have many students.
+subject_student = Table('subject_student', Base.metadata,
+                        Column('subject_id', String(60),
+                               ForeignKey('subjects.id',
+                                          onupdate='CASCADE',
+                                          ondelete='CASCADE'),
+                               primary_key=True),
+                        Column('student_id', String(60),
+                               ForeignKey('students.id',
+                                          onupdate='CASCADE',
+                                          ondelete='CASCADE'),
+                               primary_key=True))
+
 
 class Subject(BaseModel, Base):
     """Representation of Subject """

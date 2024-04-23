@@ -1,32 +1,103 @@
 #!/usr/bin/python3
 """Define the Institutions API"""
+from flask import abort, jsonify
 from api.v1.views import app_views
-from flask import abort
-import json
 from models import storage
+from models.institution import Institution
 
 
-@app_views.route("/institutions", methods=["GET", "POST"], strict_slashes=False)
-@app_views.route("/institutions/<id>", methods=["GET"], strict_slashes=False)
-def allInst(id=None):
+@app_views.route("/institutions", methods=["GET", "POST"],
+                 strict_slashes=False)
+@app_views.route("/institutions/<id>", methods=["GET"],
+                 strict_slashes=False)
+def institutions(id=None):
     """
-    GET: Return the list of avaiable institutions if there is not ID.
-         Or the list with the specified ID.
+    GET: Return the list of avaiable institutions.
+         Or the a specific institution if ID has been provided.
     """
-    from models.institution import Institution
-    insts = storage.all(Institution)
-    if id is None:
-        data = []
-        for elem in insts.values():
-            temp = elem.to_dict()
-            data.append(temp)
-        data = json.dumps(data, indent=2, sort_keys=True) + "\n"
-        return (data, 200)
-    else:
-        seek = "Institution." + id
-        try:
-            temp = insts[seek].to_dict()
-            data = json.dumps(temp, indent=2, sort_keys=True) + "\n"
-            return (data, 200)
-        except KeyError:
-            abort(404)
+
+    if not id:
+        institutions = storage.all(Institution)
+
+        institutions_dict = [institution.to_dict() for institution in
+                             institutions.values()]
+
+        return jsonify(institutions_dict), 200
+
+    institution = storage.get(Institution, id)
+    if not institution:
+        abort(404)
+
+    return jsonify(institution.to_dict()), 200
+
+
+@app_views.route("/institutions/<id>/lessons", methods=['GET'],
+                 strict_slashes=False)
+def institutions_lessons(id):
+
+    """
+    GET: return all lessons published by teachers works or has works
+    in the institution by the specific ID
+    """
+
+    institution = storage.get(Institution, id)
+    if not institution:
+        abort(404)
+
+    lessons = institution.lessons
+
+    lessons_dict = [lesson.to_dict() for lesson in lessons]
+    return jsonify(lessons_dict), 200
+
+
+@app_views.route("/institutions/<id>/teachers", methods=['GET'],
+                 strict_slashes=False)
+def institutions_teachers(id):
+    """
+    GET: return all teachers works or has works
+    in the institution by the specific ID
+    """
+
+    institution = storage.get(Institution, id)
+    if not institution:
+        abort(404)
+
+    teachers = institution.teachers
+
+    teachers_dict = [teacher.to_dict() for teacher in teachers]
+    return jsonify(teachers_dict), 200
+
+
+@app_views.route("/institutions/<id>/subjects", methods=['GET'],
+                 strict_slashes=False)
+def institutions_subjects(id):
+    """
+    GET: return all subjects works or has works
+    in the institution by the specific ID
+    """
+
+    institution = storage.get(Institution, id)
+    if not institution:
+        abort(404)
+
+    subjects = institution.subjects
+
+    subjects_dict = [subject.to_dict() for subject in subjects]
+    return jsonify(subjects_dict), 200
+
+
+@app_views.route("/institutions/<id>/classes", methods=['GET'],
+                 strict_slashes=False)
+def institutions_classes(id):
+    """
+    GET: return all classes taught in the institution by the specific ID
+    """
+
+    institution = storage.get(Institution, id)
+    if not institution:
+        abort(404)
+
+    classes = institution.classes
+
+    classes_dict = [classe.to_dict() for classe in classes]
+    return jsonify(classes_dict), 200

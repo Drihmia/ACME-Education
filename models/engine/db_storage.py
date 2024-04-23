@@ -13,10 +13,14 @@ from models.institution import Institution
 from models.subject import Subject
 from models.teacher import Teacher
 from models.lesson import Lesson
+from models.state import State
+from models.city import City
+
 
 
 classes = {'Institution': Institution, 'Subject': Subject,
-           'Teacher': Teacher, 'Lesson': Lesson, 'Class': Clas}
+           'Teacher': Teacher, 'Lesson': Lesson, 'Class': Clas,
+           'State': State, 'City': City}
 
 
 class DBStorage:
@@ -31,16 +35,21 @@ class DBStorage:
         ACME_MYSQL_HOST = getenv('h')
         ACME_MYSQL_DB = getenv('D')
         ACME_ENV = getenv('mode')
-        if None in (ACME_MYSQL_USER, ACME_MYSQL_PWD,
-                    ACME_MYSQL_HOST, ACME_MYSQL_DB):
-            string = "One or more required environment variables are not set."
-            raise ValueError(string)
+        # if None in (ACME_MYSQL_USER, ACME_MYSQL_PWD,
+                    # ACME_MYSQL_HOST, ACME_MYSQL_DB):
+            # string = "One or more required environment variables are not set."
+            # raise ValueError(string)
 
         self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
-                                      format(ACME_MYSQL_USER,
-                                             ACME_MYSQL_PWD,
-                                             ACME_MYSQL_HOST,
+                                      format('root',
+                                             '' ,
+                                             'localhost',
                                              ACME_MYSQL_DB))
+        # self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
+                                      # format(ACME_MYSQL_USER,
+                                             # ACME_MYSQL_PWD,
+                                             # ACME_MYSQL_HOST,
+                                             # ACME_MYSQL_DB))
         if ACME_ENV == "test":
             Base.metadata.drop_all(self.__engine)
 
