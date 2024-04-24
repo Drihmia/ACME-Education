@@ -13,7 +13,7 @@ class Teacher(BaseModel, Base):
     __tablename__ = 'teachers'
 
     # Normal attributes
-    name = Column(String(128), nullable=False)
+    name = Column(String(128), nullable=False, unique=True)
 
     # Many to one relationship's attributes.
     # institution_id = Column(String(60), ForeignKey('institutions.id'),

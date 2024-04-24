@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """Index API"""
 from api.v1.views import app_views
+from flask import jsonify
 import json
 
 
@@ -8,4 +9,4 @@ import json
 def status():
     """Status of API"""
     goodStat = {"status": "OK"}
-    return json.dumps(goodStat, indent=2) + "\n"
+    return jsonify(goodStat), 200

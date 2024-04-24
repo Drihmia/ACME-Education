@@ -4,6 +4,7 @@ from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.orm import relationship
 from models.clas import clas_lesson
+from models.student import student_lesson
 
 
 class Lesson(BaseModel, Base):
@@ -23,3 +24,4 @@ class Lesson(BaseModel, Base):
 
     # many to many relationship's attributes.
     classes = relationship('Clas', secondary=clas_lesson, viewonly=True)
+    students = relationship('Student', secondary=student_lesson, viewonly=True)

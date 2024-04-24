@@ -18,13 +18,26 @@ subject_teacher = Table('subject_teacher', Base.metadata,
                                           ondelete='CASCADE'),
                                primary_key=True))
 
+# A subject can be taught by many students as a subject can have many students.
+subject_student = Table('subject_student', Base.metadata,
+                        Column('subject_id', String(60),
+                               ForeignKey('subjects.id',
+                                          onupdate='CASCADE',
+                                          ondelete='CASCADE'),
+                               primary_key=True),
+                        Column('student_id', String(60),
+                               ForeignKey('students.id',
+                                          onupdate='CASCADE',
+                                          ondelete='CASCADE'),
+                               primary_key=True))
+
 
 class Subject(BaseModel, Base):
     """Representation of Subject """
     __tablename__ = 'subjects'
 
     # Normal attributes
-    name = Column(String(128), nullable=False)
+    name = Column(String(128), nullable=False, unique=True)
 
     # Many to one relationship's attributes.
     # institution_id = Column(String(60), ForeignKey('institutions.id'),
@@ -40,3 +53,4 @@ class Subject(BaseModel, Base):
                             viewonly=False)
     institutions = relationship('Institution', secondary=institution_subject,
                                 viewonly=True)
+    students = relationship('Student', secondary=subject_student, viewonly=False)

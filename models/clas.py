@@ -36,30 +36,17 @@ class Clas(BaseModel, Base):
     __tablename__ = 'classes'
 
     # Normal attributes
-    name = Column(String(128), nullable=False)
+    name = Column(String(128), nullable=False, unique=True)
 
-    # Many to one relationship's attributes.
-#     institution_id = Column(String(60), ForeignKey('institutions.id'),
-# nullable=False)
+    # one to Many relationship's attributes.
+    students = relationship("Student",
+                           backref="classes",
+                           cascade="all, delete, delete-orphan")
 
-# teacher_id = Column(String(60), ForeignKey('teachers.id'),
-# nullable=False)
+    # many to many relationship's attributes.
+    lessons = relationship("Lesson", secondary=clas_lesson, viewonly=False)
 
-# lesson_id = Column(String(60), ForeignKey('lessons.id'),
-# nullable=False)
+    teachers = relationship("Teacher", secondary=clas_teacher, viewonly=False)
 
-# One to many relationship's attributes.
-# teachers = relationship("Teacher",
-# backref="classes",
-# cascade="all, delete, delete-orphan")
-
-
-# many to many relationship's attributes.
-lessons = relationship("Lesson", secondary=clas_lesson, viewonly=False)
-
-
-teachers = relationship("Teacher", secondary=clas_teacher, viewonly=False)
-
-
-institutions = relationship('Institution', secondary=institution_clas,
-                            viewonly=True)
+    institutions = relationship('Institution', secondary=institution_clas,
+                                viewonly=True)

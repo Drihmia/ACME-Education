@@ -1,4 +1,5 @@
 *.pyc
+*.py_x
 */*.pyc
 acme-education-frontend/node_modules/
 acme-education-frontend/.pnp
@@ -34,3 +35,5 @@ acme-education-frontend/.vercel
 acme-education-frontend/*.tsbuildinfo
 acme-education-frontend/next-env.d.ts
 
+=======
+*.sql
