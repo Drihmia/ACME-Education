@@ -34,6 +34,7 @@ export const signupSchema = yup.object().shape({
   email: yup
     .string()
     .email()
+    .matches(emailRegex, "Email is invalid.")
     .test("is-valid-domain", "Invalid email address", validateEmailDomain)
     .required("Email address is required"),
   telephone: yup
