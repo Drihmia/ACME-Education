@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """ holds class State"""
-from sqlalchemy import Column, String, Table, ForeignKey
+from sqlalchemy import Column, String, Table, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from models.base_model import BaseModel, Base
 from models.city import cities_institutions
@@ -51,6 +51,7 @@ institution_clas = Table('institution_clas', Base.metadata,
 class Institution(BaseModel, Base):
     """Representation of institution """
     __tablename__ = 'institutions'
+    __table_args__ = (UniqueConstraint('name', 'city'), )
 
     # Normal attributes
     # +I've approach it as nullable is False.

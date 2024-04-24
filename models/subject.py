@@ -37,7 +37,7 @@ class Subject(BaseModel, Base):
     __tablename__ = 'subjects'
 
     # Normal attributes
-    name = Column(String(128), nullable=False)
+    name = Column(String(128), nullable=False, unique=True)
 
     # Many to one relationship's attributes.
     # institution_id = Column(String(60), ForeignKey('institutions.id'),
@@ -53,3 +53,4 @@ class Subject(BaseModel, Base):
                             viewonly=False)
     institutions = relationship('Institution', secondary=institution_subject,
                                 viewonly=True)
+    students = relationship('Student', secondary=subject_student, viewonly=False)

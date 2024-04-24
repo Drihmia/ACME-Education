@@ -2,10 +2,10 @@
 """ Test file for ACME """
 
 from models import storage
-from sqlalchemy.orm import relationship, joinedload
 from models.institution import Institution
 from models.subject import Subject
 from models.teacher import Teacher
+from models.student import Student
 from models.lesson import Lesson
 from models.clas import Clas
 from models.state import State
@@ -16,6 +16,15 @@ list_objects = []
 # Creating states.
 RSK = State(name='RSK')
 RSK.save()
+# try:
+    # RSK = State(name='RSK')
+    # RSK.save()
+# except Exception as e:
+    # storage.rollback()
+    # RSK = State(name='RSK')
+    # RSK.save()
+    # print(e)
+
 SAFI = State(name='SAFI')
 SAFI.save()
 T_T = State(name='TANGER-TETOUAN')
@@ -30,6 +39,8 @@ TANGER = City(name='TANGER', state_id=T_T.id)
 TANGER.save()
 JADIDA = City(name='JADIDA', state_id=SAFI.id)
 JADIDA.save()
+
+list_objects.extend([RSK, SAFI, T_T, SALE, S_K, TANGER, JADIDA])
 
 
 # Creating institutions.
@@ -125,6 +136,17 @@ teacher_4.save()
 
 teacher_list = [teacher_1, teacher_2, teacher_3, teacher_4]
 list_objects.extend(teacher_list)
+
+
+# Creating students.
+Marwan = Student(name='Marwan', institution_id=inst_1.id, class_id=cc.id)
+Marwan.save()
+Hamid = Student(name='Hamid', institution_id=inst_1.id, class_id=cc.id)
+Hamid.save()
+Samir = Student(name='Samir', institution_id=inst_1.id, class_id=bac1.id)
+Samir.save()
+Fatima = Student(name='Fatima', institution_id=inst_1.id, class_id=bac1.id)   # incomplete
+Fatima.save()
 
 # Creating lessons.
 # Commun Core

@@ -10,7 +10,7 @@ class State(BaseModel, Base):
     __tablename__ = 'states'
 
     # Normal attributes
-    name = Column(String(128), nullable=False)
+    name = Column(String(128), nullable=False, unique=True)
 
     # One to many relationship's attribute
     cities = relationship("City",

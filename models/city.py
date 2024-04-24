@@ -25,7 +25,7 @@ class City(BaseModel, Base):
     __tablename__ = 'cities'
 
     # Normal attributes
-    name = Column(String(128), nullable=False)
+    name = Column(String(128), nullable=False, unique=True)
 
     # Many to one relationship's attributes.
     state_id = Column(String(60), ForeignKey('states.id'), nullable=False)
