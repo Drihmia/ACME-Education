@@ -61,7 +61,7 @@ class Institution(BaseModel, Base):
     # +Of state and city to True, so we make them optional.
     # +For more information see the file : main_test_1.py to see how
     state = Column(String(128), nullable=True)
-    city = Column(String(128), nullable=False)
+    city = Column(String(128), nullable=True)  # I've made them optional.
 
     # One to many relationship's attributes.
     lessons = relationship("Lesson",
