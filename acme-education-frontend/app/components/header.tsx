@@ -14,48 +14,48 @@ export const Header = () => {
       <div className="flex items-center justify-between">
         <Link
           href={`/`}
-          className="text-xl sm:text-2xl sm:py-2 uppercase font-bold"
+          className="text-xl md:text-2xl md:py-2 uppercase font-bold"
         >
           ACME Education
         </Link>
       </div>
       <div className="flex items-center font-bold">
-        <p className="sm:hidden uppercase">menu</p>
+        <p className="md:hidden uppercase">menu</p>
         <button
           onClick={handleNav}
           id="open_menu_btn"
           aria-label="open hamburger menu"
-          className="p-2 sm:p-3 md:p-4 text-2xl sm:hidden flex items-center justify-center hover:text-blue-700"
+          className="p-2 sm:p-3 md:p-4 text-2xl md:hidden flex items-center justify-center hover:text-blue-700"
         >
           <Icon icon="ci:hamburger-md" />
         </button>
       </div>
       <nav
         id="nav_overlay"
-        className={`fixed sm:static top-0 right-0 ${
+        className={`fixed md:static top-0 right-0 ${
           navIsOpen ? "translate-x-0" : "translate-x-full"
-        } w-screen sm:w-auto h-screen sm:h-full sm:translate-x-0 bg-black/25 z-20`}
+        } w-screen md:w-auto h-screen md:h-full md:translate-x-0 bg-black/25 z-20`}
       >
         <div
           id="nav"
-          className={`fixed sm:static top-0 right-0 ${
+          className={`fixed md:static top-0 right-0 ${
             navIsOpen ? "translate-x-0" : "translate-x-full"
-          } w-full h-full sm:translate-x-0 flex flex-col sm:flex-row items-center gap-4 p-4 transition-all duration-300 ease-linear bg-white z-50`}
+          } w-full h-full md:translate-x-0 flex flex-col md:flex-row items-center gap-4 p-4 md:p-0 transition-all duration-300 ease-linear bg-white z-50`}
         >
           <button
             onClick={handleNav}
             id="close_menu_btn"
             aria-label="close hamburger menu"
-            className="self-end sm:hidden text-2xl hover:text-red-500"
+            className="self-end md:hidden text-2xl hover:text-red-500"
           >
             <Icon icon="zondicons:close-outline" />
           </button>
-          <p className="sm:hidden w-full text-center text-2xl uppercase font-bold">
+          <p className="md:hidden w-full text-center text-2xl uppercase font-bold">
             ACME Education
           </p>
           <ul
             onClick={handleNav}
-            className="w-full flex items-center flex-col sm:flex-row gap-4 sm:gap-6 md:gap-8 uppercase text-lg"
+            className="w-full flex items-center flex-col md:flex-row gap-4 sm:gap-6 md:gap-8 uppercase text-lg"
           >
             <li className="md:w-24 text-center py-1 border-b-2 border-white hover:border-black transition-all ease-linear duration-200 cursor-pointer">
               <Link href={`/`}>home</Link>
