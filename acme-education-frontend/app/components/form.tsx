@@ -2,7 +2,7 @@
 
 import React, { ClassAttributes, InputHTMLAttributes } from "react";
 import { Formik, Form, useField, FieldHookConfig } from "formik";
-import { signupSchema } from "../validation/auth";
+import { signinSchema } from "../validation/auth";
 // import { MdEmail } from "react-icons/md";
 // import { IoPerson } from "react-icons/io5";
 
@@ -64,13 +64,13 @@ export const MyTextInput = ({label, ...props}: OtherProps & InputHTMLAttributes<
 //   );
 // };
 
-const SignInForm = () => {
+export const SignInForm = () => {
   return (
     <>
-      <div className="w-full max-w-80 flex flex-col items-center justify-center gap-4 py-8 tablet:py-16">
-        <div className="w-full text-center tablet:text-left font-urbanist">
+      <div className="w-full max-w-96 flex flex-col items-center justify-center gap-4 py-8 bg-white rounded-2xl shadow-xl">
+        <div className="w-full text-center font-urbanist">
           <h2 className="font-semibold text-4xl capitalize">Login</h2>
-          <p className="text-faint-text">Join millions of institutions, teachers and students using ACME Education</p>
+          {/* <p className="max-w-sm mx-auto">ACME Education</p> */}
         </div>
         <Formik
           initialValues={{
@@ -79,7 +79,7 @@ const SignInForm = () => {
             email: "",
             telephone: ""
           }}
-          validationSchema={signupSchema}
+          validationSchema={signinSchema}
           onSubmit={(values, { setSubmitting }) => {
             setTimeout(() => {
               alert(JSON.stringify(values, null, 2));
@@ -87,7 +87,7 @@ const SignInForm = () => {
             }, 400);
           }}
         >
-          <Form className="text-faint-text">
+          <Form className="w-full flex flex-col items-center p-4 md:p-8 lg:px-16">
             <MyTextInput
               label="Email Address"
               name="email"
@@ -100,12 +100,10 @@ const SignInForm = () => {
               type="password"
               placeholder=""
             />
-            <button type="submit" className="w-full py-2 mt-4 bg-primary text-white capitalize rounded-3xl">login</button>
+            <button type="submit" className="w-40 py-2 mt-4 bg-blue-100 text-black hover:text-white hover:bg-blue-700 capitalize rounded-3xl">login</button>
           </Form>
         </Formik>
       </div>
     </>
   );
 };
-
-export default SignInForm;
