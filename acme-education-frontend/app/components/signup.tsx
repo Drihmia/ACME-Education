@@ -8,7 +8,7 @@ const SignUpForm = () => {
   return (
     <>
       <div className="w-full flex flex-col items-center justify-center gap-4 py-8 bg-white rounded-2xl shadow-xl">
-        <div className="w-full text-center tablet:text-left font-urbanist">
+        <div className="w-full text-center font-urbanist">
           <h2 className="font-semibold text-3xl md:text-4xl capitalize mb-2 md:mb-4">Sign Up</h2>
           <p className="max-w-sm mx-auto">
             Join millions of institutions, teachers and students using ACME
