@@ -2,11 +2,10 @@
 """Define the Subjects API"""
 from api.v1.views import app_views
 from flask import abort, jsonify, request
-import json
 from models import storage
 
 
-@app_views.route("/subjects", methods=["GET", "POST"], strict_slashes=False)
+@app_views.route("/subjects", methods=["GET"], strict_slashes=False)
 @app_views.route("/subjects/<id>", methods=["GET"], strict_slashes=False)
 def allSubs(id=None):
     """
@@ -24,12 +23,12 @@ def allSubs(id=None):
 
     subject = storage.get(Subject, id)
     if not subject:
-        raise abort(404)
+        abort(404)
 
     return jsonify(subject.to_dict()), 200
 
 
-@app_views.route("/subjects/<id>/institutions", methods=["GET", "POST"],
+@app_views.route("/subjects/<id>/institutions", methods=["GET"],
                  strict_slashes=False)
 def subject_institutions(id):
     """
@@ -40,14 +39,14 @@ def subject_institutions(id):
 
         subject = storage.get(Subject, id)
         if not subject:
-            raise abort(404)
+            abort(404)
         institutions = [institution.to_dict() for institution in
                         subject.institutions]
 
         return jsonify(institutions), 200
 
 
-@app_views.route("/subjects/<id>/lessons", methods=["GET", "POST"],
+@app_views.route("/subjects/<id>/lessons", methods=["GET"],
                  strict_slashes=False)
 def subject_lessons(id):
     """
@@ -59,13 +58,13 @@ def subject_lessons(id):
 
         subject = storage.get(Subject, id)
         if not subject:
-            raise abort(404)
+            abort(404)
         lessons = [lesson.to_dict() for lesson in subject.lessons]
 
         return jsonify(lessons), 200
 
 
-@app_views.route("/subjects/<id>/teachers", methods=["GET", "POST"],
+@app_views.route("/subjects/<id>/teachers", methods=["GET"],
                  strict_slashes=False)
 def subject_teachers(id):
     """
@@ -76,7 +75,7 @@ def subject_teachers(id):
 
         subject = storage.get(Subject, id)
         if not subject:
-            raise abort(404)
+            abort(404)
         teachers = [teacher.to_dict() for teacher in subject.teachers]
 
         return jsonify(teachers), 200
