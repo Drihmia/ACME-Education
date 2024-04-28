@@ -1,7 +1,7 @@
 #!/usr/bin/python
 """ holds class Lesson"""
 from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, ForeignKey
+from sqlalchemy import Column, String, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from models.clas import clas_lesson
 from models.student import student_lesson
@@ -15,6 +15,7 @@ class Lesson(BaseModel, Base):
     name = Column(String(128), nullable=False)
     download_link = Column(String(1024), nullable=False)
     description = Column(String(1024), nullable=True)
+    public = Column(Boolean, nullable=True, default=True)
 
     # Many to one relationship's attributes.
     institution_id = Column(String(60), ForeignKey('institutions.id'),

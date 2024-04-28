@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 """Define the State API"""
 from flask import abort, jsonify, request
+from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import BadRequest
 from api.v1.views import app_views
 from models import storage
 from models.state import State
-from models.city import City
 
 
 @app_views.route("/states", methods=["GET", "POST"], strict_slashes=False)
@@ -23,11 +23,11 @@ def states(id=None):
             states = storage.all(State)
 
             states_dict = [state.to_dict() for state in states.values()]
-            return (jsonify(states_dict), 200)
+            return jsonify(states_dict), 200
 
         state = storage.get(State, id)
         if not state:
-            abort(404)
+            abort(404, description="UNKNOWN STATE")
 
         return jsonify(state.to_dict()), 200
 
@@ -40,11 +40,19 @@ def states(id=None):
         except BadRequest:
             return jsonify({'error': 'Not a JSON'}), 400
 
+        if not data:
+            return jsonify({'error': 'No data'}), 400
+
         if 'name' not in data.keys():
             return jsonify({'error': 'Missing name'}), 400
 
         state = State(**data)
-        state.save()
+        try:
+            storage.new(state)
+            storage.save()
+        except IntegrityError:
+            return jsonify({'error': 'exists'}), 400
+
         return jsonify((state.to_dict())), 201
 
     if request.method == 'PUT':
@@ -56,9 +64,12 @@ def states(id=None):
         except BadRequest:
             return jsonify({'error': 'Not a JSON'}), 400
 
+        if not data:
+            return jsonify({'error': 'No data'}), 400
+
         state = storage.get(State, id)
         if not state:
-            abort(404)
+            abort(404, description="UNKNOWN STATE")
 
         ignore = ['id', 'created_at', 'updated_at']
 
@@ -71,14 +82,14 @@ def states(id=None):
     if request.method == 'DELETE':
         state = storage.get(State, id)
         if not state:
-            abort(404)
+            abort(404, description="UNKNOWN STATE")
 
         state.delete()
         storage.save()
         return jsonify({}), 200
 
 
-@app_views.route("/states/<id>/cities", methods=["GET", "POST"],
+@app_views.route("/states/<id>/cities", methods=["GET"],
                  strict_slashes=False)
 def classes_cities(id=None):
     """
@@ -87,26 +98,8 @@ def classes_cities(id=None):
 
     state = storage.get(State, id)
     if not state:
-        abort(404)
+        abort(404, description="UNKNOWN STATE")
 
-    if request.method == 'GET':
-        cities = state.cities
-        cities_dict = [state.to_dict() for state in cities]
-        return jsonify(cities_dict), 200
-
-    if request.method == 'POST':
-        if not request.is_json:
-            return jsonify({'error': 'Not a JSON'}), 400
-
-        try:
-            data = request.get_json()
-        except BadRequest:
-            return jsonify({'error': 'Not a JSON'}), 400
-
-        if 'name' not in data.keys():
-            return jsonify({'error': 'Missing name'}), 400
-
-        data.update({'state_id': id})
-        city = City(**data)
-        city.save()
-        return jsonify((city.to_dict())), 201
+    cities = state.cities
+    cities_dict = [state.to_dict() for state in cities]
+    return jsonify(cities_dict), 200

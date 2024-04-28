@@ -18,7 +18,7 @@ def classes(id=None):
         classes = storage.all(Clas)
 
         classes_dict = [clas.to_dict() for clas in classes.values()]
-        return jsonify(classes_dict, 200)
+        return jsonify(classes_dict), 200
 
     clas = storage.get(Clas, id)
     if not clas:

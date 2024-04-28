@@ -6,7 +6,7 @@ import json
 from models import storage
 
 
-@app_views.route("/lessons", methods=["GET", "POST"], strict_slashes=False)
+@app_views.route("/lessons", methods=["GET"], strict_slashes=False)
 @app_views.route("/lessons/<id>", methods=["GET"], strict_slashes=False)
 def all(id=None):
     """
@@ -21,12 +21,12 @@ def all(id=None):
             temp = elem.to_dict()
             data.append(temp)
         data = json.dumps(data, indent=2, sort_keys=True) + "\n"
-        return (data, 200)
+        return (data), 200
     else:
         seek = "Lesson." + id
         try:
             temp = less[seek].to_dict()
             data = json.dumps(temp, indent=2, sort_keys=True) + "\n"
-            return (data, 200)
+            return (data), 200
         except KeyError:
             abort(404)

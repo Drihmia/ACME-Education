@@ -1,23 +1,23 @@
 #!/usr/bin/python
 """ holds class City"""
 from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, ForeignKey, Table
+from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.orm import relationship
 
 
 # A city can have many different institutions as
 # +an institution be in different cities.
-cities_institutions = Table('cities_institutions', Base.metadata,
-                            Column('institution_id', String(60),
-                                   ForeignKey('institutions.id',
-                                              onupdate='CASCADE',
-                                              ondelete='CASCADE'),
-                                   primary_key=True),
-                            Column('city_id', String(60),
-                                   ForeignKey('cities.id',
-                                              onupdate='CASCADE',
-                                              ondelete='CASCADE'),
-                                   primary_key=True))
+# cities_institutions = Table('cities_institutions', Base.metadata,
+# Column('institution_id', String(60),
+# ForeignKey('institutions.id',
+# onupdate='CASCADE',
+# ondelete='CASCADE'),
+# primary_key=True),
+# Column('city_id', String(60),
+# ForeignKey('cities.id',
+# onupdate='CASCADE',
+# ondelete='CASCADE'),
+# primary_key=True))
 
 
 class City(BaseModel, Base):
@@ -27,12 +27,17 @@ class City(BaseModel, Base):
     # Normal attributes
     name = Column(String(128), nullable=False, unique=True)
 
+    # One to many relationship's attribute
+    institutions = relationship("Institution",
+                                backref="cities",
+                                cascade="all, delete, delete-orphan")
+
     # Many to one relationship's attributes.
     state_id = Column(String(60), ForeignKey('states.id'), nullable=False)
 
     # Many to many relationship's attributes.
-    institutions = relationship('Institution', secondary=cities_institutions,
-                                viewonly=False, back_populates="cities")
+    # institutions = relationship('Institution', secondary=cities_institutions,
+    # viewonly=False, back_populates="cities")
 
     def __init__(self, *args, **kwargs):
         """initializes city"""

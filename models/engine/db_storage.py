@@ -18,7 +18,6 @@ from models.city import City
 from models.student import Student
 
 
-
 classes = {'Institution': Institution, 'Subject': Subject,
            'Teacher': Teacher, 'Lesson': Lesson, 'Class': Clas,
            'State': State, 'City': City, 'Student': Student}
@@ -36,16 +35,10 @@ class DBStorage:
         ACME_MYSQL_HOST = getenv('h')
         ACME_MYSQL_DB = getenv('D')
         ACME_ENV = getenv('mode')
-        # print(ACME_MYSQL_USER, ACME_MYSQL_PWD, ACME_MYSQL_HOST, ACME_MYSQL_DB)
         if None in (ACME_MYSQL_USER, ACME_MYSQL_PWD,
                     ACME_MYSQL_HOST, ACME_MYSQL_DB):
             string = "One or more required environment variables are not set."
             raise ValueError(string)
-#         self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
-                                      # format('root',
-                                             # '' ,
-                                             # 'localhost',
-                                             # ACME_MYSQL_DB))
         self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
                                       format(ACME_MYSQL_USER,
                                              ACME_MYSQL_PWD,

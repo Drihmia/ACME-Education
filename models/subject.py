@@ -1,11 +1,12 @@
 #!/usr/bin/python
 """ holds class Subject"""
 from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, ForeignKey, Table
+from sqlalchemy import Column, String, ForeignKey, Table, UniqueConstraint
 from sqlalchemy.orm import relationship
 from models.institution import institution_subject
 
-# A subject can be taught by many teachers as a subject can have many teachers.
+# A subject can be taught by many teachers as a subject
+# +can have many teachers.
 subject_teacher = Table('subject_teacher', Base.metadata,
                         Column('subject_id', String(60),
                                ForeignKey('subjects.id',
@@ -16,9 +17,11 @@ subject_teacher = Table('subject_teacher', Base.metadata,
                                ForeignKey('teachers.id',
                                           onupdate='CASCADE',
                                           ondelete='CASCADE'),
-                               primary_key=True))
+                               primary_key=True),
+                        UniqueConstraint('subject_id', 'teacher_id'))
 
-# A subject can be taught by many students as a subject can have many students.
+# A subject can be taught by many students as a subject
+# can have many students.
 subject_student = Table('subject_student', Base.metadata,
                         Column('subject_id', String(60),
                                ForeignKey('subjects.id',
@@ -29,7 +32,8 @@ subject_student = Table('subject_student', Base.metadata,
                                ForeignKey('students.id',
                                           onupdate='CASCADE',
                                           ondelete='CASCADE'),
-                               primary_key=True))
+                               primary_key=True),
+                        UniqueConstraint('subject_id', 'student_id'))
 
 
 class Subject(BaseModel, Base):
@@ -53,4 +57,5 @@ class Subject(BaseModel, Base):
                             viewonly=False)
     institutions = relationship('Institution', secondary=institution_subject,
                                 viewonly=True)
-    students = relationship('Student', secondary=subject_student, viewonly=False)
+    students = relationship('Student', secondary=subject_student,
+                            viewonly=False)
