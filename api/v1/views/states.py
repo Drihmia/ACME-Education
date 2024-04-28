@@ -23,7 +23,7 @@ def states(id=None):
             states = storage.all(State)
 
             states_dict = [state.to_dict() for state in states.values()]
-            return jsonify(states_dict, 200)
+            return (jsonify(states_dict), 200)
 
         state = storage.get(State, id)
         if not state:
