@@ -1,6 +1,7 @@
 *.pyc
 *.py_x
 */*.pyc
+*dynamic/
 acme-education-frontend/node_modules/
 acme-education-frontend/.pnp
 acme-education-frontend/.pnp.js

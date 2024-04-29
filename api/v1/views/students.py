@@ -19,19 +19,29 @@ from models import storage
 def students_list(id=None):
     """Get student object by id if provided otherwise a
     full list of all students
+
     POST: Create a new student
         MUST: give the institution_id
             or institution_name + city_name/city_id.
+        - example 1:
         data = {first_name, last_name, email, password,
         teacher_email, class_id, institution_id}
 
+        - example 2:
         data = {first_name, last_name, email, password,
         teacher_email, class_id, city_id, institution}
 
-        the 1st syntax is faster
+        the 1st example is faster
+
+    PUT: update first_name, last_name, password, and list of  email teachers
+
+        data = {'first_name', 'last_name', 'password',
+                'teachers_email': list of email}
+
+        all those attributes are optional
     """
 
-    # GET's method.
+    # GET's method *******************************************************
     if request.method == 'GET':
         if id:
             student = storage.get(Student, id)
@@ -42,7 +52,7 @@ def students_list(id=None):
                          storage.all(Student).values()]
         return jsonify(students_list), 200
 
-    # POST's method.
+    # POST's method *******************************************************
     if request.method == 'POST':
         if not request.is_json:
             return jsonify({'error': 'Not a JSON'}), 400
@@ -141,6 +151,7 @@ def students_list(id=None):
         if not clas:
             return jsonify({'error': "UNKNOWN CLASS"}), 400
 
+        # This one item not a list of items, should be institution.city.
         if institution.cities:
             city_name = institution.cities.name
         elif 'city' in data.keys():
@@ -157,8 +168,12 @@ def students_list(id=None):
                               institution_id=institution.id,
                               teacher_email=teacher.email,
                               city=city_name)
-            institution.students.append(student)
-            teacher.students.append(student)
+            # institution.students.append(student)
+            # update student's relations
+            student.subjects.extend(teacher.subjects)
+            student.lessons.extend(teacher.lessons)
+            student.teachers.append(teacher)
+
         except IntegrityError:
             # storage.rollback()
             return jsonify({'error': 'exists'}), 400
@@ -185,7 +200,7 @@ def students_list(id=None):
         del student['institutions']
         return jsonify(student), 201
 
-    # PUT's method.
+    # PUT's method *******************************************************
     if request.method == 'PUT':
         if not request.is_json:
             return jsonify({'error': 'Not a JSON'}), 400
@@ -202,15 +217,48 @@ def students_list(id=None):
         if not student:
             return jsonify({'error': "UNKNOWN STUDENT"}), 400
 
-        ignore = ['id', 'created_at', 'updated_at', 'email']
+        normal_attr = ['first_name', 'last_name', 'password']
 
         for k, v in data.items():
-            if k not in ignore:
+            if k in normal_attr:
                 setattr(student, k, v)
+            elif 'teachers_email' in data.keys():
+                teachers_email = data.get('teachers_email')
+                if not isinstance(teachers_email, list):
+                    return jsonify({'error': "teachers_email must be a list"}
+                                   ),400
+
+                # Making sure there's no duplicates.
+                teachers_email = list(set(teachers_email))
+
+                # List of teacher IDs already associated with the student.
+                student_teacher_ids = [t.id for t in student.teachers]
+
+                for teacher_email in teachers_email:
+                    teacher = storage.query(Teacher).filter(Teacher.email ==
+                                                            teacher_email
+                                                            ).first()
+                    if not teacher:
+                        return jsonify({'error': "UNKNOWN TEACHER"}), 400
+
+                    if teacher.id in student_teacher_ids:
+                        continue
+
+                    # Add a teacher to the student's list of teachers.
+                    student.teachers.append(teacher)
+
+                    # Append new subjects/lessons related to new teacher to
+                    # +student.
+                    # and avoid duplications
+                    st_sub = set(student.subjects + teacher.subjects)
+                    student.subjects.extend(st_sub)
+                    st_lessons = set(student.lessons + teacher.lessons)
+                    student.lessons.extend(st_lessons)
+
         student.save()
         return jsonify(student.to_dict()), 200
 
-    # DELETE's method.
+    # DELETE's method *******************************************************
     if request.method == 'DELETE':
         student = storage.get(Student, id)
         if not student:
