@@ -101,7 +101,7 @@ def test_getting_the_correct_class():
     with req.get(link + "/" + slct) as marko:
         polo = marko.json()
         cls = polo["__class__"]
-        assert cls == "Institution"
+        assert cls == "Lesson"
 
 def test_getting_not_lesson():
     """Checks what happens if the ID is wrong"""
@@ -129,7 +129,7 @@ def test_relationships():
         inst = []
         for elem in polo:
             inst.append(elem["id"])
-    with req.get(base + "institutions") as marko:
+    with req.get(link) as marko:
         polo = marko.json()
         for elem in polo:
             assert elem["institution_id"] in inst

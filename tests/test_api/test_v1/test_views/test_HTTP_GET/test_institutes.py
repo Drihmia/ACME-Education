@@ -8,6 +8,7 @@ base = "http://54.157.156.176/"
 toTest = "institutions"
 link = base + toTest
 timeFormat = "%Y-%m-%dT%H:%M:%S.%f"
+limit = 32
 
 
 # Tests HTTP GET all
@@ -54,7 +55,7 @@ def test_values_availability():
             assert elem["name"] is not None
             assert elem["updated_at"] is not None
             assert elem["city"] is not None
-            assert elem["state"] is not None
+            assert elem["city_id"] is not None
 
 
 def test_correct_value_type_in_return():
@@ -70,7 +71,7 @@ def test_correct_value_type_in_return():
             assert isinstance(elem["__class__"], str)
             assert isinstance(elem["name"], str)
             assert isinstance(elem["city"], str)
-            assert isinstance(elem["state"], str)
+            assert uuid.UUID(str(elem["city_id"]))
 
 
 def test_getting_one_institute():
@@ -106,18 +107,83 @@ def test_relationships():
     """
     Checks if institute is from a state and city in the database
     """
-    with req.get(base + "states") as marko:
-        polo = marko.json()
-        state = []
-        for elem in polo:
-            state.append(elem["name"])
     with req.get(base + "cities") as marko:
         polo = marko.json()
         city = []
+        cityID = []
     for elem in polo:
         city.append(elem["name"])
-    with req.get(base + "cities") as marko:
+        cityID.append(elem["id"]) 
+    with req.get(link) as marko:
         polo = marko.json()
         for elem in polo:
-            assert elem["state"] in state
+            assert elem["city_id"] in cityID
             assert elem["city"] in city
+
+
+def test_correct_relationship():
+    """Check if the information is correct"""
+    i = 0
+    with req.get(link) as marko:
+        polo = marko.json()
+        for elem in polo:
+            if i != limit:
+                cityID = elem["city_id"]
+                with req.get(base + "/cities/" + cityID) as marko2:
+                    polo2 = marko2.json()
+                    assert polo2["id"] == cityID
+                    i = i + 1
+            else:
+                break
+
+
+def test_lesson_from_institute():
+    """Checks the filter of lessons from the same institute"""
+    testID = "d48256df-47f8-4c51-9e77-a380bbe208b8"
+    testLink = link + "/" + testID + "/lessons"
+    with req.get(testLink) as marko:
+        polo = marko.json()
+        for elem in polo:
+            assert elem["__class__"] == "Lesson"
+            assert elem["institution_id"] == testID
+
+
+def test_teacher_by_institute():
+    """Checks the teachers in same institute filter"""
+    testID = "d48256df-47f8-4c51-9e77-a380bbe208b8"
+    testLink = link + "/" + testID + "/teachers"
+    with req.get(testLink) as marko:
+        polo = marko.json()
+        for elem in polo:
+            assert elem["__class__"] == "Teacher"
+
+
+def test_subjct_by_institute():
+    """Checks the filter of subjects from the same institute"""
+    testID = "d48256df-47f8-4c51-9e77-a380bbe208b8"
+    testLink = link + "/" + testID + "/subjects"
+    with req.get(testLink) as marko:
+        polo = marko.json()
+        for elem in polo:
+            assert elem["__class__"] == "Subject"
+
+
+def test_year_by_institute():
+    """Checks the filter of years from the same institute"""
+    testID = "d48256df-47f8-4c51-9e77-a380bbe208b8"
+    testLink = link + "/" + testID + "/classes"
+    with req.get(testLink) as marko:
+        polo = marko.json()
+        for elem in polo:
+            assert elem["__class__"] == "Clas"
+
+
+def test_student_by_institute():
+    """Checks the filter of students from the same institute"""
+    testID = "31975d9f-08a3-445b-88aa-fc01cd05d18c"
+    testLink = link + "/" + testID + "/students"
+    with req.get(testLink) as marko:
+        polo = marko.json()
+        for elem in polo:
+            assert elem["__class__"] == "Student"
+            assert elem["institution_id"] == testID

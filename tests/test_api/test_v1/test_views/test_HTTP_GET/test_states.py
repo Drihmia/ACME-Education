@@ -96,3 +96,17 @@ def test_getting_not_teacher():
     """Checks what happens if the ID is wrong"""
     with req.get(link + "/temp") as marko:
         assert marko.status_code == 404
+
+
+def test_list_cites_of_state():
+    """Checks the list of cities of a state"""
+    with req.get(link) as marko:
+        polo = marko.json()
+        for elem in polo:
+            chkID = elem["id"]
+            testLink = link + "/" + chkID + "/cities"
+            with req.get(testLink) as marko2:
+                polo2 = marko2.json()
+                for elem2 in polo2:
+                    assert elem2["__class__"] == "City"
+                    assert elem2["state_id"] == chkID

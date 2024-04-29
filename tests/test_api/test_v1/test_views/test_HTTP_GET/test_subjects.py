@@ -69,7 +69,7 @@ def test_correct_value_type_in_return():
             assert isinstance(elem["name"], str)
 
 
-def test_getting_one_teacher():
+def test_getting_one_subject():
     """Checks when we pick a subject"""
     with req.get(link) as marko:
         polo = marko.json()
@@ -92,7 +92,44 @@ def test_getting_the_correct_class():
         cls = polo["__class__"]
         assert cls == "Subject"
 
-def test_getting_not_teacher():
+def test_getting_not_subject():
     """Checks what happens if the ID is wrong"""
     with req.get(link + "/temp") as marko:
         assert marko.status_code == 404
+
+
+def test_subject_of_institute():
+    """Checks filter of institute by subject"""
+    with req.get(link) as marko:
+        polo = marko.json()
+        for elem in polo:
+            chkID = elem["id"]
+            testLink = link + "/" + chkID + "/institutions"
+            with req.get(testLink) as marko2:
+                polo2 = marko2.json()
+                for elem2 in polo2:
+                    assert elem2["__class__"] == "Institution"
+
+
+def test_subject_of_lessons():
+    """Checks filter of institute by lessons"""
+    chkID = "7424627e-8f0d-4273-ad4e-b2e69215b526"
+    testLink = link + "/" + chkID + "/lessons"
+    with req.get(testLink) as marko2:
+        polo2 = marko2.json()
+        for elem2 in polo2:
+            assert elem2["__class__"] == "Lesson"
+
+
+def test_teacher_of_subject():
+    """Checks filter of subject by teacher"""
+    with req.get(link) as marko:
+        polo = marko.json()
+        for elem in polo:
+            chkID = elem["id"]
+            testLink = link + "/" + chkID + "/teachers"
+            print(testLink)
+            with req.get(testLink) as marko2:
+                polo2 = marko.json()
+                for elem2 in polo2:
+                    assert elem2["__class__"] == "Teacher"
