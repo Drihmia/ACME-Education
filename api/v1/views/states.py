@@ -41,7 +41,7 @@ def states(id=None):
             return jsonify({'error': 'Not a JSON'}), 400
 
         if not data:
-            return jsonify({'error': 'No data'}), 400
+            return jsonify({'error': 'No data'}), 422
 
         if 'name' not in data.keys():
             return jsonify({'error': 'Missing name'}), 400
@@ -65,7 +65,7 @@ def states(id=None):
             return jsonify({'error': 'Not a JSON'}), 400
 
         if not data:
-            return jsonify({'error': 'No data'}), 400
+            return jsonify({'error': 'No data'}), 422
 
         state = storage.get(State, id)
         if not state:

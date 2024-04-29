@@ -38,7 +38,8 @@ class Clas(BaseModel, Base):
     __tablename__ = 'classes'
 
     # Normal attributes
-    name = Column(String(128), nullable=False, unique=True)
+    name = Column(String(128, collation='utf8mb4_unicode_ci'),
+                  nullable=False, unique=True)
 
     # one to Many relationship's attributes.
     students = relationship("Student",

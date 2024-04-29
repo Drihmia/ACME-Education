@@ -25,7 +25,8 @@ class City(BaseModel, Base):
     __tablename__ = 'cities'
 
     # Normal attributes
-    name = Column(String(128), nullable=False, unique=True)
+    name = Column(String(128, collation='utf8mb4_unicode_ci'),
+                  nullable=False, unique=True)
 
     # One to many relationship's attribute
     institutions = relationship("Institution",

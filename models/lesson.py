@@ -12,9 +12,12 @@ class Lesson(BaseModel, Base):
     __tablename__ = 'lessons'
 
     # Normal attributes
-    name = Column(String(128), nullable=False)
-    download_link = Column(String(1024), nullable=False)
-    description = Column(String(1024), nullable=True)
+    name = Column(String(128, collation='utf8mb4_unicode_ci'),
+                  nullable=False)
+    download_link = Column(String(1024, collation='utf8mb4_unicode_ci'),
+                           nullable=False)
+    description = Column(String(1024, collation='utf8mb4_unicode_ci'),
+                         nullable=True)
     public = Column(Boolean, nullable=True, default=True)
 
     # Many to one relationship's attributes.

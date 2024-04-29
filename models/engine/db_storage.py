@@ -5,6 +5,7 @@ Contains the class DBStorage
 
 from models.base_model import Base
 from sqlalchemy import create_engine
+from sqlalchemy_utils import create_database, database_exists
 from sqlalchemy.orm import scoped_session, sessionmaker
 from os import getenv
 import models
@@ -35,15 +36,21 @@ class DBStorage:
         ACME_MYSQL_HOST = getenv('h')
         ACME_MYSQL_DB = getenv('D')
         ACME_ENV = getenv('mode')
+        CHARSET_STR = '?charset=utf8mb4&collation=utf8mb4_unicode_ci'
         if None in (ACME_MYSQL_USER, ACME_MYSQL_PWD,
                     ACME_MYSQL_HOST, ACME_MYSQL_DB):
             string = "One or more required environment variables are not set."
             raise ValueError(string)
-        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
+        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}{}'.
                                       format(ACME_MYSQL_USER,
                                              ACME_MYSQL_PWD,
                                              ACME_MYSQL_HOST,
-                                             ACME_MYSQL_DB))
+                                             ACME_MYSQL_DB,
+                                             CHARSET_STR))
+        if not database_exists(self.__engine.url):
+            # Create the database
+            create_database(self.__engine.url)
+
         if ACME_ENV == "test":
             Base.metadata.drop_all(self.__engine)
 

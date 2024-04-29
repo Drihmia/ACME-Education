@@ -50,16 +50,23 @@ def teachers_list(id=None):
             return jsonify({'error': 'Not a JSON'}), 400
 
         if not data:
-            return jsonify({'error': 'No data'}), 400
+            return jsonify({'error': 'No data'}), 422
+
+        if 'email' not in data.keys():
+            return jsonify({'error': 'Missing email'}), 400
+
+        # Check if the teacher's email not in our database.
+        if storage.query(Teacher).filter(Teacher.email == data.
+                                         get('email')).first():
+            return jsonify({'error': "teacher exists"}), 400
+
+        # -------------------------------------------------------
 
         if 'first_name' not in data.keys():
             return jsonify({'error': 'Missing first_name'}), 400
 
         if 'last_name' not in data.keys():
             return jsonify({'error': 'Missing last_name'}), 400
-
-        if 'email' not in data.keys():
-            return jsonify({'error': 'Missing email'}), 400
 
         if 'password' not in data.keys():
             return jsonify({'error': 'Missing password'}), 400
@@ -132,10 +139,16 @@ def teachers_list(id=None):
                     except IntegrityError:
                         pass
         try:
-            storage.new(teacher)
             institution.save()
         except IntegrityError:
-            return jsonify({'error': 'exists'}), 400
+            return jsonify({'error': 'institution exists'}), 400
+
+        try:
+            storage.new(teacher)
+            storage.save()
+        except IntegrityError:
+            return jsonify({'error': 'teacher exists'}), 400
+
         return jsonify(teacher.to_dict()), 201
 
     if request.method == 'PUT':
@@ -148,7 +161,7 @@ def teachers_list(id=None):
             return jsonify({'error': 'Not a JSON'}), 400
 
         if not data:
-            return jsonify({'error': 'No data'}), 400
+            return jsonify({'error': 'No data'}), 422
 
         teacher = storage.get(Teacher, id)
         if not teacher:
@@ -178,8 +191,15 @@ def teachers_list_lessons(id):
     """return a list of all  lessons by teacher"""
 
     # lessons = storage.query(Lesson).filter(Lesson.teacher_id == id).all()
-    lessons = storage.query(Teacher).filter(Teacher.id == id).all()[-1].lessons
+    # lessons = storage.query(Teacher).filter(Teacher.id == id).
+    # all()[-1].lessons
 
+    # Match faster if the maching is faster and less overload on database.
+    teacher = storage.get(Teacher, id)
+    if not teacher:
+        abort(404)
+
+    lessons = teacher.lessons
     return jsonify([lesson.to_dict() for lesson in lessons]), 200
 
 

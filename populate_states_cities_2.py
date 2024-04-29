@@ -13,27 +13,49 @@ from models.city import City
 with open('schools.json', 'r') as file:
     data = load(file)
 
+    dic = {}
+    for state in storage.all(State).values():
+        dic.update({state.name: state.id})
+
+    cities = storage.all(City).values()
+    cities_name = [ city.name for city in cities]
+
+    count = 0
+    refresh = 0
+    length = len(data)
     for shool in data:
-        state_found = 0
+        city_name = shool.get('PROVINCE')
+        if city_name in cities_name:
+            continue
+        refresh = refresh + 1
+        if refresh % 20:
+            refresh = 0
+            cities = storage.all(City).values()
+            cities_name = [ city.name for city in cities]
+
+
         state_name = shool.get('REGION')
-        for state_obj in storage.all(State).values():
-            if state_obj.name == state_name:
-                state_found = 1
-                city_name = shool.get('PROVINCE')
-                city = City(name=city_name, state_id=state_obj.id)
-                try:
-                    storage.new(city)
-                    print("adding :", city.name)
-                except IntegrityError as e:
-                    print(e)
-                    storage.rollback()
-                try:
-                    storage.save()
-                except IntegrityError:
-                    storage.rollback()
-                    print("**********************************************")
-        if not state_found:
-            print(f'state: {state_name} not found')
+        state_id = dic.get(state_name, 'None')
+
+        if state_id == 'None':
+            print(f"                                        ---------------------------    {state_name} not found")
+            count = count + 1
+            continue
+        else:
+            count = count + 1
+
+        print(f'                                         ---------------------------     {count} of {length} : {refresh}')
+
+        city = City(name=city_name, state_id=state_id)
+        print("creating :", city.name)
+        storage.new(city)
+
+        try:
+            storage.save()
+            print("added :", city.name)
+        except IntegrityError:
+            storage.rollback()
+            print(".")
 
 print('statistics:')
 stats = {

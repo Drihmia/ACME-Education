@@ -12,10 +12,9 @@ from models.state import State
 from models.city import City
 list_objects = []
 
-
 # Creating states.
-RSK = State(name='RSK')
-RSK.save()
+# RSK = State(name='RSK')
+# RSK.save()
 # try:
     # RSK = State(name='RSK')
     # RSK.save()
@@ -25,46 +24,83 @@ RSK.save()
     # RSK.save()
     # print(e)
 
-SAFI = State(name='SAF')
-SAFI.save()
-T_T = State(name='TANGE-TETOUAN')
-T_T.save()
+# SAFI = State(name='SAF')
+# SAFI.save()
+# T_T = State(name='TANGE-TETOUAN')
+# T_T.save()
 
 # Creating cities.
-SALE = City(name='SAL', state_id=RSK.id)
-SALE.save()
-S_K = City(name='SIDI KACE', state_id=RSK.id)
-S_K.save()
-TANGER = City(name='TANGE', state_id=T_T.id)
-TANGER.save()
-JADIDA = City(name='JADID', state_id=SAFI.id)
-JADIDA.save()
+# SALE = City(name='SAL', state_id=RSK.id)
+# SALE.save()
+# S_K = City(name='SIDI KACE', state_id=RSK.id)
+# S_K.save()
+# TANGER = City(name='TANGE', state_id=T_T.id)
+# TANGER.save()
+# JADIDA = City(name='JADID', state_id=SAFI.id)
+# JADIDA.save()
 
-list_objects.extend([RSK, SAFI, T_T, SALE, S_K, TANGER, JADIDA])
+# list_objects.extend([RSK, SAFI, T_T, SALE, S_K, TANGER, JADIDA])
 
 
-# Creating institutions.
-inst_1 = Institution(name='LYCEE ALMANDAR ALJAMI', city=SALE.name,
-                     state=RSK.name, city_id=SALE.id)
-inst_1.save()
-inst_11 = Institution(name='LYCEE ALMANDAR ALJAMIL', city=S_K.name,
-                      state=RSK.name, city_id=S_K.id)
-inst_11.save()
-inst_2 = Institution(name='LYCEE JABIR IBN HAYA', city=SALE.name,
-                     state=RSK.name, city_id=SALE.id)
-inst_2.save()
-inst_22 = Institution(name='LYCEE JABIR IBN HAYAE', city=TANGER.name,
-                      state=T_T.name, city_id=TANGER.id)
-inst_22.save()
-inst_3 = Institution(name='LYCEE QUADI AAD', city=SALE.name,
-                     state=RSK.name, city_id=SALE.id)
-inst_3.save()
-inst_33 = Institution(name='LYCEE QUADI AAD', city=JADIDA.name,
-                      state=SAFI.name, city_id=JADIDA.id)
-inst_33.save()
-inst_4 = Institution(name='LYCEE ALMONABI', city=SALE.name,
-                     state=RSK.name, city_id=SALE.id)
-inst_4.save()
+# # Creating institutions.
+# inst_1 = Institution(name='LYCEE ALMANDAR ALJAMI', city=SALE.name,
+                     # state=RSK.name, city_id=SALE.id)
+# inst_1.save()
+# inst_11 = Institution(name='LYCEE ALMANDAR ALJAMIL', city=S_K.name,
+                      # state=RSK.name, city_id=S_K.id)
+# inst_11.save()
+# inst_2 = Institution(name='LYCEE JABIR IBN HAYA', city=SALE.name,
+                     # state=RSK.name, city_id=SALE.id)
+# inst_2.save()
+# inst_22 = Institution(name='LYCEE JABIR IBN HAYAE', city=TANGER.name,
+                      # state=T_T.name, city_id=TANGER.id)
+# inst_22.save()
+# inst_3 = Institution(name='LYCEE QUADI AAD', city=SALE.name,
+                     # state=RSK.name, city_id=SALE.id)
+# inst_3.save()
+# inst_33 = Institution(name='LYCEE QUADI AAD', city=JADIDA.name,
+                      # state=SAFI.name, city_id=JADIDA.id)
+# inst_33.save()
+# inst_4 = Institution(name='LYCEE ALMONABI', city=SALE.name,
+                     # state=RSK.name, city_id=SALE.id)
+# inst_4.save()
+inst_1 = storage.query(Institution).filter((Institution.name).like('%ALMANDAR ALJAMIL%'),
+                                           Institution.city == 'Sale').first()
+if not inst_1:
+    print('inst_1')
+    exit(1)
+inst_11 = storage.query(Institution).filter(Institution.name.like('%ALMANDAR ALJAMIL%'),
+                                           Institution.city.like('Sidi ka%')).first()
+if not inst_11:
+    print('inst_11')
+    exit(1)
+inst_2 = storage.query(Institution).filter(Institution.name.like('%JABIR IBN HAYA%'),
+                                           Institution.city.like('SAL%')).first()
+if not inst_2:
+    print('inst_2')
+    exit(1)
+inst_22 = storage.query(Institution).filter(Institution.name.like('%JABIR IBN HAYA%'),
+                                           Institution.city.like('tange%')).first()
+if not inst_22:
+    print('inst_22')
+    exit(1)
+inst_3 = storage.query(Institution).filter(Institution.name.like('%QUADI AAD%'),
+                                           Institution.city.like('sal%')).first()
+if not inst_3:
+    print('inst_3')
+    exit(1)
+inst_33 = storage.query(Institution).filter(Institution.name.like('%QUADI AAD%'),
+                                           Institution.city.like('jadid%')).first()
+if not inst_33:
+    print('inst_33')
+    exit(1)
+inst_4 = storage.query(Institution).filter(Institution.name.like('%ALMONABI%'),
+                                           Institution.city.like('sal%')).first()
+if not inst_4:
+    print('inst_4')
+    exit(1)
+
+
 
 
 
@@ -93,8 +129,8 @@ inst_4.save()
 # print('SAFI\n', SAFI.cities)
 # print('T_T\n', T_T.cities)
 
-institution_list = [inst_1, inst_2, inst_3, inst_4, inst_11, inst_22, inst_33]
-list_objects.extend(institution_list)
+# institution_list = [inst_1, inst_2, inst_3, inst_4, inst_11, inst_22, inst_33]
+# list_objects.extend(institution_list)
 
 
 # Creating subjects.
@@ -131,16 +167,16 @@ class_list = [cc, bac1, bac2]
 list_objects.extend(class_list)
 
 # Creating teachers.
-teacher_1 = Teacher(first_name='Redouane', last_name='DRIHMIA', email='red1@gmail.com', password='123')
+teacher_1 = Teacher(first_name='Redouane', last_name='DRIHMIA', email='red1@gmail.com', password='red1')
 teacher_1.save()
 
-teacher_2 = Teacher(first_name='DRIHMIA', last_name='Redouane', email='red2@gmail.com', password='123')
+teacher_2 = Teacher(first_name='DRIHMIA', last_name='Redouane', email='red2@gmail.com', password='red2')
 teacher_2.save()
 
-teacher_3 = Teacher(first_name='OMER', last_name='Mohamed', email='omer1@gmail.com', password='123')
+teacher_3 = Teacher(first_name='OMER', last_name='Mohamed', email='omer1@gmail.com', password='omer1')
 teacher_3.save()
 
-teacher_4 = Teacher(first_name='OMER', last_name='OMER', email='omer2@gmail.com', password='123')
+teacher_4 = Teacher(first_name='OMER', last_name='OMER', email='omer2@gmail.com', password='omer2')
 teacher_4.save()
 
 
@@ -149,16 +185,16 @@ list_objects.extend(teacher_list)
 
 
 # Creating students.
-Marwan = Student(first_name='student_1', last_name='marwan', email='marwan@gmail.com', password='123',
+Marwan = Student(first_name='student_1', last_name='marwan', email='marwan@gmail.com', password='marwan',
                  institution_id=inst_1.id, class_id=cc.id, teacher_email='red1@gmail.com')
 Marwan.save()
-Hamid = Student(first_name='student_2', last_name='hicham', email='hicham@gmail.com', password='123',
+Hamid = Student(first_name='student_2', last_name='hicham', email='hicham@gmail.com', password='hicham',
                 institution_id=inst_1.id, class_id=cc.id, teacher_email='red1@gmail.com')
 Hamid.save()
-Samir = Student(first_name='student_3', last_name='fatima', email='fatima@gmail.com', password='123',
+Samir = Student(first_name='student_3', last_name='fatima', email='fatima@gmail.com', password='fatima',
                 institution_id=inst_1.id, class_id=bac1.id, teacher_email='red1@gmail.com')
 Samir.save()
-Fatima = Student(first_name='student_4', last_name='yasmine', email='yasmine@gmail.com', password='123',
+Fatima = Student(first_name='student_4', last_name='yasmine', email='yasmine@gmail.com', password='yasmine',
                  institution_id=inst_1.id, class_id=bac1.id, teacher_email='red2@gmail.com')   # incomplete
 Fatima.save()
 

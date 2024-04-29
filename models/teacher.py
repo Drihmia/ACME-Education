@@ -1,13 +1,13 @@
 #!/usr/bin/python
 """ holds class Teacher"""
-from sqlalchemy import Column, event, String
 from hashlib import sha256
+from sqlalchemy import Column, event, String
+from sqlalchemy import ForeignKey, Table, UniqueConstraint
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, String, ForeignKey, Table, UniqueConstraint
 from models.base_model import BaseModel, Base
-from models.subject import subject_teacher
-from models.institution import institution_teacher
 from models.clas import clas_teacher
+from models.institution import institution_teacher
+from models.subject import subject_teacher
 
 
 teacher_student = Table('teacher_student', Base.metadata,
@@ -29,28 +29,27 @@ class Teacher(BaseModel, Base):
     __tablename__ = 'teachers'
     # __table_args__ = (UniqueConstraint('first_name', 'last_name'), )
 
-    # Normal attributes
+    # -------------------------------------------------------------
+    # Normal attributes.
     first_name = Column(String(128), nullable=False)  # A must
     last_name = Column(String(128), nullable=False)  # A must
     email = Column(String(128), nullable=False, unique=True)  # A must
+    password = Column(String(128), nullable=False)  # A must
 
+    # -------------------------------------------------------------
+    # Optional attributes.
+    # gender = Column(String(12), nullable=True)
     institution = Column(String(128), nullable=True)
     subject = Column(String(128), nullable=True)
     city = Column(String(128), nullable=True)
 
-    password = Column(String(128), nullable=False)  # A must
-
-    # Many to one relationship's attributes.
-    # institution_id = Column(String(60), ForeignKey('institutions.id'),
-    # nullable=False)
-    # subject_id = Column(String(60), ForeignKey('subjects.id'),
-    # nullable=False)
-
+    # -------------------------------------------------------------
     # One to many relationship's attributes.
     lessons = relationship("Lesson",
                            backref="teachers",
                            cascade="all, delete, delete-orphan")
 
+    # -------------------------------------------------------------
     # many to many relationship's attributes.
     subjects = relationship("Subject", secondary=subject_teacher,
                             viewonly=True)
@@ -62,9 +61,10 @@ class Teacher(BaseModel, Base):
 
 
 def hash_password_before_insert_or_update(_, __, teacher):
+    """Hashing the password before store it into database"""
     if teacher.password is not None:
         # Hash the password using sha256
-        teacher.password = sha256(teacher.password.encode()).hexdigest()
+        teacher.password = sha256(teacher.password.encode('utf-8')).hexdigest()
 
 
 event.listen(Teacher, 'before_insert', hash_password_before_insert_or_update)

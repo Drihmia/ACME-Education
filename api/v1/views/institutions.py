@@ -47,7 +47,7 @@ def institutions(id=None):
             return jsonify({'error': 'Not a JSON'}), 400
 
         if not data:
-            return jsonify({'error': 'No data'}), 400
+            return jsonify({'error': 'No data'}), 422
 
         if 'name' not in data.keys():
             return jsonify({'error': 'Missing name'}), 400
@@ -98,7 +98,7 @@ def institutions(id=None):
             return jsonify({'error': 'Not a JSON'}), 400
 
         if not data:
-            return jsonify({'error': 'No data'}), 400
+            return jsonify({'error': 'No data'}), 422
 
         institution = storage.get(Institution, id)
         if not institution:

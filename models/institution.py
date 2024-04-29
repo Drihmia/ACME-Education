@@ -57,10 +57,12 @@ class Institution(BaseModel, Base):
 
     # Normal attributes
     # +I've approach it as nullable is False.
-    name = Column(String(128), nullable=False)  # A must
+    name = Column(String(128, collation='utf8mb4_unicode_ci'),
+                  nullable=False)  # A must
 
     # Frontend can provide the city's name or city's id.
-    city = Column(String(128), nullable=True)  # It's optional.
+    city = Column(String(128, collation='utf8mb4_unicode_ci'),
+                  nullable=True)  # It's optional.
 
     # One to many relationship's attributes.
     lessons = relationship("Lesson",

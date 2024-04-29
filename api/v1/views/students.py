@@ -53,7 +53,28 @@ def students_list(id=None):
             return jsonify({'error': 'Not a JSON'}), 400
 
         if not data:
-            return jsonify({'error': 'No data'}), 400
+            return jsonify({'error': 'No data'}), 422
+
+        if 'email' not in data.keys():
+            return jsonify({'error': 'Missing email'}), 400
+
+        # Check if the student's email not in our database.
+        if storage.query(Student).filter(Student.email == data.
+                                         get('email')).first():
+            return jsonify({'error': "student exists"}), 400
+
+        # -------------------------------------------------------
+
+        # checking student's teacher exist in our database.
+        teacher = storage.query(Teacher).filter(Teacher.email == data.
+                                                get("teacher_email")).first()
+        if not teacher:
+            return jsonify({'error': "UNKNOWN TEACHER"}), 400
+
+        # -------------------------------------------------------
+
+        if 'teacher_email' not in data.keys():
+            return jsonify({'error': "Missing teacher's email"}), 400
 
         if 'first_name' not in data.keys():
             return jsonify({'error': 'Missing first_name'}), 400
@@ -61,23 +82,11 @@ def students_list(id=None):
         if 'last_name' not in data.keys():
             return jsonify({'error': 'Missing last_name'}), 400
 
-        if 'email' not in data.keys():
-            return jsonify({'error': 'Missing email'}), 400
-
         if 'password' not in data.keys():
             return jsonify({'error': 'Missing password'}), 400
 
         if 'class_id' not in data.keys():
             return jsonify({'error': 'Missing class_id'}), 400
-
-        if 'teacher_email' not in data.keys():
-            return jsonify({'error': "Missing teacher's email"}), 400
-
-        # checking student's teacher exist in our database.
-        teacher = storage.query(Teacher).filter(Teacher.email == data.
-                                                get("teacher_email")).first()
-        if not teacher:
-            return jsonify({'error': "UNKNOWN TEACHER"}), 400
 
         # Check if institution already exist, 1st by its id if it's provided
         # +or by its name.
@@ -153,7 +162,6 @@ def students_list(id=None):
         except IntegrityError:
             # storage.rollback()
             return jsonify({'error': 'exists'}), 400
-        print("****************")
         for subject in storage.all(Subject).values():
             try:
                 subject.students.append(student)
@@ -188,7 +196,7 @@ def students_list(id=None):
             return jsonify({'error': 'Not a JSON'}), 400
 
         if not data:
-            return jsonify({'error': 'No data'}), 400
+            return jsonify({'error': 'No data'}), 422
 
         student = storage.get(Student, id)
         if not student:

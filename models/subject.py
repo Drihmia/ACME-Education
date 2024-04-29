@@ -41,7 +41,8 @@ class Subject(BaseModel, Base):
     __tablename__ = 'subjects'
 
     # Normal attributes
-    name = Column(String(128), nullable=False, unique=True)
+    name = Column(String(128, collation='utf8mb4_unicode_ci'),
+                  nullable=False, unique=True)
 
     # Many to one relationship's attributes.
     # institution_id = Column(String(60), ForeignKey('institutions.id'),
