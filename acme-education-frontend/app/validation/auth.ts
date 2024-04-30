@@ -52,6 +52,7 @@ export const signupSchema = yup.object().shape({
     .string()
     .oneOf([yup.ref("password")], "Mismatched passwords")
     .required("Please confirm your password"),
+  isTeacher: yup.string().oneOf(["true", "false"], "Terms must be accepted").required()
   // terms: yup
   //   .boolean()
   //   .oneOf([true], "Terms must be accepted")

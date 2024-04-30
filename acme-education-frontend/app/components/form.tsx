@@ -1,13 +1,20 @@
 "use client";
 
 import React, { ClassAttributes, InputHTMLAttributes } from "react";
-import { Formik, Form, useField, FieldHookConfig } from "formik";
+import { Formik, Form, useField, FieldHookConfig, Field } from "formik";
 import { signinSchema } from "../validation/auth";
 import Link from "next/link";
 
+
+interface radioProps {
+  label: string;
+  name: string;
+  value: boolean;
+}
 interface OtherProps {
   label: string;
-  placeholder: string;
+  placeholder?: string;
+  options?: radioProps[]
 }
 
 export const MyTextInput = ({
@@ -21,7 +28,7 @@ export const MyTextInput = ({
   return (
     <div className="w-full mb-4">
       <label
-        className="relative w-full font-semibold text-black text-xs"
+        className="relative w-full font-semibold text-black"
         htmlFor={props.id || props.name}
       >
         {label}
@@ -51,7 +58,7 @@ export const MyTextArea = ({
   return (
     <div className="mb-4">
       <label
-        className="flex pb-2 font-semibold text-black text-xs"
+        className="flex pb-2 font-semibold text-black"
         htmlFor={props.id || props.name}
       >
         {label}
@@ -80,10 +87,7 @@ export const MySelect = ({
   const [field, meta] = useField(props);
   return (
     <div className="mb-4">
-      <label
-        className="flex pb-2 font-medium text-xs"
-        htmlFor={props.id || props.name}
-      >
+      <label className="flex pb-2 font-medium" htmlFor={props.id || props.name}>
         {label}
       </label>
       <select
@@ -98,6 +102,40 @@ export const MySelect = ({
   );
 };
 
+//create your input component
+//in this case im defining the radio input
+//this component can be contained in another file
+export const InputField = ({ label, name, value }: radioProps) => {
+  return (
+    <label htmlFor={name} className="block font-normal">
+      <input type="radio" name={name} value={`${value}`} />
+      {label}
+    </label>
+  );
+};
+
+// create a custom FieldSet component that uses the useField hook
+//this component can be contained in another file
+export const FieldSet = ({ label, options, ...props }: OtherProps &
+  InputHTMLAttributes<HTMLFieldSetElement> &
+  ClassAttributes<HTMLFieldSetElement> &
+  FieldHookConfig<string>) => {
+  const [field, meta] = useField(props);
+  return (
+    <div className="w-full">
+      <label className="font-medium">
+        {label}
+        {/* make sure the radios are contained in a fieldset */}
+        <fieldset {...field} {...props}>
+          {options?.map((option, i) => <InputField key={`${i}`} name={option.name} label={option.label} value={option.value} />)}
+        </fieldset>
+      </label>
+      {meta.touched && meta.error ? (
+        <div className="error text-xs text-red-600">{meta.error}</div>
+      ) : null}
+    </div>
+  );
+};
 export const SignInForm = () => {
   return (
     <>
@@ -140,10 +178,16 @@ export const SignInForm = () => {
           </Form>
         </Formik>
         <div className="w-full text-center lg:flex lg:items-center lg:justify-between lg:px-8">
-          <Link href={`/signup`} className="block text-black/60 hover:text-blue-900 hover:underline text-sm">
+          <Link
+            href={`/signup`}
+            className="block text-black/60 hover:text-blue-900 hover:underline text-sm"
+          >
             Don&apos;t have an account? Sign up
           </Link>
-          <Link href={`forgotPassword`} className="block text-black/60 hover:text-blue-900 hover:underline text-sm">
+          <Link
+            href={`forgotPassword`}
+            className="block text-black/60 hover:text-blue-900 hover:underline text-sm"
+          >
             Forgot password?
           </Link>
         </div>
