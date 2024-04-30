@@ -33,12 +33,12 @@ def students_list(id=None):
 
         the 1st example is faster
 
-    PUT: update first_name, last_name, password, and list of  email teachers
+    PUT: Update first_name, last_name, password, and list of  email teachers
 
         data = {'first_name', 'last_name', 'password',
                 'teachers_email': list of email}
 
-        all those attributes are optional
+        all those attributes are optional.
     """
 
     # GET's method *******************************************************
@@ -168,6 +168,7 @@ def students_list(id=None):
                               institution_id=institution.id,
                               teacher_email=teacher.email,
                               city=city_name)
+            storage.new(student)
             # institution.students.append(student)
             # update student's relations
             student.subjects.extend(teacher.subjects)
@@ -217,43 +218,59 @@ def students_list(id=None):
         if not student:
             return jsonify({'error': "UNKNOWN STUDENT"}), 400
 
-        normal_attr = ['first_name', 'last_name', 'password']
+        normal_attr = ['first_name', 'last_name', 'password', 'institution',
+                       'city']
 
         for k, v in data.items():
             if k in normal_attr:
                 setattr(student, k, v)
-            elif 'teachers_email' in data.keys():
-                teachers_email = data.get('teachers_email')
-                if not isinstance(teachers_email, list):
-                    return jsonify({'error': "teachers_email must be a list"}
-                                   ),400
 
-                # Making sure there's no duplicates.
-                teachers_email = list(set(teachers_email))
+        if 'teachers_email' in data.keys():
+            teachers_email = data.get('teachers_email')
 
-                # List of teacher IDs already associated with the student.
-                student_teacher_ids = [t.id for t in student.teachers]
+            # Make sure that teachers_email is an actual list.
+            if not isinstance(teachers_email, list):
+                return jsonify({'error': "teachers_email must be a list"}
+                               ),400
 
-                for teacher_email in teachers_email:
-                    teacher = storage.query(Teacher).filter(Teacher.email ==
-                                                            teacher_email
-                                                            ).first()
-                    if not teacher:
-                        return jsonify({'error': "UNKNOWN TEACHER"}), 400
+            # Making sure there's no duplicates.
+            teachers_email = list(set(teachers_email))
 
-                    if teacher.id in student_teacher_ids:
-                        continue
+            # List of teacher IDs already associated with the student.
+            student_teacher_ids = [t.id for t in student.teachers]
 
-                    # Add a teacher to the student's list of teachers.
-                    student.teachers.append(teacher)
+            for teacher_email in teachers_email:
+                teacher = storage.query(Teacher).filter(Teacher.email ==
+                                                        teacher_email
+                                                        ).first()
+                # I'm not sure which policy  I should adopte,
+                # +forgiven or strict.
+                # I chose to be strict.
+                if not teacher:
+                # If techer object with one of the teacher's emails
+                # +provided not in our database or it's misspelled
+                # all the list will be rejected.
+                    return jsonify({
+                        'error': f'UNKNOWN TEACHER with {teacher_email}'}), 400
 
-                    # Append new subjects/lessons related to new teacher to
-                    # +student.
-                    # and avoid duplications
-                    st_sub = set(student.subjects + teacher.subjects)
-                    student.subjects.extend(st_sub)
-                    st_lessons = set(student.lessons + teacher.lessons)
-                    student.lessons.extend(st_lessons)
+                if teacher.id in student_teacher_ids:
+                    continue
+
+                # Add a teacher to the student's list of teachers.
+                student.teachers.append(teacher)
+
+                # Append new subjects/lessons related to new teacher to
+                # +student.
+                # and avoid duplications
+                st_sub = set(student.subjects + teacher.subjects)
+                student.subjects.extend(st_sub)
+
+                # Making sure that student get assigned only lessons of
+                # +the classes he studies in.
+                teacher_lessons = [lesson for lesson in teacher.lessons
+                                   if lesson.classes == student.classes]
+                st_lessons = set(student.lessons + teacher_lessons)
+                student.lessons.extend(st_lessons)
 
         student.save()
         return jsonify(student.to_dict()), 200
