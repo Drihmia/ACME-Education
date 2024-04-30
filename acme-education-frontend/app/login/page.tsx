@@ -1,5 +1,3 @@
-// import Login from "../components/Login";
-
 import { SignInForm } from "../components/form";
 
 export default async function Page({
