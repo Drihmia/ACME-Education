@@ -64,7 +64,7 @@ export const Header = () => {
               <Link href={`/about_us`}>about us</Link>
             </li>
             <li className="py-2 px-4 rounded-2xl bg-blue-100 text-black hover:text-white hover:bg-blue-700 font-medium transition-all ease-linear duration-200 cursor-pointer">
-              <Link href={`/login`}>login | signup</Link>
+              <Link href={`/login`}>login</Link>
             </li>
           </ul>
         </div>
