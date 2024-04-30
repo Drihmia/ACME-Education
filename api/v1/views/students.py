@@ -231,7 +231,7 @@ def students_list(id=None):
             # Make sure that teachers_email is an actual list.
             if not isinstance(teachers_email, list):
                 return jsonify({'error': "teachers_email must be a list"}
-                               ),400
+                               ), 400
 
             # Making sure there's no duplicates.
             teachers_email = list(set(teachers_email))
@@ -247,9 +247,9 @@ def students_list(id=None):
                 # +forgiven or strict.
                 # I chose to be strict.
                 if not teacher:
-                # If techer object with one of the teacher's emails
-                # +provided not in our database or it's misspelled
-                # all the list will be rejected.
+                    # If techer object with one of the teacher's emails
+                    # +provided not in our database or it's misspelled
+                    # all the list will be rejected.
                     return jsonify({
                         'error': f'UNKNOWN TEACHER with {teacher_email}'}), 400
 
@@ -268,7 +268,10 @@ def students_list(id=None):
                 # Making sure that student get assigned only lessons of
                 # +the classes he studies in.
                 teacher_lessons = [lesson for lesson in teacher.lessons
-                                   if lesson.classes == student.classes]
+                                   if lesson.classes.id in
+                                   [c.id for c in student.classes] and
+                                   lesson.institutions.id ==
+                                   student.institutions.id]
                 st_lessons = set(student.lessons + teacher_lessons)
                 student.lessons.extend(st_lessons)
 
