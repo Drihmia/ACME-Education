@@ -24,11 +24,11 @@ def teachers_list(id=None):
             or institution_name + city_name/city_id.
 
         - example 1:
-        data = {first_name, last_name, email, password,
+        data = {first_name, last_name, email, password, confirm_password
         institution_id}
 
         - example 2:
-        data = {first_name, last_name, email, password,
+        data = {first_name, last_name, email, password, confirm_password
         city_id, institution}
 
         the 1st syntax is faster
@@ -38,9 +38,9 @@ def teachers_list(id=None):
 
         - example:
         data = {first_name, last_name, password, city,
-        institutions: list of ids,
-        subjects: list of ids,
-        classes: list of ids}
+        institutions_id: list of ids,
+        subjects_id: list of ids,
+        classes_id: list of ids}
 
         all those attributes are optional.
     """
@@ -86,6 +86,12 @@ def teachers_list(id=None):
 
         if 'password' not in data.keys():
             return jsonify({'error': 'Missing password'}), 400
+
+        if 'confirm_password' in data.keys():
+            if data.get('confirm_password') != data.get('password'):
+                return jsonify({'error': 'password do not match'}), 400
+            else:
+                del data['confirm_password']
 
         # Check if institution already exist, 1st by its id if it's provided
         # +or by its name.
@@ -138,7 +144,7 @@ def teachers_list(id=None):
                           email=data.get('email'),
                           password=data.get('password'),
                           institution=institution.name,
-                          city=institution.cities.name)
+                          city=institution.city)
         institution.teachers.append(teacher)
 
         try:
@@ -167,15 +173,24 @@ def teachers_list(id=None):
         if not data:
             return jsonify({'error': 'No data'}), 422
 
+        if 'password' in data.keys() and 'confirm_password' in data.keys():
+            if data.get('confirm_password') != data.get('password'):
+                return jsonify({'error': 'password do not match'}), 400
+            else:
+                del data['confirm_password']
+
         teacher = storage.get(Teacher, id)
         if not teacher:
             return jsonify({'error': "UNKNOWN TEACHER"}), 400
 
+        tech_dict = teacher.to_dict()
         normal_attr = ['first_name', 'last_name', 'password', 'institution',
                        'city', 'subject']
 
         for k, v in data.items():
             if k in normal_attr:
+                if v == tech_dict.get(k, "Not Found"):
+                    continue
                 setattr(teacher, k, v)
 
         # assign all optional subjects to teacher's object.
@@ -217,8 +232,8 @@ def teachers_list(id=None):
 
         # assign all optional institutions to teacher's object.
         # If institution does not exist, it will be ignored
-        if 'institutions' in data.keys():
-            institutions = data.get('institutions')
+        if 'institutions_id' in data.keys():
+            institutions = data.get('institutions_id')
 
             # Make sure that institutions is an actual list.
             if not isinstance(institutions, list):
@@ -248,8 +263,8 @@ def teachers_list(id=None):
 
         # assign all optional classes to teacher's object.
         # If class does not exist, it will be ignored
-        if 'classes' in data.keys():
-            classes = data.get('classes')
+        if 'classes_id' in data.keys():
+            classes = data.get('classes_id')
 
             # Make sure that classes is an actual list.
             if not isinstance(classes, list):

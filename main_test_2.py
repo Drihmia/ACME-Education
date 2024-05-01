@@ -191,19 +191,19 @@ list_objects.extend(class_list)
 
 # Creating teachers.
 teacher_1 = Teacher(first_name='Redouane', last_name='DRIHMIA', email='red1@gmail.com', password='red1',
-                    institution=inst_1.name, city=inst_1.city)
+                    institution=inst_1.name, city=inst_1.city, gender='M')
 teacher_1.save()
 
 teacher_2 = Teacher(first_name='DRIHMIA', last_name='Redouane', email='red2@gmail.com', password='red2',
-                    institution=inst_11.name, city=inst_11.city)
+                    institution=inst_11.name, city=inst_11.city, gender='M')
 teacher_2.save()
 
 teacher_3 = Teacher(first_name='OMER', last_name='Mohamed', email='omer1@gmail.com', password='omer1',
-                    institution=inst_1.name, city=inst_1.city)
+                    institution=inst_1.name, city=inst_1.city, gender='M')
 teacher_3.save()
 
 teacher_4 = Teacher(first_name='OMER', last_name='OMER', email='omer2@gmail.com', password='omer2',
-                    institution=inst_2.name, city=inst_2.city)
+                    institution=inst_2.name, city=inst_2.city, gender='M')
 teacher_4.save()
 
 # set relations with teacher's objects.
@@ -230,16 +230,20 @@ list_objects.extend(teacher_list)
 
 # Creating students.
 Marwan = Student(first_name='student_1', last_name='marwan', email='marwan@gmail.com', password='marwan',
-                 institution_id=inst_1.id, class_id=cc_french.id, teacher_email='red1@gmail.com')
+                 institution_id=inst_1.id, class_id=cc_french.id, teacher_email='red1@gmail.com',
+                 gender='M')
 Marwan.save()
 Hamid = Student(first_name='student_2', last_name='hicham', email='hicham@gmail.com', password='hicham',
-                institution_id=inst_1.id, class_id=cc_french.id, teacher_email='red1@gmail.com')
+                institution_id=inst_1.id, class_id=cc_french.id, teacher_email='red1@gmail.com',
+                 gender='M')
 Hamid.save()
 Samir = Student(first_name='student_3', last_name='fatima', email='fatima@gmail.com', password='fatima',
-                institution_id=inst_1.id, class_id=bac1_french.id, teacher_email='red1@gmail.com')
+                institution_id=inst_1.id, class_id=bac1_french.id, teacher_email='red1@gmail.com',
+                 gender='F')
 Samir.save()
 Fatima = Student(first_name='student_4', last_name='yasmine', email='yasmine@gmail.com', password='yasmine',
-                 institution_id=inst_1.id, class_id=bac1_french.id, teacher_email='red2@gmail.com')   # incomplete
+                 institution_id=inst_1.id, class_id=bac1_french.id, teacher_email='red2@gmail.com',
+                 gender='F')   # incomplete
 Fatima.save()
 
 student_list = [Marwan, Hamid, Samir, Fatima]

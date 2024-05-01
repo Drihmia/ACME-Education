@@ -36,14 +36,14 @@ class Student(BaseModel, Base):
                        nullable=False)  # A must.
     email = Column(String(128, collation='utf8mb4_unicode_ci'),
                    nullable=False, unique=True)  # A must.
-    teacher_email = Column(String(128, collation='utf8mb4_unicode_ci'),
-                           nullable=False)  # A must.
     password = Column(String(128, collation='utf8mb4_unicode_ci'),
                       nullable=False)  # A must.
 
     # -------------------------------------------------------------
     # Optional attributes.
-    # gender = Column(String(12), nullable=True)
+    gender = Column(String(1), nullable=True)
+    teacher_email = Column(String(128, collation='utf8mb4_unicode_ci'),
+                           nullable=True)
     institution = Column(String(128, collation='utf8mb4_unicode_ci'),
                          nullable=True)
     subject = Column(String(128, collation='utf8mb4_unicode_ci'),
