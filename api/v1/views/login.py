@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """Define the State API"""
 from flask import jsonify, request
+from flask_jwt_extended import create_access_token
 from werkzeug.exceptions import BadRequest
 from api.v1.views import app_views
 from models import storage
@@ -41,8 +42,13 @@ def teacher_login():
     # Hashing the teacher's password and compare it with stored hash
     # +of its original password.
     dec_pass = sha256(data.get("password", "wrong").encode()).hexdigest()
+
     if teacher.password == dec_pass:
-        return jsonify({'status': 'OK'}), 200
+        # Generate JWT token for teacher with id and user_type.
+        access_token = create_access_token(identity={'id': teacher.id,
+                                                     'type': 'teacher'})
+
+        return jsonify({'status': 'OK', 'access_token': access_token}), 200
     else:
         return jsonify({'status': 'ERROR'}), 401
 
@@ -79,7 +85,12 @@ def student_login():
     # Hashing the student's password and compare it with stored hash
     # +of its original password.
     dec_pass = sha256(data.get("password", "wrong").encode()).hexdigest()
+
     if student.password == dec_pass:
-        return jsonify({'status': 'OK'}), 200
+        # Generate JWT token for student with additional information
+        access_token = create_access_token(identity={'id': student.id,
+                                                     'type': 'student'})
+
+        return jsonify({'status': 'OK', 'access_token': access_token}), 200
     else:
         return jsonify({'status': 'ERROR'}), 401

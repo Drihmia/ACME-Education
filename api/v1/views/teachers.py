@@ -7,6 +7,8 @@ from api.v1.views import app_views
 from models.teacher import Teacher
 from models.institution import Institution
 from models.city import City
+from models.clas import Clas
+from models.subject import Subject
 from models import storage
 
 
@@ -20,16 +22,29 @@ def teachers_list(id=None):
     POST: Create a new teacher
         MUST: give the institution_id
             or institution_name + city_name/city_id.
-        data = {first_name, last_name, email, password,
+
+        - example 1:
+        data = {first_name, last_name, email, password, confirm_password
         institution_id}
 
-        data = {first_name, last_name, email, password,
-        institution_id, institutions: list}
-        data = {first_name, last_name, email, password, city_id, institution}
+        - example 2:
+        data = {first_name, last_name, email, password, confirm_password
+        city_id, institution}
 
         the 1st syntax is faster
-    """
 
+    PUT: Update first_name, last_name, password, institutions, city, subjects,
+            classes.
+
+        - example:
+        data = {first_name, last_name, password, city,
+        institutions_id: list of ids,
+        subjects_id: list of ids,
+        classes_id: list of ids}
+
+        all those attributes are optional.
+    """
+    # GET's method *******************************************************
     if request.method == 'GET':
         if id:
             teacher = storage.get(Teacher, id)
@@ -40,6 +55,7 @@ def teachers_list(id=None):
                          storage.all(Teacher).values()]
         return jsonify(teachers_list), 200
 
+    # POST's method *******************************************************
     if request.method == 'POST':
         if not request.is_json:
             return jsonify({'error': 'Not a JSON'}), 400
@@ -70,6 +86,12 @@ def teachers_list(id=None):
 
         if 'password' not in data.keys():
             return jsonify({'error': 'Missing password'}), 400
+
+        if 'confirm_password' in data.keys():
+            if data.get('confirm_password') != data.get('password'):
+                return jsonify({'error': 'password do not match'}), 400
+            else:
+                del data['confirm_password']
 
         # Check if institution already exist, 1st by its id if it's provided
         # +or by its name.
@@ -106,9 +128,9 @@ def teachers_list(id=None):
                         'error': "Missin city_id: provide city_id or\
                         city's name + institution_id"}), 400
                 city = storage.get(City, data.get('city_id'))
-                city_name = city.name
                 if not city:
                     return jsonify({'error': "UNKNOWN CITY"}), 400
+                city_name = city.name
 
                 # Creation new institution
                 institution = Institution(name=institution_name,
@@ -122,22 +144,9 @@ def teachers_list(id=None):
                           email=data.get('email'),
                           password=data.get('password'),
                           institution=institution.name,
-                          city=institution.cities.name)
+                          city=institution.city)
         institution.teachers.append(teacher)
 
-        # asseign all optionnal institutions to teacher's object.
-        # If institution does not exist, it will be ignored
-        if 'institutions' in data.keys():
-            institutions = data.get('institutions')
-            for institution_key in institutions:
-                institution_optional = storage.get(Institution,
-                                                   institution_key)
-                if institution_optional:
-                    institution_optional.teachers.append(teacher)
-                    try:
-                        institution_optional.save()
-                    except IntegrityError:
-                        pass
         try:
             institution.save()
         except IntegrityError:
@@ -151,6 +160,7 @@ def teachers_list(id=None):
 
         return jsonify(teacher.to_dict()), 201
 
+    # PUT's method *******************************************************
     if request.method == 'PUT':
         if not request.is_json:
             return jsonify({'error': 'Not a JSON'}), 400
@@ -163,18 +173,128 @@ def teachers_list(id=None):
         if not data:
             return jsonify({'error': 'No data'}), 422
 
+        if 'password' in data.keys() and 'confirm_password' in data.keys():
+            if data.get('confirm_password') != data.get('password'):
+                return jsonify({'error': 'password do not match'}), 400
+            else:
+                del data['confirm_password']
+
         teacher = storage.get(Teacher, id)
         if not teacher:
             return jsonify({'error': "UNKNOWN TEACHER"}), 400
 
-        ignore = ['id', 'created_at', 'updated_at', 'email']
+        tech_dict = teacher.to_dict()
+        normal_attr = ['first_name', 'last_name', 'password', 'institution',
+                       'city', 'subject']
 
         for k, v in data.items():
-            if k not in ignore:
+            if k in normal_attr:
+                if v == tech_dict.get(k, "Not Found"):
+                    continue
                 setattr(teacher, k, v)
+
+        # assign all optional subjects to teacher's object.
+        # If subject does not exist, it will be ignored
+        if 'subjects_id' in data.keys():
+            subjects_id = data.get('subjects_id')
+
+            # Make sure that subjects_id is an actual list.
+            if not isinstance(subjects_id, list):
+                return jsonify({'error': "subjects_id must be a list"}), 400
+
+            # Making sure there's no duplicates.
+            subjects_id = list(set(subjects_id))
+
+            # List of subjects IDs already associated with the teacher.
+            teacher_subject_ids = [s.id for s in teacher.subjects]
+
+            for subject_id in subjects_id:
+                # Ignore subject that are already associated to this teacher.
+                # Avoid duplications
+                if subject_id in teacher_subject_ids:
+                    continue
+
+                subject_optional = storage.get(Subject,
+                                               subject_id)
+                if subject_optional:
+                    try:
+                        subject_optional.teachers.append(teacher)
+                        subject_optional.save()
+                    except IntegrityError:
+                        # If teacher already had that subject.
+                        pass
+
+                    # Update student's subjects automatically
+                    # +as he add new teacher.
+                    for student in teacher.students:
+                        if subject_optional not in student.subjects:
+                            student.subjects.append(subject_optional)
+
+        # assign all optional institutions to teacher's object.
+        # If institution does not exist, it will be ignored
+        if 'institutions_id' in data.keys():
+            institutions = data.get('institutions_id')
+
+            # Make sure that institutions is an actual list.
+            if not isinstance(institutions, list):
+                return jsonify({'error': "institutions must be a list"}), 400
+
+            # Making sure there's no duplicates.
+            institutions = list(set(institutions))
+
+            # List of institutions ID already associated with the teacher.
+            teacher_institution_ids = [i.id for i in teacher.institutions]
+
+            for institution_id in institutions:
+                # Ignore institution t'are already associated to this teacher.
+                # Avoid duplications
+                if institution_id in teacher_institution_ids:
+                    continue
+
+                institution_optional = storage.get(Institution,
+                                                   institution_id)
+                if institution_optional:
+                    try:
+                        institution_optional.teachers.append(teacher)
+                        institution_optional.save()
+                    except IntegrityError:
+                        # If teacher already had that institution.
+                        pass
+
+        # assign all optional classes to teacher's object.
+        # If class does not exist, it will be ignored
+        if 'classes_id' in data.keys():
+            classes = data.get('classes_id')
+
+            # Make sure that classes is an actual list.
+            if not isinstance(classes, list):
+                return jsonify({'error': "classes must be a list"}), 400
+
+            # Making sure there's no duplicates.
+            classes = list(set(classes))
+
+            # List of classes ID already associated with the teacher.
+            teacher_class_ids = [c.id for c in teacher.classes]
+
+            for class_id in classes:
+                # Ignore class that are already associated to this teacher.
+                # Avoid duplications
+                if class_id in teacher_class_ids:
+                    continue
+
+                class_optional = storage.get(Clas,
+                                             class_id)
+                if class_optional:
+                    try:
+                        class_optional.teachers.append(teacher)
+                        class_optional.save()
+                    except IntegrityError:
+                        # If teacher already had that class.
+                        pass
         teacher.save()
         return jsonify(teacher.to_dict()), 200
 
+    # DELETE's method *******************************************************
     if request.method == 'DELETE':
         teacher = storage.get(Teacher, id)
         if not teacher:
@@ -228,7 +348,7 @@ def teachers_list_institution(id):
 
     teacher = storage.get(Teacher, id)
     if not teacher:
-        raise abort(404)
+        abort(404)
 
     institutions = teacher.institutions
 
@@ -247,7 +367,7 @@ def teachers_list_class(id):
 
     teacher = storage.get(Teacher, id)
     if not teacher:
-        raise abort(404)
+        abort(404)
 
     classes = teacher.classes
 
