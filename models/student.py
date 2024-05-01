@@ -46,8 +46,8 @@ class Student(BaseModel, Base):
                            nullable=True)
     institution = Column(String(128, collation='utf8mb4_unicode_ci'),
                          nullable=True)
-    subject = Column(String(128, collation='utf8mb4_unicode_ci'),
-                     nullable=True)
+    # subject = Column(String(128, collation='utf8mb4_unicode_ci'),
+    # nullable=True)
     city = Column(String(128, collation='utf8mb4_unicode_ci'),
                   nullable=True)
 

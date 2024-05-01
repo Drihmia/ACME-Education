@@ -31,6 +31,10 @@ def students_list(id=None):
         data = {first_name, last_name, email, password, confirm_password
         teacher_email, class_id, city_id, institution}
 
+        - example 2:
+        data = {first_name, last_name, email, password, confirm_password
+        teacher_email, class_id, city, institution}
+
         the 1st example is faster
 
     PUT: Update first_name, last_name, password, and list of  email teachers
@@ -121,6 +125,7 @@ def students_list(id=None):
                     Institution.city == city_name).first()
                 # if not institution:
                 # return jsonify({'error': "UNKNOWN INSTITUTION"}), 400
+
             elif 'city_id' in data.keys():
                 city_id = data.get('city_id')
                 institution = storage.query(Institution).filter(
@@ -129,17 +134,16 @@ def students_list(id=None):
                 # if not institution:
                 # return jsonify({'error': "UNKNOWN INSTITUTION"}), 400
             else:
-                return jsonify({'error': "Missin city_id: provide city_id or\
-                                city's name + institution_id"}), 400
+                return jsonify({'error': "Provide 'institution' name \
+with 'city' name or 'city_id', or you can provide the 'institution_id'"}), 400
 
             # If no institution exist with that name, create new one.
             # I'm supposing the city already exist.
             if not institution:
                 if 'city_id' not in data.keys():
                     return jsonify({
-                        'error': "incorrect city_id / city /\
-                        institution: provide city_id or\
-                        city's name + institution_id"}), 400
+                        'error': "UNKNOWN INSTITUTION, \
+create new institution: provide 'city_id' and 'institution' name"}), 400
                 city = storage.get(City, data.get('city_id'))
                 if not city:
                     return jsonify({'error': "UNKNOWN CITY"}), 400
@@ -162,8 +166,6 @@ def students_list(id=None):
             city_name = institution.cities.name
         elif 'city' in data.keys():
             city_name = data.get('city')
-        elif 'city_id' in data.keys():
-            city_name = data.get('city_id')
         else:
             city_name = 'Null'
 
@@ -180,6 +182,12 @@ def students_list(id=None):
             teacher = None
             teacher_email = 'Null'
 
+        # Adding gender.
+        if 'gender' in data.keys():
+            gender = data.get('gender')
+        else:
+            gender = 'N'
+
         try:
             student = Student(first_name=data.get('first_name'),
                               last_name=data.get('last_name'),
@@ -187,8 +195,9 @@ def students_list(id=None):
                               password=data.get('password'),
                               class_id=data.get('class_id'),
                               institution_id=institution.id,
+                              institution=institution.name,
                               teacher_email=teacher_email,
-                              city=city_name)
+                              city=city_name, gender=gender)
 
             storage.new(student)
 
@@ -223,7 +232,8 @@ def students_list(id=None):
             return jsonify({'error': 'exists'}), 400
 
         student = student.to_dict()
-        del student['institutions']
+        if 'institutions' in student:
+            del student['institutions']
         return jsonify(student), 201
 
     # PUT's method *******************************************************
