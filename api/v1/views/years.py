@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """Define the Classes API"""
-from flask import abort, jsonify
+from flask import jsonify
 from api.v1.views import app_views
 from models import storage
 from models.clas import Clas
@@ -22,7 +22,7 @@ def classes(id=None):
 
     clas = storage.get(Clas, id)
     if not clas:
-        abort(404)
+        return jsonify({'error': "UNKNOWN CLASS"}), 403
 
     return jsonify(clas.to_dict()), 200
 
@@ -36,7 +36,7 @@ def classes_students(id=None):
 
     clas = storage.get(Clas, id)
     if not clas:
-        abort(404)
+        return jsonify({'error': "UNKNOWN CLASS"}), 403
 
     students = clas.students
     students_dict = [student.to_dict() for student in students]
@@ -52,7 +52,7 @@ def classes_lessons(id=None):
 
     clas = storage.get(Clas, id)
     if not clas:
-        abort(404)
+        return jsonify({'error': "UNKNOWN CLASS"}), 403
 
     lessons = clas.lessons
     lessons_dict = [lesson.to_dict() for lesson in lessons]
@@ -68,7 +68,7 @@ def classes_teachers(id=None):
 
     clas = storage.get(Clas, id)
     if not clas:
-        abort(404)
+        return jsonify({'error': "UNKNOWN CLASS"}), 403
 
     teachers = clas.teachers
     teachers_dict = [teacher.to_dict() for teacher in teachers]
@@ -84,7 +84,7 @@ def classes_institutions(id=None):
 
     clas = storage.get(Clas, id)
     if not clas:
-        abort(404)
+        return jsonify({'error': "UNKNOWN CLASS"}), 403
 
     institutions = clas.institutions
     institutions_dict = [institution.to_dict() for institution in institutions]

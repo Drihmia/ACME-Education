@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """Define the Subjects API"""
 from api.v1.views import app_views
-from flask import abort, jsonify, request
+from flask import jsonify, request
 from models import storage
 
 
@@ -23,7 +23,7 @@ def allSubs(id=None):
 
     subject = storage.get(Subject, id)
     if not subject:
-        abort(404)
+        return jsonify({'error': "UNKNOWN STUBJECT"}), 403
 
     return jsonify(subject.to_dict()), 200
 
@@ -39,7 +39,7 @@ def subject_institutions(id):
 
         subject = storage.get(Subject, id)
         if not subject:
-            abort(404)
+            return jsonify({'error': "UNKNOWN STUBJECT"}), 403
         institutions = [institution.to_dict() for institution in
                         subject.institutions]
 
@@ -58,7 +58,7 @@ def subject_lessons(id):
 
         subject = storage.get(Subject, id)
         if not subject:
-            abort(404)
+            return jsonify({'error': "UNKNOWN STUBJECT"}), 403
         lessons = [lesson.to_dict() for lesson in subject.lessons]
 
         return jsonify(lessons), 200
@@ -75,7 +75,7 @@ def subject_teachers(id):
 
         subject = storage.get(Subject, id)
         if not subject:
-            abort(404)
+            return jsonify({'error': "UNKNOWN STUBJECT"}), 403
         teachers = [teacher.to_dict() for teacher in subject.teachers]
 
         return jsonify(teachers), 200

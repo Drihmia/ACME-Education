@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """Define the State API"""
-from flask import abort, jsonify, request
+from flask import jsonify, request
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import BadRequest
 from api.v1.views import app_views
@@ -27,7 +27,7 @@ def states(id=None):
 
         state = storage.get(State, id)
         if not state:
-            abort(404, description="UNKNOWN STATE")
+            return jsonify({'error': "UNKNOWN STATE"}), 400
 
         return jsonify(state.to_dict()), 200
 
@@ -69,20 +69,20 @@ def states(id=None):
 
         state = storage.get(State, id)
         if not state:
-            abort(404, description="UNKNOWN STATE")
+            return jsonify({'error': "UNKNOWN STATE"}), 400
 
         ignore = ['id', 'created_at', 'updated_at']
 
         for k, v in data.items():
             if k not in ignore:
-                setattr(state, k, v)
+                setattr(state, k.strip(), v.strip())
         state.save()
         return jsonify(state.to_dict()), 200
 
     if request.method == 'DELETE':
         state = storage.get(State, id)
         if not state:
-            abort(404, description="UNKNOWN STATE")
+            return jsonify({'error': "UNKNOWN STATE"}), 400
 
         state.delete()
         storage.save()
@@ -98,7 +98,7 @@ def classes_cities(id=None):
 
     state = storage.get(State, id)
     if not state:
-        abort(404, description="UNKNOWN STATE")
+        return jsonify({'error': "UNKNOWN STATE"}), 400
 
     cities = state.cities
     cities_dict = [state.to_dict() for state in cities]
