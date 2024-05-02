@@ -1,20 +1,30 @@
 "use client";
 
-import React, { ClassAttributes, InputHTMLAttributes } from "react";
-import { Formik, Form, useField, FieldHookConfig, Field } from "formik";
+import React, { ClassAttributes, InputHTMLAttributes, useState } from "react";
+import {
+  Formik,
+  Form,
+  useField,
+  FieldHookConfig,
+  Field,
+  useFormikContext,
+} from "formik";
 import { signinSchema } from "../validation/auth";
 import Link from "next/link";
-
+import { useOutsideClick } from "../lib/useOutsideClick";
+import { cityProps, siginProps } from "../types";
 
 interface radioProps {
   label: string;
   name: string;
   value: boolean;
 }
+
 interface OtherProps {
   label: string;
   placeholder?: string;
-  options?: radioProps[]
+  options?: radioProps[];
+  data?: cityProps[];
 }
 
 export const MyTextInput = ({
@@ -43,6 +53,83 @@ export const MyTextInput = ({
       {meta.touched && meta.error ? (
         <div className="error text-xs text-red-600">{meta.error}</div>
       ) : null}
+    </div>
+  );
+};
+export const MyTextAndSelectInput = ({
+  label,
+  data,
+  ...props
+}: OtherProps &
+  InputHTMLAttributes<HTMLInputElement> &
+  ClassAttributes<HTMLInputElement> &
+  FieldHookConfig<string>) => {
+  const [field, meta, helpers] = useField(props);
+  const [filteredData, setData] = useState<cityProps[]>([]);
+  const [focused, setFocus] = useState(false);
+
+  const openFocus = () => setFocus(true);
+  const closeFocus = () => setFocus(false);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let value = event.target.value;
+
+    const searchRegex = new RegExp(value, "gi");
+
+    const filter = data?.filter((res) => {
+      if (searchRegex.test(res.name)) return res;
+    }) as cityProps[];
+
+    setData(filter);
+  };
+
+  const setValue = (value: string) => {
+    helpers.setValue(value);
+    closeFocus();
+  };
+
+  // useEffect(() => {
+  //   console.log(field);
+  // }, [field]);
+
+  const ref = useOutsideClick(closeFocus);
+
+  return (
+    <div ref={ref} className="relative w-full mb-4 z-1">
+      <label
+        className="relative w-full font-semibold text-black"
+        htmlFor={props.id || props.name}
+      >
+        {label}
+        <input
+          onFocus={openFocus}
+          className={`w-full p-2 md:px-4 md:py-3 tablet:mt-1 laptop:mt-2 font-normal text-base border ${
+            meta.error ? "border-red-600" : "border-dark/25"
+          } hover:border-dark/50 focus:border-dark/75 outline-none rounded-xl md:rounded-2xl`}
+          {...field}
+          {...props}
+          onChange={(e) => {
+            field.onChange(e);
+            handleChange(e);
+          }}
+        />
+      </label>
+      {meta.touched && meta.error ? (
+        <div className="error text-xs text-red-600">{meta.error}</div>
+      ) : null}
+      {focused && filteredData.length > 0 && (
+        <ul className="absolute w-full max-h-48 overflow-y-scroll top-full left-0 flex flex-col gap-1 p-1 md:p-2 bg-white rounded-md shadow-md z-10">
+          {filteredData.map((city, i) => (
+            <li
+              className="w-full p-1 cursor-pointer hover:bg-blue-700 hover:text-white rounded"
+              key={i}
+              onClick={() => setValue(city.name)}
+            >
+              {city.name}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
@@ -86,8 +173,11 @@ export const MySelect = ({
   FieldHookConfig<string>) => {
   const [field, meta] = useField(props);
   return (
-    <div className="mb-4">
-      <label className="flex pb-2 font-medium" htmlFor={props.id || props.name}>
+    <div className="w-full mb-4">
+      <label
+        className="w-full flex pb-2 font-medium"
+        htmlFor={props.id || props.name}
+      >
         {label}
       </label>
       <select
@@ -116,18 +206,29 @@ export const InputField = ({ label, name, value }: radioProps) => {
 
 // create a custom FieldSet component that uses the useField hook
 //this component can be contained in another file
-export const FieldSet = ({ label, options, ...props }: OtherProps &
+export const FieldSet = ({
+  label,
+  options,
+  ...props
+}: OtherProps &
   InputHTMLAttributes<HTMLFieldSetElement> &
   ClassAttributes<HTMLFieldSetElement> &
   FieldHookConfig<string>) => {
   const [field, meta] = useField(props);
   return (
     <div className="w-full">
-      <label className="font-medium">
+      <label className="w-full font-medium">
         {label}
         {/* make sure the radios are contained in a fieldset */}
-        <fieldset {...field} {...props}>
-          {options?.map((option, i) => <InputField key={`${i}`} name={option.name} label={option.label} value={option.value} />)}
+        <fieldset {...field} {...props} className="w-full flex items-center gap-4">
+          {options?.map((option, i) => (
+            <InputField
+              key={`${i}`}
+              name={option.name}
+              label={option.label}
+              value={option.value}
+            />
+          ))}
         </fieldset>
       </label>
       {meta.touched && meta.error ? (
@@ -136,7 +237,41 @@ export const FieldSet = ({ label, options, ...props }: OtherProps &
     </div>
   );
 };
+
+
 export const SignInForm = () => {
+  const [error, setError] = useState<string | null>()
+
+  const submitForm = async (values: siginProps) => {
+
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:5000/api/v1/${
+          values.isTeacher == "true" ? "teacher_login" : "student_login"
+        }`,
+        {
+          method: "POST",
+          body: JSON.stringify(values),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const res_data = await response.json();
+      console.log(res_data);
+      
+
+      if (response.status != 200) setError(res_data.error);
+    } catch (e) {
+      let errorMessage = "Something went wrong. Try again later.";
+      if (e instanceof Error) {
+        errorMessage = e.message;
+      }
+      setError( errorMessage );
+    } 
+  };
+
   return (
     <>
       <div className="w-full max-w-md flex flex-col items-center justify-center gap-4 py-8 bg-white rounded-2xl shadow-xl">
@@ -147,11 +282,12 @@ export const SignInForm = () => {
           initialValues={{
             email: "",
             password: "",
+            isTeacher: ""
           }}
           validationSchema={signinSchema}
           onSubmit={(values, { setSubmitting }) => {
             setTimeout(() => {
-              alert(JSON.stringify(values, null, 2));
+              submitForm(values)
               setSubmitting(false);
             }, 400);
           }}
@@ -169,6 +305,14 @@ export const SignInForm = () => {
               type="password"
               placeholder=""
             />
+            <FieldSet
+              label="Are you a Teacher or a Student?"
+              name="isTeacher"
+              options={[
+                { name: "isTeacher", label: "Teacher", value: true },
+                { name: "isTeacher", label: "Student", value: false },
+              ]}
+            />
             <button
               type="submit"
               className="w-40 py-2 mt-4 bg-blue-100 text-black hover:text-white hover:bg-blue-700 capitalize rounded-2xl"
@@ -185,7 +329,7 @@ export const SignInForm = () => {
             Don&apos;t have an account? Sign up
           </Link>
           <Link
-            href={`forgotPassword`}
+            href={`#`}
             className="block text-black/60 hover:text-blue-900 hover:underline text-sm"
           >
             Forgot password?
