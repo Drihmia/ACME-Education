@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """This module contains teacher'S IP"""
-from flask import abort, jsonify, request
+from flask import jsonify, request
 from werkzeug.exceptions import BadRequest
 from sqlalchemy.exc import IntegrityError
 from api.v1.views import app_views
@@ -49,7 +49,7 @@ def teachers_list(id=None):
         if id:
             teacher = storage.get(Teacher, id)
             if not teacher:
-                abort(404)
+                return jsonify({'error': "UNKNOWN TEACHER"}), 403
             return jsonify(teacher.to_dict()), 200
         teachers_list = [teacher.to_dict() for teacher in
                          storage.all(Teacher).values()]
@@ -234,7 +234,11 @@ def teachers_list(id=None):
                     # +as he add new teacher.
                     for student in teacher.students:
                         if subject_optional not in student.subjects:
-                            student.subjects.append(subject_optional)
+                            subject_optional.students.append(student)
+                            try:
+                                subject_optional.save()
+                            except IntegrityError:
+                                storage.rollback()
 
         # assign all optional institutions to teacher's object.
         # If institution does not exist, it will be ignored
@@ -323,7 +327,7 @@ def teachers_list_lessons(id):
     # Match faster if the maching is faster and less overload on database.
     teacher = storage.get(Teacher, id)
     if not teacher:
-        abort(404)
+        return jsonify({'error': "UNKNOWN TEACHER"}), 403
 
     lessons = teacher.lessons
     return jsonify([lesson.to_dict() for lesson in lessons]), 200
@@ -336,7 +340,7 @@ def teachers_list_subject(id):
 
     teacher = storage.get(Teacher, id)
     if not teacher:
-        abort(404)
+        return jsonify({'error': "UNKNOWN TEACHER"}), 403
 
     subjects = teacher.subjects
 
@@ -354,7 +358,7 @@ def teachers_list_institution(id):
 
     teacher = storage.get(Teacher, id)
     if not teacher:
-        abort(404)
+        return jsonify({'error': "UNKNOWN TEACHER"}), 403
 
     institutions = teacher.institutions
 
@@ -373,7 +377,7 @@ def teachers_list_class(id):
 
     teacher = storage.get(Teacher, id)
     if not teacher:
-        abort(404)
+        return jsonify({'error': "UNKNOWN TEACHER"}), 403
 
     classes = teacher.classes
 

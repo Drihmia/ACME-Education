@@ -222,7 +222,13 @@ def lessons(id=None):
             institutions = teacher.institutions
 
         # Associate lesson to its institution.
-        lesson.institutions.extend(institutions)
+        for institution in institutions:
+            institution.lessons.append(lesson)
+
+            try:
+                institution.save()
+            except IntegrityError:
+                storage.rollback()
 
         # ---------------------------------------------------------
         if 'class_id' in data.keys() and \
@@ -236,7 +242,13 @@ def lessons(id=None):
             classes = teacher.classes
 
         # Associate lesson to its clas.
-        lesson.classes.extend(classes)
+        for clas in classes:
+            clas.lessons.append(lesson)
+
+            try:
+                clas.save()
+            except IntegrityError:
+                storage.rollback()
 
         # Assign lesson to all teacher's lesson that belong to the classes
         # +subjects and institutions chosen by the teacher.
@@ -257,12 +269,16 @@ def lessons(id=None):
             teacher_classes_ids = [c.id for c in classes if c]
             if student_id not in teacher_classes_ids:
                 continue
-            lesson.students.append(student)
+            student.lessons.append(lesson)
+            try:
+                student.save()
+            except IntegrityError:
+                storage.rollback()
 
         # save lesson
         try:
             lesson.save()
-        except InterruptedError:
+        except IntegrityError:
             storage.rollback()
 
         # try:

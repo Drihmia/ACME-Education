@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """This module contains student'S IP"""
-from flask import abort, jsonify, request
+from flask import jsonify, request
 from werkzeug.exceptions import BadRequest
 from sqlalchemy.exc import IntegrityError
 from api.v1.views import app_views
@@ -50,7 +50,7 @@ def students_list(id=None):
         if id:
             student = storage.get(Student, id)
             if not student:
-                abort(404)
+                return jsonify({'error': "UNKNOWN STUDENT"}), 403
             return jsonify(student.to_dict()), 200
         students_list = [student.to_dict() for student in
                          storage.all(Student).values()]
@@ -206,9 +206,20 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
             # institution.students.append(student)
             # update student's relations
             if teacher:
-                student.subjects.extend(teacher.subjects)
                 student.lessons.extend(teacher.lessons)
-                student.teachers.append(teacher)
+
+                for subject in teacher.subjects:
+                    subject.students.append(student)
+                    try:
+                        subject.save()
+                    except IntegrityError:
+                        storage.rollback()
+
+                teacher.students.append(student)
+                try:
+                    teacher.save()
+                except IntegrityError:
+                    storage.rollback()
 
         except IntegrityError:
             # storage.rollback()
@@ -216,6 +227,7 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
         for subject in storage.all(Subject).values():
             try:
                 subject.students.append(student)
+
                 storage.save()
                 subject.save()
             except IntegrityError:
@@ -306,7 +318,7 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
                     continue
 
                 # Add a teacher to the student's list of teachers.
-                student.teachers.append(teacher)
+                teacher.students.append(student)
 
                 # Append new subjects/lessons related to new teacher to
                 # +student.
@@ -356,7 +368,7 @@ def students_list_subject(id):
 
     student = storage.get(Student, id)
     if not student:
-        abort(404)
+        return jsonify({'error': "UNKNOWN STUDENT"}), 403
 
     subjects = student.subjects
 
@@ -374,7 +386,7 @@ def students_list_institution(id):
 
     student = storage.get(Student, id)
     if not student:
-        abort(404)
+        return jsonify({'error': "UNKNOWN STUDENT"}), 403
 
     institutions = student.institutions
 
@@ -392,7 +404,7 @@ def students_list_class(id):
 
     student = storage.get(Student, id)
     if not student:
-        abort(404)
+        return jsonify({'error': "UNKNOWN STUDENT"}), 403
 
     classes = student.classes
 
