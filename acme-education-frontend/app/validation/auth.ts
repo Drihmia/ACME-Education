@@ -29,8 +29,8 @@ const validateEmailDomain = (value?: string) => {
 };
 
 export const signupSchema = yup.object().shape({
-  firstName: yup.string().required("First Name is required"),
-  lastName: yup.string().required("Last Name is required"),
+  first_name: yup.string().required("First Name is required"),
+  last_name: yup.string().required("Last Name is required"),
   email: yup
     .string()
     .email()
@@ -48,10 +48,12 @@ export const signupSchema = yup.object().shape({
       "Password must be at least 8 characters and have at least one uppercase, one lowercase, a number and a special characters"
     )
     .required("Password is required"),
-  confirmPassword: yup
+  confirm_password: yup
     .string()
     .oneOf([yup.ref("password")], "Mismatched passwords")
     .required("Please confirm your password"),
+  institution: yup.string().required("Name of institution is required"),
+  city: yup.string().required("Name of city is required"),
   isTeacher: yup.string().oneOf(["true", "false"], "Terms must be accepted").required()
   // terms: yup
   //   .boolean()
@@ -74,4 +76,5 @@ export const signinSchema = yup.object().shape({
     .test("is-valid-domain", "Invalid email address", validateEmailDomain)
     .required("Email address is required"),
   password: yup.string().required(),
+  isTeacher: yup.string().oneOf(["true", "false"], "Terms must be accepted").required()
 });
