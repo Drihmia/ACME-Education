@@ -18,7 +18,7 @@ with open('schools.json', 'r') as file:
         dic.update({state.name: state.id})
 
     cities = storage.all(City).values()
-    cities_name = [ city.name for city in cities]
+    cities_name = [city.name for city in cities]
 
     count = 0
     refresh = 0
@@ -31,21 +31,20 @@ with open('schools.json', 'r') as file:
         if not refresh % 20:
             refresh = 0
             cities = storage.all(City).values()
-            cities_name = [ city.name for city in cities]
+            cities_name = [city.name for city in cities]
             print(len(cities_name), "+++++++++++++++++++")
-
 
         state_name = shool.get('REGION')
         state_id = dic.get(state_name, 'None')
 
         if state_id == 'None':
-            print(f"                                        ---------------------------    {state_name} not found")
+            print(f"---------------------------    {state_name} not found")
             count = count + 1
             continue
         else:
             count = count + 1
 
-        print(f'                                         ---------------------------     {count} of {length / 8} : {refresh}')
+        print(f'--------------------------{count} of {length / 8} : {refresh}')
 
         city = City(name=city_name, state_id=state_id)
         print("creating :", city.name)

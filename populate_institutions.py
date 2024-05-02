@@ -13,20 +13,20 @@ from models.state import State
 
 with open('schools.json', 'r', encoding='utf-8') as file:
     data = load(file)
-    count = 0;
+    count = 0
     cities = storage.all(City).values()
-    cities_name = [ city.name for city in cities]
+    cities_name = [city.name for city in cities]
 
     dic = {}
     for city in storage.all(City).values():
         dic.update({city.name: city.id})
 
     institutions = storage.all(Institution).values()
-    institutions_name = [ institution.name for institution in institutions]
+    institutions_name = [institution.name for institution in institutions]
 
     length = len(data)
     for shool in data:
-        count +=1
+        count += 1
         print(f'{count} of {length}: {(count/length) * 100}%')
         school_name = shool.get('NOM_ETABLISSENTFR')
 
