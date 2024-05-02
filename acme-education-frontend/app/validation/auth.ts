@@ -73,5 +73,5 @@ export const signinSchema = yup.object().shape({
     .email()
     .test("is-valid-domain", "Invalid email address", validateEmailDomain)
     .required("Email address is required"),
-  password: yup.string().min(8).required(),
+  password: yup.string().required(),
 });
