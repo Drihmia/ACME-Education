@@ -28,10 +28,11 @@ with open('schools.json', 'r') as file:
         if city_name in cities_name:
             continue
         refresh = refresh + 1
-        if refresh % 20:
+        if not refresh % 20:
             refresh = 0
             cities = storage.all(City).values()
             cities_name = [ city.name for city in cities]
+            print(len(cities_name), "+++++++++++++++++++")
 
 
         state_name = shool.get('REGION')
@@ -44,7 +45,7 @@ with open('schools.json', 'r') as file:
         else:
             count = count + 1
 
-        print(f'                                         ---------------------------     {count} of {length} : {refresh}')
+        print(f'                                         ---------------------------     {count} of {length / 8} : {refresh}')
 
         city = City(name=city_name, state_id=state_id)
         print("creating :", city.name)

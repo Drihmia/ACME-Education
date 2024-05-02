@@ -1,0 +1,8 @@
+flasgger==0.9.7.1
+Flask==2.1.0
+Flask_Cors==4.0.0
+Flask_JWT_Extended==4.6.0
+Requests==2.31.0
+SQLAlchemy==2.0.27
+SQLAlchemy_Utils==0.41.2
+Werkzeug==2.1.1

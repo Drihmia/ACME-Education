@@ -75,7 +75,7 @@ def students_list(id=None):
         # -----------------------------------------------------------------
         # Check if the student's email not in our database.
         if storage.query(Student).filter(Student.email == data.
-                                         get('email')).first():
+                                         get('email').strip()).first():
             return jsonify({'error': "student exists"}), 400
 
         # -----------------------------------------------------------------
@@ -98,7 +98,8 @@ def students_list(id=None):
             return jsonify({'error': 'Missing password'}), 400
 
         if 'confirm_password' in data.keys():
-            if data.get('confirm_password') != data.get('password'):
+            if data.get('confirm_password').strip() != data.get(
+                    'password').strip():
                 return jsonify({'error': 'password do not match'}), 400
             else:
                 del data['confirm_password']
@@ -113,13 +114,14 @@ def students_list(id=None):
         # If the institution object is not found, we create new one bound to
         # +state_id provided
         if 'institution_id' in data.keys():
-            institution = storage.get(Institution, data.get('institution_id'))
+            institution = storage.get(Institution, data.get(
+                'institution_id').strip())
             if not institution:
                 return jsonify({'error': "UNKNOWN INSTITUTION"}), 400
         elif 'institution' in data.keys():
-            institution_name = data.get('institution')
+            institution_name = data.get('institution').strip()
             if 'city' in data.keys():
-                city_name = data.get('city')
+                city_name = data.get('city').strip()
                 institution = storage.query(Institution).filter(
                     Institution.name == institution_name,
                     Institution.city == city_name).first()
@@ -127,7 +129,7 @@ def students_list(id=None):
                 # return jsonify({'error': "UNKNOWN INSTITUTION"}), 400
 
             elif 'city_id' in data.keys():
-                city_id = data.get('city_id')
+                city_id = data.get('city_id').strip()
                 institution = storage.query(Institution).filter(
                     Institution.name == institution_name,
                     Institution.city_id == city_id).first()
@@ -144,7 +146,7 @@ with 'city' name or 'city_id', or you can provide the 'institution_id'"}), 400
                     return jsonify({
                         'error': "UNKNOWN INSTITUTION, \
 create new institution: provide 'city_id' and 'institution' name"}), 400
-                city = storage.get(City, data.get('city_id'))
+                city = storage.get(City, data.get('city_id').strip())
                 if not city:
                     return jsonify({'error': "UNKNOWN CITY"}), 400
 
@@ -157,7 +159,7 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
                             }), 400
 
         # Check if the class object exist.
-        clas = storage.get(Clas, data.get('class_id'))
+        clas = storage.get(Clas, data.get('class_id').strip())
         if not clas:
             return jsonify({'error': "UNKNOWN CLASS"}), 400
 
@@ -165,7 +167,7 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
         if institution.cities:
             city_name = institution.cities.name
         elif 'city' in data.keys():
-            city_name = data.get('city')
+            city_name = data.get('city').strip()
         else:
             city_name = 'Null'
 
@@ -184,16 +186,16 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
 
         # Adding gender.
         if 'gender' in data.keys():
-            gender = data.get('gender')
+            gender = data.get('gender').strip()
         else:
             gender = 'N'
 
         try:
-            student = Student(first_name=data.get('first_name'),
-                              last_name=data.get('last_name'),
-                              email=data.get('email'),
-                              password=data.get('password'),
-                              class_id=data.get('class_id'),
+            student = Student(first_name=data.get('first_name').strip(),
+                              last_name=data.get('last_name').strip(),
+                              email=data.get('email').strip(),
+                              password=data.get('password').strip(),
+                              class_id=data.get('class_id').strip(),
                               institution_id=institution.id,
                               institution=institution.name,
                               teacher_email=teacher_email,
@@ -250,7 +252,8 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
             return jsonify({'error': 'No data'}), 422
 
         if 'password' in data.keys() and 'confirm_password' in data.keys():
-            if data.get('confirm_password') != data.get('password'):
+            if data.get('confirm_password').strip() != data.get(
+                    'password').strip():
                 return jsonify({'error': 'password do not match'}), 400
             else:
                 del data['confirm_password']
@@ -265,12 +268,14 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
 
         for k, v in data.items():
             if k in normal_attr:
-                if v == student_dict.get(k, "Not Found"):
+                # Accept only attr that already part of object
+                # +and ignore 0 length values
+                if v == student_dict.get(k, "Not Found") or not len(v):
                     continue
-                setattr(student, k, v)
+                setattr(student, k.strip(), v.strip())
 
         if 'teachers_email' in data.keys():
-            teachers_email = data.get('teachers_email')
+            teachers_email = data.get('teachers_email').strip()
 
             # Make sure that teachers_email is an actual list.
             if not isinstance(teachers_email, list):

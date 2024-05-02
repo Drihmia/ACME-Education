@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """Define the Institutions API"""
-from flask import abort, jsonify, request
+from flask import jsonify, request
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import BadRequest
 from api.v1.views import app_views
@@ -33,7 +33,7 @@ def institutions(id=None):
 
         institution = storage.get(Institution, id)
         if not institution:
-            abort(404)
+            return jsonify({'error': "UNKNOWN INSTITUTION"}), 400
 
         return jsonify(institution.to_dict()), 200
 
@@ -57,14 +57,14 @@ def institutions(id=None):
         # If the city object is not found, we create new one bound to
         # +state_id provided
         if 'city_id' in data.keys():
-            city = storage.get(City, data.get('city_id'))
+            city = storage.get(City, data.get('city_id').strip())
             if not city:
                 return jsonify({'error': "UNKNOWN CITY"}), 400
         # last resort, cities lists will be populated automatically using
         # +dataset from the internet,
         # +So city_id should be always provided.
         elif 'city' in data.keys():
-            city_name = data.get('city')
+            city_name = data.get('city').strip()
             city = storage.query(City).filter(City.name == city_name).first()
 
             if not city:
@@ -72,11 +72,12 @@ def institutions(id=None):
                     return jsonify({
                         'error': "Missing state_id: provide city_id or city's\
                         name plus state_id"}), 400
-                city = City(name=city_name, state_id=data.get('state_id'))
+                city = City(name=city_name,
+                            state_id=data.get('state_id').strip())
         else:
             return jsonify({'error': "provide city's info, name or id"}), 400
 
-        institution = Institution(name=data.get('name'),
+        institution = Institution(name=data.get('name').strip(),
                                   city_id=city.id, city=city.name)
         # city.institutions.append(institution)
         # No need: Many to many relationship#s association
@@ -133,7 +134,7 @@ def institutions_lessons(id):
 
     institution = storage.get(Institution, id)
     if not institution:
-        abort(404, description="UNKNOWN INSTITUTION")
+        return jsonify({'error': "UNKNOWN INSTITUTION"}), 400
 
     lessons = institution.lessons
 
@@ -151,7 +152,7 @@ def institutions_teachers(id):
 
     institution = storage.get(Institution, id)
     if not institution:
-        abort(404, description="UNKNOWN INSTITUTION")
+        return jsonify({'error': "UNKNOWN INSTITUTION"}), 400
 
     teachers = institution.teachers
 
@@ -169,7 +170,7 @@ def institutions_subjects(id):
 
     institution = storage.get(Institution, id)
     if not institution:
-        abort(404, description="UNKNOWN INSTITUTION")
+        return jsonify({'error': "UNKNOWN INSTITUTION"}), 400
 
     subjects = institution.subjects
 
@@ -186,7 +187,7 @@ def institutions_classes(id):
 
     institution = storage.get(Institution, id)
     if not institution:
-        abort(404, description="UNKNOWN INSTITUTION")
+        return jsonify({'error': "UNKNOWN INSTITUTION"}), 400
 
     classes = institution.classes
 
@@ -203,7 +204,7 @@ def institutions_students(id):
 
     institution = storage.get(Institution, id)
     if not institution:
-        abort(404)
+        return jsonify({'error': "UNKNOWN INSTITUTION"}), 400
 
     students = institution.students
 
