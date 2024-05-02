@@ -1,4 +1,4 @@
-import { SignInForm } from "../components/form";
+import { SignInForm } from "../ui/form";
 
 export default async function Page({
   params,
