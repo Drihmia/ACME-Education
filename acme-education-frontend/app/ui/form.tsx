@@ -1,18 +1,19 @@
 "use client";
 
-import React, { ClassAttributes, InputHTMLAttributes, useState } from "react";
+import React, { ClassAttributes, InputHTMLAttributes, useContext, useState } from "react";
 import {
   Formik,
   Form,
   useField,
-  FieldHookConfig,
-  Field,
-  useFormikContext,
+  FieldHookConfig
 } from "formik";
 import { signinSchema } from "../validation/auth";
 import Link from "next/link";
+import Cookies from 'js-cookie'
 import { useOutsideClick } from "../lib/useOutsideClick";
-import { cityProps, siginProps } from "../types";
+import { User, cityProps, siginProps } from "../types";
+import { useRouter } from "next/navigation";
+import { authUserContext, useAuth } from "@/context/authContext";
 
 interface radioProps {
   label: string;
@@ -240,7 +241,9 @@ export const FieldSet = ({
 
 
 export const SignInForm = () => {
+  const { updateUser } = useAuth()!
   const [error, setError] = useState<string | null>()
+  const router = useRouter();
 
   const submitForm = async (values: siginProps) => {
 
@@ -258,11 +261,13 @@ export const SignInForm = () => {
         }
       );
 
-      const res_data = await response.json();
-      console.log(res_data);
-      
-
-      if (response.status != 200) setError(res_data.error);
+      const user: User = await response.json();
+      if (user.access_token) {
+        Cookies.set("currentUser", JSON.stringify(user))
+        updateUser()
+        router.push("/dashboard")
+      }
+      if (response.status != 200) setError("Invalid credentials");
     } catch (e) {
       let errorMessage = "Something went wrong. Try again later.";
       if (e instanceof Error) {
@@ -277,6 +282,7 @@ export const SignInForm = () => {
       <div className="w-full max-w-md flex flex-col items-center justify-center gap-4 py-8 bg-white rounded-2xl shadow-xl">
         <div className="w-full text-center">
           <h2 className="font-semibold text-4xl capitalize">Login</h2>
+          {error && <p className="w-full pt-2 italic text-red-600">{error}</p>}
         </div>
         <Formik
           initialValues={{
@@ -323,7 +329,7 @@ export const SignInForm = () => {
         </Formik>
         <div className="w-full text-center lg:flex lg:items-center lg:justify-between lg:px-8">
           <Link
-            href={`/signup`}
+            href={`/`}
             className="block text-black/60 hover:text-blue-900 hover:underline text-sm"
           >
             Don&apos;t have an account? Sign up
