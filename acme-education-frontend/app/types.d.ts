@@ -21,3 +21,14 @@ export interface siginProps {
   password: string;
   isTeacher: string;
 }
+
+export interface User {
+  access_token: string;
+  user_id: string;
+  class: string;
+}
+
+export interface UserContext {
+  user: User | null;
+  updateUser: () => void;
+}
