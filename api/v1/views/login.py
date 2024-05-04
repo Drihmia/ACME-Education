@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """Define the State API"""
+import bcrypt
 from flask import jsonify, request
 from flask_jwt_extended import create_access_token
 from werkzeug.exceptions import BadRequest
@@ -39,12 +40,8 @@ def teacher_login():
     if not teacher:
         return jsonify({'error': 'UNKNOWN TEACHER'}), 404
 
-    # Hashing the teacher's password and compare it with stored hash
-    # +of its original password.
-    dec_pass = sha256(data.get("password", "wrong").encode()).hexdigest()
-
-    if teacher.password == dec_pass:
-        # Generate JWT token for teacher with id and user_type.
+    if bcrypt.checkpw(data.get('password', '').encode('utf-8'), teacher.password):
+        # generate JWT token for teacher with id and user_type.
         access_token = create_access_token(identity={'id': teacher.id,
                                                      'type': 'teacher'})
 
