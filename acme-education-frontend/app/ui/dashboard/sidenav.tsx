@@ -2,7 +2,7 @@
 
 import { useLogOut } from "@/app/lib/auth";
 import { NavLinks } from "@/app/ui/dashboard/nav-links";
-import { useAuth } from "@/context/authContext";
+import { useAuth } from "@/app/context/authContext";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next/navigation";
 
