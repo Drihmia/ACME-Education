@@ -45,7 +45,7 @@ for sending verification email'}), 400
         subject='Verification',
         contents=f'http://127.0.0.1:5000/api/v1/verify_email_recieve/{token}'
     )
-    return jsonify({'status': 'OK'}), 200
+    return jsonify({'status': 'SEND VERIFICATION MAIL SUCCEEDED'}), 200
 
 @app_views.route("/verify_email_recieve/<token>", methods=["GET"], strict_slashes=False)
 def verify_email_recieve(token):
@@ -77,15 +77,3 @@ def verify_email_recieve(token):
                 return jsonify({'status': 'STUDENT VERIFIED'}), 200
             else:
                 return jsonify(json.loads(response.text)), int(response.status_code)
-
-
-
-@app_views.route("/redirect_1", methods=["GET"], strict_slashes=False)
-def redirect_1():
-
-    if request.is_json:
-        print('request data from redirect_1')
-        print(request.get_json())
-        return jsonify({'status': f'ok from redirect_1\n{request.get_json()}'}), 200
-    else:
-        return jsonify({'error': f'FAIL from redirect_1\n{isinstance(request.args.get("data"), dict)}'}), 400
