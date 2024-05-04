@@ -48,6 +48,7 @@ class Student(BaseModel, Base):
                          nullable=True)
     city = Column(String(64, collation='utf8mb4_unicode_ci'),
                   nullable=True)
+    phone_number = Column(String(14), nullable=True)
 
     # -------------------------------------------------------------
     # Many to one relationship's attributes.

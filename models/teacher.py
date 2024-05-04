@@ -40,7 +40,7 @@ class Teacher(BaseModel, Base):
     # Optional attributes.
     gender = Column(String(1), nullable=True)
     institution = Column(String(128), nullable=True)
-    subject = Column(String(128), nullable=True)
+    main_subject = Column(String(128), nullable=True)
     city = Column(String(64), nullable=True)
     phone_number = Column(String(14), nullable=True)
 
