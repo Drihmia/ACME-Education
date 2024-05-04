@@ -8,8 +8,6 @@ from models.student import Student
 from models.teacher import Teacher
 from models.institution import Institution
 from models.city import City
-from models.clas import Clas
-from models.subject import Subject
 from models import storage
 
 
