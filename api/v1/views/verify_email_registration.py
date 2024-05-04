@@ -31,7 +31,9 @@ def verify_email_send():
         return jsonify({'error': 'No data'}), 422
 
     if 'email' not in data.keys():
-        return jsonify({'error': 'Missing email for verification'}), 400
+        return jsonify({
+            'error': 'Missing email for verification \
+for sending verification email'}), 400
 
     token = serializer.dumps(data)
 
