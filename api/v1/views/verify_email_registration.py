@@ -51,19 +51,11 @@ for sending verification email'}), 400
 def verify_email_recieve(token):
     try:
         data = serializer.loads(token, max_age=3600)
-        print("++++++++++++++++++++++++++++++++++++++++++++++++")
-        print("token:", token)
-        print("data reveive", data, type(data))
-        print("++++++++++++++++++++++++++++++++++++++++++++++++")
     except:
         return jsonify({'status': 'FAIL'}), 400
 
     if 'is_teacher' not in data.keys():
         return jsonify({'error': 'Missing is_teacher'}), 400
-
-    # Store data in session so it can be transfered with redirection
-    # +next route/endpoint.
-    # session['data'] = data
 
     import requests
     url = 'http://127.0.0.1:5000/api/v1/'
@@ -84,3 +76,15 @@ def verify_email_recieve(token):
                 return jsonify({'status': 'OK'}), 200
             else:
                 return jsonify(json.loads(response.text)), int(response.status_code)
+
+
+
+@app_views.route("/redirect_1", methods=["GET"], strict_slashes=False)
+def redirect_1():
+
+    if request.is_json:
+        print('request data from redirect_1')
+        print(request.get_json())
+        return jsonify({'status': f'ok from redirect_1\n{request.get_json()}'}), 200
+    else:
+        return jsonify({'error': f'FAIL from redirect_1\n{isinstance(request.args.get("data"), dict)}'}), 400
