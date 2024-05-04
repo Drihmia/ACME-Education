@@ -32,3 +32,16 @@ export interface UserContext {
   user: User | null;
   updateUser: () => void;
 }
+
+export interface lessonFormProps {
+  id?: string;
+  subject?: string;
+  subject_id?: string;
+  institution: string;
+  institution_id?: string;
+  teacher_id?: string;
+  name: string;
+  download_link: string;
+  description: string;
+  public: string | boolean;
+}
