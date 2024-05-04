@@ -42,13 +42,12 @@ class Student(BaseModel, Base):
     # -------------------------------------------------------------
     # Optional attributes.
     gender = Column(String(1), nullable=True)
-    teacher_email = Column(String(128, collation='utf8mb4_unicode_ci'),
+    teacher_email = Column(String(64, collation='utf8mb4_unicode_ci'),
                            nullable=True)
     institution = Column(String(128, collation='utf8mb4_unicode_ci'),
                          nullable=True)
-    city = Column(String(128, collation='utf8mb4_unicode_ci'),
+    city = Column(String(64, collation='utf8mb4_unicode_ci'),
                   nullable=True)
-    phone_number = Column(String(14), nullable=True)
 
     # -------------------------------------------------------------
     # Many to one relationship's attributes.
@@ -72,7 +71,7 @@ class Student(BaseModel, Base):
 
 def hash_password_before_insert_or_update(_, __, student):
     """Hashing the password before store it into database"""
-    if student.password is not None:
+    if student.password is not None and isinstance(student.password, str):
         # Generate a salt and hash the password using bcrypt
         salt = bcrypt.gensalt()
         student.password = bcrypt.hashpw(student.password.encode('utf-8'), salt)

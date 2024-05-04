@@ -31,17 +31,17 @@ class Teacher(BaseModel, Base):
 
     # -------------------------------------------------------------
     # Normal attributes.
-    first_name = Column(String(128), nullable=False)  # A must
-    last_name = Column(String(128), nullable=False)  # A must
-    email = Column(String(128), nullable=False, unique=True)  # A must
-    password = Column(String(128), nullable=False)  # A must
+    first_name = Column(String(64), nullable=False)  # A must
+    last_name = Column(String(64), nullable=False)  # A must
+    email = Column(String(64), nullable=False, unique=True)  # A must
+    password = Column(String(64), nullable=False)  # A must
 
     # -------------------------------------------------------------
     # Optional attributes.
     gender = Column(String(1), nullable=True)
     institution = Column(String(128), nullable=True)
     subject = Column(String(128), nullable=True)
-    city = Column(String(128), nullable=True)
+    city = Column(String(64), nullable=True)
     phone_number = Column(String(14), nullable=True)
 
     # -------------------------------------------------------------
@@ -63,7 +63,7 @@ class Teacher(BaseModel, Base):
 
 def hash_password_before_insert_or_update(_, __, teacher):
     """Hashing the password before store it into database"""
-    if teacher.password is not None:
+    if teacher.password is not None and isinstance(teacher.password, str):
         # Generate a salt and hash the password using bcrypt
         salt = bcrypt.gensalt()
         teacher.password = bcrypt.hashpw(teacher.password.encode('utf-8'), salt)
