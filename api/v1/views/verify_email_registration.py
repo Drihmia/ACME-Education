@@ -67,14 +67,14 @@ def verify_email_recieve(token):
         base = 'teachers'
         with requests.post(url + base, data = json.dumps(data), headers=headers) as response:
             if response.status_code == 200:
-                return jsonify({'status': 'OK'}), 200
+                return jsonify({'status': 'TEACHER VERIFIED'}), 200
             else:
                 return jsonify(json.loads(response.text)), int(response.status_code)
     else:
         base = 'students'
         with requests.post(url + base, data = json.dumps(data), headers=headers) as response:
             if response.status_code == 200:
-                return jsonify({'status': 'OK'}), 200
+                return jsonify({'status': 'STUDENT VERIFIED'}), 200
             else:
                 return jsonify(json.loads(response.text)), int(response.status_code)
 
