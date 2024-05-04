@@ -42,7 +42,7 @@ class Teacher(BaseModel, Base):
     institution = Column(String(128), nullable=True)
     subject = Column(String(128), nullable=True)
     city = Column(String(128), nullable=True)
-    # phone_number = Column(String(14), nullable=True)
+    phone_number = Column(String(14), nullable=True)
 
     # -------------------------------------------------------------
     # One to many relationship's attributes.
