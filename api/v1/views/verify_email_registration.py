@@ -31,8 +31,7 @@ def verify_email_send():
         return jsonify({'error': 'No data'}), 422
 
     if 'email' not in data.keys():
-        return jsonify({
-            'error': 'Missing email for verification \
+        return jsonify({'error': 'Missing email for verification \
 for sending verification email'}), 400
 
     token = serializer.dumps(data)
@@ -46,9 +45,4 @@ for sending verification email'}), 400
         subject='Verification',
         contents=f'http://127.0.0.1:5000/api/v1/verify_email_recieve/{token}'
     )
-    # print("************************************************")
-    # print("data send", data)
-    # print("token:", token)
-    # print("************************************************")
-
     return jsonify({'status': 'OK'}), 200
