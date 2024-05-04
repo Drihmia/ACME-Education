@@ -140,7 +140,7 @@ def teachers_list(id=None):
                                           city=city.name)
 
         else:
-            return jsonify({'error': "provide city's info, name or id"}), 400
+            return jsonify({'error': "provide institution's info, name or id"}), 400
 
         teacher = Teacher(first_name=data.get('first_name').strip(),
                           last_name=data.get('last_name').strip(),
