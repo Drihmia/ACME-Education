@@ -211,22 +211,26 @@ list_objects.extend(class_list)
 # Creating teachers.
 teacher_1 = Teacher(first_name='Redouane', last_name='DRIHMIA',
                     email='red1@gmail.com', password='red1',
-                    institution=inst_1.name, city=inst_1.city, gender='M')
+                    institution=inst_1.name, city=inst_1.city, gender='M',
+                    phone_number='+212683984948')
 teacher_1.save()
 
 teacher_2 = Teacher(first_name='DRIHMIA', last_name='Redouane',
                     email='red2@gmail.com', password='red2',
-                    institution=inst_11.name, city=inst_11.city, gender='M')
+                    institution=inst_11.name, city=inst_11.city, gender='M',
+                    phone_number='+2126123456452')
 teacher_2.save()
 
 teacher_3 = Teacher(first_name='OMER', last_name='Mohamed',
                     email='omer1@gmail.com', password='omer1',
-                    institution=inst_1.name, city=inst_1.city, gender='M')
+                    institution=inst_1.name, city=inst_1.city, gender='M',
+                    phone_number='+212698765432')
 teacher_3.save()
 
 teacher_4 = Teacher(first_name='OMER', last_name='OMER',
                     email='omer2@gmail.com', password='omer2',
-                    institution=inst_2.name, city=inst_2.city, gender='M')
+                    institution=inst_2.name, city=inst_2.city, gender='M',
+                    phone_number='+212610928374')
 teacher_4.save()
 
 # set relations with teacher's objects.
@@ -334,7 +338,8 @@ cc_less_2 = Lesson(name='Direct electric current',
                    description='lesson N6 for my student related to Physics',
                    # institution_id=inst_1.id,
                    subject_id=PC.id,
-                   teacher_id=teacher_1.id)
+                   teacher_id=teacher_1.id,
+                   public=False)
 cc_less_2.save()
 
 cc_lesson_list = [cc_less_1, cc_less_2]
@@ -357,7 +362,8 @@ f_less_2 = Lesson(name='Laplace\'s Force - out of the curriculum',
                   description='lesson 12 for my 1st bac student',
                   # institution_id=inst_2.id,
                   subject_id=PC.id,
-                  teacher_id=teacher_1.id)
+                  teacher_id=teacher_1.id,
+                  public=False)
 f_less_2.save()
 
 f_lesson_list = [f_less_1, f_less_2]

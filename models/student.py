@@ -58,7 +58,7 @@ class Student(BaseModel, Base):
 
     class_id = Column(String(60),
                       ForeignKey('classes.id'),  # A must.
-                      nullable=True)
+                      nullable=False)
 
     # -------------------------------------------------------------
     # many to many relationship's attributes.
