@@ -138,12 +138,25 @@ def teachers_list(id=None):
         else:
             return jsonify({'error': "provide institution's info, name or id"}), 400
 
+        if 'phone_number' in data.keys():
+            phone_number = data.get('phone_number')
+        else:
+            phone_number = 'Null'
+
+        if 'gender' in data.keys():
+            gender = data.get('gender')
+        else:
+            gender = 'Null'
+
         teacher = Teacher(first_name=data.get('first_name').strip(),
                           last_name=data.get('last_name').strip(),
                           email=data.get('email').strip(),
                           password=data.get('password').strip(),
                           institution=institution.name,
-                          city=institution.city)
+                          city=institution.city,
+                          phone_number=phone_number,
+                          gender=gender)
+
         institution.teachers.append(teacher)
 
         try:
