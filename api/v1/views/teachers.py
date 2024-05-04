@@ -110,15 +110,11 @@ def teachers_list(id=None):
                 institution = storage.query(Institution).filter(
                     Institution.name == institution_name,
                     Institution.city == city_name).first()
-                # if not institution:
-                # return jsonify({'error': "UNKNOWN INSTITUTION"}), 400
             elif 'city_id' in data.keys():
                 city_id = data.get('city_id').strip()
                 institution = storage.query(Institution).filter(
                     Institution.name == institution_name,
                     Institution.city_id == city_id).first()
-                # if not institution:
-                # return jsonify({'error': "UNKNOWN INSTITUTION"}), 400
             else:
                 return jsonify({'error': "Missin city_id: provide city_id or\
                                 city's name + institution_id"}), 400
@@ -228,6 +224,7 @@ def teachers_list(id=None):
                         subject_optional.save()
                     except IntegrityError:
                         # If teacher already had that subject.
+                        # +Do nothing.
                         pass
 
                     # Update student's subjects automatically
@@ -269,6 +266,7 @@ def teachers_list(id=None):
                         institution_optional.save()
                     except IntegrityError:
                         # If teacher already had that institution.
+                        # +Do nothing.
                         pass
 
         # assign all optional classes to teacher's object.
@@ -320,10 +318,6 @@ def teachers_list(id=None):
 def teachers_list_lessons(id):
     """return a list of all  lessons by teacher"""
 
-    # lessons = storage.query(Lesson).filter(Lesson.teacher_id == id).all()
-    # lessons = storage.query(Teacher).filter(Teacher.id == id).
-    # all()[-1].lessons
-
     # Match faster if the maching is faster and less overload on database.
     teacher = storage.get(Teacher, id)
     if not teacher:
@@ -344,10 +338,6 @@ def teachers_list_subject(id):
 
     subjects = teacher.subjects
 
-    # two differente approach using query methode from storage.
-    # teacher = storage.query(Teacher).filter(Teacher.id == id).all()
-    # lessons = storage.query(Subject).filter(Subject.subject_id == id).all()
-
     return jsonify([subject.to_dict() for subject in subjects]), 200
 
 
@@ -361,10 +351,6 @@ def teachers_list_institution(id):
         return jsonify({'error': "UNKNOWN TEACHER"}), 403
 
     institutions = teacher.institutions
-
-    # two differente approach using query methode from storage.
-    # teacher = storage.query(Teacher).filter(Teacher.id == id).all()
-    # lessons = storage.query(Subject).filter(Subject.subject_id == id).all()
 
     return jsonify([institution.to_dict() for institution in
                     institutions]), 200
@@ -380,9 +366,5 @@ def teachers_list_class(id):
         return jsonify({'error': "UNKNOWN TEACHER"}), 403
 
     classes = teacher.classes
-
-    # two differente approach using query methode from storage.
-    # teacher = storage.query(Teacher).filter(Teacher.id == id).all()
-    # lessons = storage.query(Subject).filter(Subject.subject_id == id).all()
 
     return jsonify([classe.to_dict() for classe in classes]), 200
