@@ -1,10 +1,13 @@
 "use client";
 
-import { FieldSet, MyTextArea, MyTextInput } from "@/app/ui/form";
+import { deleteLesson, fetcher } from "@/app/lib/fetch";
+import { institutionProps, lessonFormProps } from "@/app/types";
+import { FieldSet, MyTextAndSelectInput, MyTextArea, MyTextInput } from "@/app/ui/form";
 import { lessonSchema } from "@/app/validation/lessons";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Form, Formik } from "formik";
 import { useRouter } from "next/navigation";
+import useSWR from "swr";
 
 export const LessonForm = ({
   id,
@@ -14,6 +17,50 @@ export const LessonForm = ({
   action: string;
 }) => {
   const navigation = useRouter();
+
+  const { data: institutionsData } = useSWR(
+    "http://127.0.0.1:5000/api/v1/institutions",
+    fetcher
+  );
+
+  const submitForm = async (values: lessonFormProps) => {
+
+    const institution = institutionsData?.find(
+      (item: institutionProps) => item.name == values.institution
+    );
+    if (institution) values.institution_id = institution.id;
+
+    // values.teacher_id = use
+    values.public = values.public === "true" ? true : false
+
+    console.log(values);
+
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:5000/api/v1/lessons/${id}`,
+        {
+          method: "POST",
+          body: JSON.stringify(values),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const res_data = await response.json();
+
+      // setResponse({
+      //   status: response.status == 201 ? "success" : "error",
+      //   message: response.status == 201 ? "OK" : res_data.error,
+      // });
+    } catch (e) {
+      let errorMessage = "Something went wrong. Try again later.";
+      if (e instanceof Error) {
+        errorMessage = e.message;
+      }
+      // setResponse({ status: "error", message: errorMessage });
+    }
+  };
 
   return (
     <div className="w-full max-w-5xl mx-auto flex flex-col items-center justify-center gap-4 py-8">
@@ -25,7 +72,7 @@ export const LessonForm = ({
       <Formik
         initialValues={{
           subject: "Rocket Science",
-          institution_id: "College of Science And Technology",
+          institution: "College of Science And Technology",
           name: "How to build a rocket",
           download_link: "https://goal.com",
           description: "",
@@ -33,10 +80,8 @@ export const LessonForm = ({
         }}
         validationSchema={lessonSchema}
         onSubmit={(values, { setSubmitting }) => {
-          setTimeout(() => {
-            alert(JSON.stringify(values, null, 2));
+          submitForm(values);
             setSubmitting(false);
-          }, 400);
         }}
       >
         <Form className="w-full flex flex-col items-center md:grid md:grid-cols-2 md:gap-4 lg:gap-8 p-4 md:p-8 lg:px-16">
@@ -46,12 +91,13 @@ export const LessonForm = ({
             type="text"
             placeholder="you@example.com"
           />
-          <MyTextInput
-            label="Institution ID"
-            name="institution_id"
-            type="text"
-            placeholder="you@example.com"
-          />
+          <MyTextAndSelectInput
+              label="Name of Institution"
+              name="institution"
+              data={institutionsData}
+              type="text"
+              placeholder="e.g Insitute of Science and Technology"
+            />
           <MyTextInput
             label="Name"
             name="name"
@@ -86,7 +132,11 @@ export const LessonForm = ({
               { action == "Add" ? "Publish" : "Update"}
             </button>
             {action == "Edit" && (
-              <div className="w-24 h-8 flex items-center justify-center p-2 bg-red-200 hover:bg-red-700 rounded-md hover:text-white cursor-pointer">
+              <div onClick={async() => {
+                "use server"
+                // change later
+                // await deleteLesson(lesson.id!)
+              }} className="w-24 h-8 flex items-center justify-center p-2 bg-red-200 hover:bg-red-700 rounded-md hover:text-white cursor-pointer">
                 <Icon icon="material-symbols:delete-outline" /> Delete
               </div>
             )}

@@ -48,7 +48,7 @@ def teacher_login():
         access_token = create_access_token(identity={'id': teacher.id,
                                                      'type': 'teacher'})
 
-        return jsonify({'status': 'OK', 'access_token': access_token}), 200
+        return jsonify({'access_token': access_token, 'user_id': teacher.id, 'class': 'Teacher'}), 200
     else:
         return jsonify({'status': 'ERROR'}), 401
 
@@ -91,6 +91,6 @@ def student_login():
         access_token = create_access_token(identity={'id': student.id,
                                                      'type': 'student'})
 
-        return jsonify({'status': 'OK', 'access_token': access_token}), 200
+        return jsonify({'access_token': access_token, 'user_id': student.id, 'class': 'Student'}), 200
     else:
         return jsonify({'status': 'ERROR'}), 401
