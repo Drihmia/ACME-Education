@@ -13,7 +13,7 @@ import Cookies from 'js-cookie'
 import { useOutsideClick } from "../lib/useOutsideClick";
 import { User, cityProps, siginProps } from "../types";
 import { useRouter } from "next/navigation";
-import { authUserContext, useAuth } from "@/context/authContext";
+import { useAuth } from "@/app/context/authContext";
 
 interface radioProps {
   label: string;
