@@ -46,3 +46,35 @@ for sending verification email'}), 400
         contents=f'http://127.0.0.1:5000/api/v1/verify_email_recieve/{token}'
     )
     return jsonify({'status': 'OK'}), 200
+
+@app_views.route("/verify_email_recieve/<token>", methods=["GET"], strict_slashes=False)
+def verify_email_recieve(token):
+    try:
+        data = serializer.loads(token, max_age=3600)
+        print("++++++++++++++++++++++++++++++++++++++++++++++++")
+        print("token:", token)
+        print("data reveive", data, type(data))
+        print("++++++++++++++++++++++++++++++++++++++++++++++++")
+    except:
+        return jsonify({'status': 'FAIL'}), 400
+
+    if 'is_teacher' not in data.keys():
+        return jsonify({'error': 'Missing is_teacher'}), 400
+
+    # Store data in session so it can be transfered with redirection
+    # +next route/endpoint.
+    # session['data'] = data
+
+    import requests
+    url = 'http://127.0.0.1:5000/api/v1/'
+    headers = {'Content-Type': 'application/json'}
+
+    if data.get('is_teacher') == 'True':
+        # Making a POST request with a with context manager
+        base = 'teachers'
+        with requests.post(url + base, data = json.dumps(data), headers=headers) as response:
+            if response.status_code == 200:
+                return jsonify({'status': 'OK'}), 200
+            else:
+                return jsonify(json.loads(response.text)), int(response.status_code)
+    return jsonify({'error': 'Missing is_teacher'}), 400
