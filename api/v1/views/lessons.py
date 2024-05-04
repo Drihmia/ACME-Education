@@ -339,7 +339,7 @@ def lessons(id=None):
         return jsonify({}), 200
 
 
-@app_views.route("/public_lessons", methods=["GET", "POST"],
+@app_views.route("/public_lessons", methods=["GET"],
                  strict_slashes=False)
 def public_lessons():
     """return all public lessons"""
