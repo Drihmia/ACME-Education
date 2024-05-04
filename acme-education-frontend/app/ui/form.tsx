@@ -11,7 +11,7 @@ import { signinSchema } from "../validation/auth";
 import Link from "next/link";
 import Cookies from 'js-cookie'
 import { useOutsideClick } from "../lib/useOutsideClick";
-import { User, cityProps, siginProps } from "../types";
+import { User, cityProps, institutionProps, siginProps } from "../types";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/authContext";
 
@@ -23,9 +23,10 @@ interface radioProps {
 
 interface OtherProps {
   label: string;
+  checkValue?: (val: boolean, id?: string) => void;
   placeholder?: string;
   options?: radioProps[];
-  data?: cityProps[];
+  data?: any[];
 }
 
 export const MyTextInput = ({
@@ -59,6 +60,7 @@ export const MyTextInput = ({
 };
 export const MyTextAndSelectInput = ({
   label,
+  checkValue,
   data,
   ...props
 }: OtherProps &
@@ -66,11 +68,16 @@ export const MyTextAndSelectInput = ({
   ClassAttributes<HTMLInputElement> &
   FieldHookConfig<string>) => {
   const [field, meta, helpers] = useField(props);
-  const [filteredData, setData] = useState<cityProps[]>([]);
+  const [filteredData, setData] = useState<any[]>([]);
   const [focused, setFocus] = useState(false);
 
   const openFocus = () => setFocus(true);
   const closeFocus = () => setFocus(false);
+
+  const setValue = (value: string) => {
+    helpers.setValue(value);
+    closeFocus();
+  };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let value = event.target.value;
@@ -79,19 +86,22 @@ export const MyTextAndSelectInput = ({
 
     const filter = data?.filter((res) => {
       if (searchRegex.test(res.name)) return res;
-    }) as cityProps[];
+    }) as any[];
 
     setData(filter);
-  };
 
-  const setValue = (value: string) => {
-    helpers.setValue(value);
-    closeFocus();
-  };
+    // check if value is in data array
+    const isValuePresent = data?.find(item => item.name === value)
 
-  // useEffect(() => {
-  //   console.log(field);
-  // }, [field]);
+    if (checkValue) {
+      if (isValuePresent) {
+        checkValue(true, isValuePresent.id)
+      } else {
+        checkValue(false)
+        helpers.setError("Please choose from list.")
+      }
+    }
+  };
 
   const ref = useOutsideClick(closeFocus);
 
@@ -124,7 +134,12 @@ export const MyTextAndSelectInput = ({
             <li
               className="w-full p-1 cursor-pointer hover:bg-blue-700 hover:text-white rounded"
               key={i}
-              onClick={() => setValue(city.name)}
+              onClick={() => {
+                setValue(city.name);
+                if (checkValue) {
+                  checkValue(true, city.id)
+                }
+              }}
             >
               {city.name}
             </li>
@@ -242,7 +257,7 @@ export const FieldSet = ({
 
 export const SignInForm = () => {
   const { updateUser } = useAuth()!
-  const [error, setError] = useState<string | null>()
+  // const [error, setError] = useState<string | null>()
   const router = useRouter();
 
   const submitForm = async (values: siginProps) => {
@@ -266,14 +281,16 @@ export const SignInForm = () => {
         Cookies.set("currentUser", JSON.stringify(user))
         updateUser()
         router.push("/dashboard")
+      } else {
+        alert("Invalid credentials, try again.")
       }
-      if (response.status != 200) setError("Invalid credentials");
+      // if (response.status != 200) setError("Invalid credentials");
     } catch (e) {
       let errorMessage = "Something went wrong. Try again later.";
       if (e instanceof Error) {
         errorMessage = e.message;
       }
-      setError( errorMessage );
+      alert(errorMessage)
     } 
   };
 
@@ -282,7 +299,6 @@ export const SignInForm = () => {
       <div className="w-full max-w-md flex flex-col items-center justify-center gap-4 py-8 bg-white rounded-2xl shadow-xl">
         <div className="w-full text-center">
           <h2 className="font-semibold text-4xl capitalize">Login</h2>
-          {error && <p className="w-full pt-2 italic text-red-600">{error}</p>}
         </div>
         <Formik
           initialValues={{
@@ -329,7 +345,7 @@ export const SignInForm = () => {
         </Formik>
         <div className="w-full text-center lg:flex lg:items-center lg:justify-between lg:px-8">
           <Link
-            href={`/`}
+            href={`/signup`}
             className="block text-black/60 hover:text-blue-900 hover:underline text-sm"
           >
             Don&apos;t have an account? Sign up
