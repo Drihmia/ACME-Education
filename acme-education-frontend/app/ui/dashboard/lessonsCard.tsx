@@ -31,7 +31,7 @@ export const LessonCard = ({ index, lesson, openModal }: lessonCardProps) => {
           <Icon icon="akar-icons:edit" />
         </Link>
         <button onClick={async() => {
-            "use server"
+            // "use server"
             await deleteLesson(lesson.id!)
           }} className="w-8 h-8 flex items-center justify-center p-2 text-white hover:bg-white hover:text-black rounded">
           <Icon icon="material-symbols:delete-outline" />

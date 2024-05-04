@@ -42,7 +42,7 @@ export const LessonModal = ({
             <Icon icon="akar-icons:edit" /> Edit
           </Link>
           <button onClick={async() => {
-            "use server"
+            // "use server"
             await deleteLesson(item.id!)
           }} className="w-24 h-8 flex items-center justify-center p-2 bg-red-200 hover:bg-red-700 rounded-md hover:text-white">
             <Icon icon="material-symbols:delete-outline" /> Delete
