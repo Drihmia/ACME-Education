@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """ holds class Student"""
-from hashlib import sha256
+import bcrypt
 from sqlalchemy import Column, event, String
 from sqlalchemy import ForeignKey, Table, UniqueConstraint
 from sqlalchemy.orm import relationship
@@ -46,10 +46,9 @@ class Student(BaseModel, Base):
                            nullable=True)
     institution = Column(String(128, collation='utf8mb4_unicode_ci'),
                          nullable=True)
-    # subject = Column(String(128, collation='utf8mb4_unicode_ci'),
-    # nullable=True)
     city = Column(String(128, collation='utf8mb4_unicode_ci'),
                   nullable=True)
+    phone_number = Column(String(14), nullable=True)
 
     # -------------------------------------------------------------
     # Many to one relationship's attributes.
@@ -74,8 +73,9 @@ class Student(BaseModel, Base):
 def hash_password_before_insert_or_update(_, __, student):
     """Hashing the password before store it into database"""
     if student.password is not None:
-        # Hash the password using sha256
-        student.password = sha256(student.password.encode('utf-8')).hexdigest()
+        # Generate a salt and hash the password using bcrypt
+        salt = bcrypt.gensalt()
+        student.password = bcrypt.hashpw(student.password.encode('utf-8'), salt)
 
 
 event.listen(Student, 'before_insert', hash_password_before_insert_or_update)
