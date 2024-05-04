@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ClassAttributes, InputHTMLAttributes, useContext, useState } from "react";
+import React, { ClassAttributes, InputHTMLAttributes, useState } from "react";
 import {
   Formik,
   Form,
@@ -11,7 +11,7 @@ import { signinSchema } from "../validation/auth";
 import Link from "next/link";
 import Cookies from 'js-cookie'
 import { useOutsideClick } from "../lib/useOutsideClick";
-import { User, cityProps, institutionProps, siginProps } from "../types";
+import { User, siginProps } from "../types";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/authContext";
 
