@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """ holds class Teacher"""
-from hashlib import sha256
+import bcrypt
 from sqlalchemy import Column, event, String
 from sqlalchemy import ForeignKey, Table, UniqueConstraint
 from sqlalchemy.orm import relationship
@@ -64,8 +64,9 @@ class Teacher(BaseModel, Base):
 def hash_password_before_insert_or_update(_, __, teacher):
     """Hashing the password before store it into database"""
     if teacher.password is not None:
-        # Hash the password using sha256
-        teacher.password = sha256(teacher.password.encode('utf-8')).hexdigest()
+        # Generate a salt and hash the password using bcrypt
+        salt = bcrypt.gensalt()
+        teacher.password = bcrypt.hashpw(teacher.password.encode('utf-8'), salt)
 
 
 event.listen(Teacher, 'before_insert', hash_password_before_insert_or_update)
