@@ -4,10 +4,12 @@ from flask import jsonify, request
 from werkzeug.exceptions import BadRequest
 from sqlalchemy.exc import IntegrityError
 from api.v1.views import app_views
-from models.student import Student
-from models.teacher import Teacher
-from models.institution import Institution
 from models.city import City
+from models.clas import Clas
+from models.institution import Institution
+from models.student import Student
+from models.subject import Subject
+from models.teacher import Teacher
 from models import storage
 
 
@@ -104,8 +106,8 @@ def students_list(id=None):
         else:
             return jsonify({'error': 'Missing confirm_password'}), 400
 
-        # if 'class_id' not in data.keys():
-        #     return jsonify({'error': 'Missing class_id'}), 400
+        if 'class_id' not in data.keys():
+            return jsonify({'error': 'Missing class_id'}), 400
 
         # Check if institution already exist, 1st by its id if it's provided
         # +or by its name.
@@ -123,16 +125,12 @@ def students_list(id=None):
                 institution = storage.query(Institution).filter(
                     Institution.name == institution_name,
                     Institution.city == city_name).first()
-                # if not institution:
-                # return jsonify({'error': "UNKNOWN INSTITUTION"}), 400
 
             elif 'city_id' in data.keys():
                 city_id = data.get('city_id').strip()
                 institution = storage.query(Institution).filter(
                     Institution.name == institution_name,
                     Institution.city_id == city_id).first()
-                # if not institution:
-                # return jsonify({'error': "UNKNOWN INSTITUTION"}), 400
             else:
                 return jsonify({'error': "Provide 'institution' name \
 with 'city' name or 'city_id', or you can provide the 'institution_id'"}), 400
@@ -157,9 +155,9 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
                             }), 400
 
         # Check if the class object exist.
-        # clas = storage.get(Clas, data.get('class_id'))
-        # if not clas:
-        #     return jsonify({'error': "UNKNOWN CLASS"}), 400
+        clas = storage.get(Clas, data.get('class_id'))
+        if not clas:
+            return jsonify({'error': "UNKNOWN CLASS"}), 400
 
         # This one item is not a list of items, should be institution.city.
         if institution.cities:
@@ -188,25 +186,23 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
         else:
             gender = 'N'
 
+        if 'phone_number' in data.keys():
+            phone_number = data.get('phone_number')
+        else:
+            phone_number = 'Null'
+
         try:
             student = Student(first_name=data.get('first_name'),
                               last_name=data.get('last_name'),
                               email=data.get('email'),
                               password=data.get('password'),
+                              class_id=data.get('class_id'),
                               institution_id=institution.id,
                               institution=institution.name,
                               teacher_email=teacher_email,
-                              city=city_name, gender=gender)
-        # try:
-        #     student = Student(first_name=data.get('first_name'),
-        #                       last_name=data.get('last_name'),
-        #                       email=data.get('email'),
-        #                       password=data.get('password'),
-        #                       class_id=data.get('class_id'),
-        #                       institution_id=institution.id,
-        #                       institution=institution.name,
-        #                       teacher_email=teacher_email,
-        #                       city=city_name, gender=gender)
+                              city=city_name,
+                              gender=gender,
+                              phone_number=phone_number)
 
             storage.new(student)
 
@@ -231,13 +227,15 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
         except IntegrityError:
             # storage.rollback()
             return jsonify({'error': 'exists'}), 400
-        # for subject in storage.all(Subject).values():
-        #     try:
-        #         subject.students.append(student)
-        #         storage.save()
-        #         subject.save()
-        #     except IntegrityError:
-        #         pass
+
+        for subject in storage.all(Subject).values():
+            try:
+                subject.students.append(student)
+                storage.save()
+                subject.save()
+            except IntegrityError:
+                pass
+
         try:
             storage.new(student)
             storage.save()
