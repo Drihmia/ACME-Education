@@ -81,15 +81,14 @@ def student_login():
     if not student:
         return jsonify({'error': 'UNKNOWN STUDENT'}), 404
 
-    # Hashing the student's password and compare it with stored hash
-    # +of its original password.
-    dec_pass = sha256(data.get("password", "wrong").encode()).hexdigest()
 
-    if student.password == dec_pass:
+    if bcrypt.checkpw(data.get('password', '').encode('utf-8'),
+                      student.password.encode('utf-8')):
         # Generate JWT token for student with additional information
         access_token = create_access_token(identity={'id': student.id,
                                                      'type': 'student'})
 
-        return jsonify({'access_token': access_token, 'user_id': student.id, 'class': 'Student'}), 200
+        return jsonify({'access_token': access_token,
+                        'user_id': student.id, 'class': 'Student'}), 200
     else:
         return jsonify({'status': 'ERROR'}), 401
