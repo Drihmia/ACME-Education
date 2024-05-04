@@ -133,7 +133,6 @@ export const LessonForm = ({
             </button>
             {action == "Edit" && (
               <div onClick={async() => {
-                "use server"
                 // change later
                 // await deleteLesson(lesson.id!)
               }} className="w-24 h-8 flex items-center justify-center p-2 bg-red-200 hover:bg-red-700 rounded-md hover:text-white cursor-pointer">

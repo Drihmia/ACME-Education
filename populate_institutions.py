@@ -29,6 +29,9 @@ with open('schools.json', 'r', encoding='utf-8') as file:
         count += 1
         print(f'{count} of {length}: {(count/length) * 100}%')
         school_name = shool.get('NOM_ETABLISSENTFR')
+        if school_name is None:
+            print(shool)
+            continue
 
         if school_name in institutions_name:
             continue

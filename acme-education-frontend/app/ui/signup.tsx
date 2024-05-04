@@ -4,7 +4,7 @@ import useSWR from "swr";
 import { FieldSet, MyTextAndSelectInput, MyTextInput } from "./form";
 import { Formik, Form } from "formik";
 import { signupSchema } from "../validation/auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SignUpModal } from "./signupModal";
 import { fetcher } from "../lib/fetch";
 import { cityProps, institutionProps } from "../types";
@@ -28,7 +28,12 @@ interface responseProps {
   message: string;
 }
 
-const SignUpForm = () => {
+interface selectedCityProps {
+  status: boolean;
+  id: string;
+}
+
+export const SignUpForm = () => {
   const [response, setResponse] = useState<responseProps>({
     status: "",
     message: "",
@@ -36,14 +41,36 @@ const SignUpForm = () => {
   const [isModal, setModal] = useState(false);
   const closeModal = () => setModal(false);
 
+  const [institutionsData, setInstitutionsData] = useState<institutionProps[]>([])
+
+  const [selectedCity, setCity] = useState<selectedCityProps>({status: false, id: ""})
+
+  useEffect(() => {
+    if (selectedCity.id != "") {
+      fetch(`http://127.0.0.1:5000/api/v1/cities/${selectedCity.id}/institutions`).then(res => res.json()).then(data => setInstitutionsData(data))
+    } else {
+      setInstitutionsData([])
+    }
+    }, [selectedCity])
+
+  const checkValue = (status: boolean, id?: string) => {
+    
+    if (status) {
+      setCity({status: true, id: id!})
+    } else {
+      setCity({status: false, id: ""})
+    }
+  }
+
   const { data: citiesData } = useSWR(
     "http://127.0.0.1:5000/api/v1/cities",
     fetcher
   );
-  const { data: institutionsData } = useSWR(
-    "http://127.0.0.1:5000/api/v1/institutions",
-    fetcher
-  );
+
+  // const { data: institutionsData } = useSWR(
+  //   `http://127.0.0.1:5000/api/v1/cities/${selectedCity.id}/institutions`,
+  //   fetcher
+  // );
 
   // change later - done
   if (institutionsData) console.log(institutionsData);
@@ -91,9 +118,10 @@ const SignUpForm = () => {
       setModal(true);
     }
   };
+
   return (
     <>
-      <div className="w-full flex flex-col items-center justify-center gap-4 py-8 bg-white rounded-2xl shadow-xl">
+      <div className="w-full max-w-xl flex flex-col items-center justify-center gap-4 py-8 bg-white rounded-2xl shadow-xl">
         <div className="w-full text-center">
           <h2 className="font-semibold text-3xl md:text-4xl capitalize mb-2 md:mb-4">
             Sign Up
@@ -159,18 +187,20 @@ const SignUpForm = () => {
               placeholder=""
             />
             <MyTextAndSelectInput
+              label="City"
+              name="city"
+              data={citiesData}
+              checkValue={checkValue}
+              type="text"
+              placeholder="e.g MarsCity"
+            />
+            <MyTextAndSelectInput
               label="Name of Institution"
               name="institution"
               data={institutionsData}
               type="text"
+              disabled={!selectedCity.status}
               placeholder="e.g Insitute of Science and Technology"
-            />
-            <MyTextAndSelectInput
-              label="City"
-              name="city"
-              data={citiesData}
-              type="text"
-              placeholder="e.g MarsCity"
             />
             <FieldSet
               label="Are you a Teacher or a Student?"
@@ -182,7 +212,7 @@ const SignUpForm = () => {
             />
             <button
               type="submit"
-              className="w-40 py-2 mt-8 bg-blue-100 text-black hover:text-white hover:bg-blue-700 capitalize rounded-3xl"
+              className="w-40 py-2 mt-8 bg-blue-100 text-black hover:text-white hover:bg-blue-700 capitalize rounded-xl"
             >
               sign up
             </button>
@@ -193,5 +223,3 @@ const SignUpForm = () => {
     </>
   );
 };
-
-export default SignUpForm;
