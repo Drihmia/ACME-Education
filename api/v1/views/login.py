@@ -40,12 +40,14 @@ def teacher_login():
     if not teacher:
         return jsonify({'error': 'UNKNOWN TEACHER'}), 404
 
-    if bcrypt.checkpw(data.get('password', '').encode('utf-8'), teacher.password):
+    if bcrypt.checkpw(data.get('password', '').encode('utf-8'),
+                      teacher.password.encode('utf-8')):
         # generate JWT token for teacher with id and user_type.
         access_token = create_access_token(identity={'id': teacher.id,
                                                      'type': 'teacher'})
 
-        return jsonify({'access_token': access_token, 'user_id': teacher.id, 'class': 'Teacher'}), 200
+        return jsonify({'access_token': access_token,
+                        'user_id': teacher.id, 'class': 'Teacher'}), 200
     else:
         return jsonify({'status': 'ERROR'}), 401
 
