@@ -1,4 +1,4 @@
-DROP DATABASE IF EXISTS acme;
+DROP DATABASE IF EXISTS ACME;
 create database if not exists ACME;
 USE ACME;
 
