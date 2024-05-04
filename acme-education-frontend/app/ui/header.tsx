@@ -3,7 +3,7 @@
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import { useState } from "react";
-import { useAuth } from "@/context/authContext";
+import { useAuth } from "@/app/context/authContext";
 
 export const Header = () => {
   const { user } = useAuth()!
