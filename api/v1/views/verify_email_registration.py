@@ -52,10 +52,11 @@ def verify_email_recieve(token):
     try:
         data = serializer.loads(token, max_age=3600)
     except:
-        return jsonify({'status': 'FAIL'}), 400
+        return jsonify({'status': 'VERIFICATION FAILS'}), 400
 
     if 'is_teacher' not in data.keys():
-        return jsonify({'error': 'Missing is_teacher'}), 400
+        return jsonify({
+            'error': 'Missing is_teacher during verification'}), 400
 
     import requests
     url = 'http://127.0.0.1:5000/api/v1/'
