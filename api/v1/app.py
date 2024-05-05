@@ -6,6 +6,7 @@ from flask_cors import CORS
 from flasgger import Swagger
 from flask_jwt_extended import JWTManager
 import json
+import os
 from models import storage
 from api.v1.views import app_views
 
@@ -16,7 +17,13 @@ cors = CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 # app.config["JWT_COOKIE_SECURE"] = False
 app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=2)
-app.config["JWT_SECRET_KEY"] = '96389b9ffb48fcc169bd922991b420f9cb3e27e13a1cc6b188edc28745df08a7'
+
+JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
+if not JWT_SECRET_KEY:
+    print("JWT_SECRET_KEY is empty")
+    exit(1)
+app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
+
 jwt = JWTManager(app)
 
 
