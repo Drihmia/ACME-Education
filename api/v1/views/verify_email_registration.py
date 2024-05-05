@@ -36,6 +36,9 @@ def verify_email_send():
         return jsonify({'error': 'Missing email for verification \
 for sending verification email'}), 400
 
+    if 'is_teacher' not in data.keys():
+        return jsonify({'error': 'Missing is_teacher'}), 400
+
     EMAIL_SEND = os.environ.get('ACME_EMAIL')
     if not EMAIL_SEND:
         return jsonify(error='export ACME_EMAIL="the_email@gmail.com" \
@@ -94,7 +97,8 @@ def verify_email_recieve(token):
                     with requests.get('http://127.0.0.1:3000') as res:
                         print(res.status_code)
                         if res.status_code == 200:
-                            return redirect(url_for('app_views.confirmation'), code=301)
+                            return redirect(
+                                url_for('app_views.confirmation'), code=301)
                         raise requests.exceptions.ConnectionError
                 except requests.exceptions.ConnectionError:
                     return jsonify({'status': "EMAIL VERIFIED AND \
@@ -106,7 +110,9 @@ TEACHER's PROFILE CREATED"}), 201
                     try:
                         with requests.get('http://127.0.0.1:3000') as res:
                             if res.status_code == 200:
-                                return redirect(url_for('app_views.already_exists'), code=301)
+                                return redirect(
+                                    url_for('app_views.already_exists'),
+                                    code=301)
                             raise requests.exceptions.ConnectionError
                     except requests.exceptions.ConnectionError:
                         return jsonify(
@@ -121,7 +127,8 @@ TEACHER's PROFILE CREATED"}), 201
                 try:
                     with requests.get('http://127.0.0.1:3000') as res:
                         if res.status_code == 200:
-                            return redirect(url_for('app_views.confirmation'), code=301)
+                            return redirect(
+                                url_for('app_views.confirmation'), code=301)
                         raise requests.exceptions.ConnectionError
                 except requests.exceptions.ConnectionError:
                     return jsonify({'status': "EMAIL VERIFIED AND \
@@ -133,7 +140,9 @@ STUDENT's PROFILE CREATED"}), 201
                     try:
                         with requests.get('http://127.0.0.1:3000') as res:
                             if res.status_code == 200:
-                                return redirect(url_for('app_views.already_exists'), code=301)
+                                return redirect(
+                                    url_for('app_views.already_exists'),
+                                    code=301)
                             raise requests.exceptions.ConnectionError
                     except requests.exceptions.ConnectionError:
                         return jsonify(
@@ -141,22 +150,26 @@ STUDENT's PROFILE CREATED"}), 201
                 return jsonify(
                     json.loads(res.text)), int(res.status_code)
 
+
 @app_views.route('/confirmation')
 def confirmation():
     """ a function that render the confirmation template"""
     url = 'http://127.0.0.1:3000/login?msg=success_registration'
     info = 'Registration Successful'
-    message = 'Registration Confirmed! Your account has been successfully created.'
+    message = """Registration Confirmed! Your account has
+    been successfully created."""
     login = '   Login  '
     return render_template('confirme_registration.html', url=url,
                            info=info, message=message, login=login)
+
 
 @app_views.route('/already_exists')
 def already_exists():
     """ a function that render the confirmation template"""
     url = 'http://127.0.0.1:3000/login?msg=success_registration'
     info = 'Account Already Exists'
-    message = 'An account with this email address already exists. Would you like to log in instead?'
+    message = """An account with this email address already exists.
+    Would you like to log in instead?"""
     login = '   Login  '
     return render_template('confirme_registration.html', url=url,
                            info=info, message=message, login=login)
