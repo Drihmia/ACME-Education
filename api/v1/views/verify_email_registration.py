@@ -37,27 +37,37 @@ for sending verification email'}), 400
 
     EMAIL_SEND = os.environ.get('ACME_EMAIL')
     if not EMAIL_SEND:
-        return jsonify(error='export ACME_EMAIL="the_email@gmail.com" into ur bashrc file')
-    token = serializer.dumps(data)
-    print(EMAIL_SEND)
-    # Initialize Yagmail with the OAuth2 credentials
-    yag = yagmail.SMTP(EMAIL_SEND, oauth2_file='~/oauth2_creds.json')
+        return jsonify(error='export ACME_EMAIL="the_email@gmail.com" \
+into ur bashrc file')
 
-    # Send a test email
-    sent_successfully = yag.send(
-        to=data.get('email'),
-        subject='Verification',
-        contents=f'http://127.0.0.1:5000/api/v1/verify_email_recieve/{token}'
-    )
-    if sent_successfully:
-        print("Email sent successfully!")
-    else:
-        print(sent_successfully)
-        print("Failed to send email. Please check your settings.")
+    # All the sent data is coing to be stored in this token
+    # +and verified by next method down bellow.
+    token = serializer.dumps(data)
+
+    try:
+        # Initialize Yagmail with the OAuth2 credentials
+        yag = yagmail.SMTP(EMAIL_SEND, oauth2_file='~/oauth2_creds.json')
+
+        try:
+            # Send a test email
+            yag.send(
+                to=data.get('email'),
+                subject='Verification',
+                contents=f'http://127.0.0.1:5000/api/\
+v1/verify_email_recieve/{token}'
+            )
+
+            # Close connection.
+            yag.close()
+        except YagInvalidEmailAddress:
+            return jsonify({'error': 'INVALID EMAIL'}), 400
+    except:
+        return jsonify({'status': 'SEND VERIFICATION MAIL FAILED'}), 400
 
     return jsonify({'status': 'SEND VERIFICATION MAIL SUCCEEDED'}), 200
 
-@app_views.route("/verify_email_recieve/<token>", methods=["GET"], strict_slashes=False)
+@app_views.route("/verify_email_recieve/<token>", methods=["GET"],
+                 strict_slashes=False)
 def verify_email_recieve(token):
     try:
         data = serializer.loads(token, max_age=3600)
