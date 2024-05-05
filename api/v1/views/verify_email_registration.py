@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """This module verify if user's email is valid and fonctionnal"""
 
-from flask import jsonify, request
+from flask import jsonify, request, redirect, url_for
 from itsdangerous import URLSafeTimedSerializer
 import json
 import os
@@ -89,16 +89,18 @@ def verify_email_recieve(token):
         base = 'teachers'
         url = url + base
         with requests.post(url, data=json.dumps(data), headers=headers) as res:
-            if res.status_code == 200:
-                return jsonify({'status': 'TEACHER VERIFIED'}), 200
+            if res.status_code == 201:
+                return jsonify({'status': "EMAIL VERIFIED AND \
+TEACHER's PROFILE CREATED"}), 201
             else:
                 return jsonify(json.loads(res.text)), int(res.status_code)
     else:
         base = 'students'
         url = url + base
         with requests.post(url, data=json.dumps(data), headers=headers) as res:
-            if res.status_code == 200:
-                return jsonify({'status': 'STUDENT VERIFIED'}), 200
+            if res.status_code == 201:
+                return jsonify({'status': "EMAIL VERIFIED AND \
+STUDENT's PROFILE CREATED"}), 201
             else:
                 return jsonify(
                     json.loads(res.text)), int(res.status_code)
