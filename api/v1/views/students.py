@@ -280,7 +280,7 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
 
         student_dict = student.to_dict()
         normal_attr = ['first_name', 'last_name', 'password', 'institution',
-                       'city']
+                       'city', 'phone_number', 'gender', 'teacher_email']
 
         for k, v in data.items():
             if k in normal_attr:
@@ -288,6 +288,8 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
                 # +and ignore 0 length values
                 if v == student_dict.get(k, "Not Found") or not len(v):
                     continue
+                if k == 'gender' and len(v) != 1:
+                    return jsonify({'error': 'gender must be M/F'}), 400
                 setattr(student, k.strip(), v.strip())
 
         if 'teachers_email' in data.keys():
@@ -295,8 +297,8 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
 
             # Make sure that teachers_email is an actual list.
             if not isinstance(teachers_email, list):
-                return jsonify({'error': "teachers_email must be a list"}
-                               ), 400
+                return jsonify({'error': "teachers_email must be a list \
+of teacher's IDs"}), 400
 
             # Making sure there's no duplicates.
             teachers_email = list(set(teachers_email))
@@ -341,6 +343,17 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
                 student.lessons.extend(st_lessons)
 
         student.save()
+        student = student.to_dict()
+
+        if 'subjects' in student:
+            del student['subjects']
+
+        if 'lessons' in student:
+            del student['lessons']
+
+        if 'teachers' in student:
+            del student['teachers']
+
         return jsonify(student.to_dict()), 200
 
     # DELETE's method *******************************************************
