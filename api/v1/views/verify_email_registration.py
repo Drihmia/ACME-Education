@@ -101,7 +101,7 @@ def verify_email_recieve(token):
                     return jsonify({'status': "EMAIL VERIFIED AND \
 TEACHER's PROFILE CREATED"}), 201
             else:
-                # If status code is 700 means students's email already in
+                # If status code is 700 means teacher's email already in
                 # +our database and it will be redirect to login page.
                 if res.status_code == 700:
                     with requests.get('http://127.0.0.1:3000') as res:
@@ -129,7 +129,17 @@ TEACHER's PROFILE CREATED"}), 201
                     return jsonify({'status': "EMAIL VERIFIED AND \
 STUDENT's PROFILE CREATED"}), 201
             else:
-                return jsonify(
-                    json.loads(res.text)), int(res.status_code)
+                # If status code is 700 means student's email already in
+                # +our database and it will be redirect to login page.
+                if res.status_code == 700:
+                    with requests.get('http://127.0.0.1:3000') as res:
+                        if res.status_code == 200:
+                            url_s = 'http://127.0.0.1:3000/login?msg=already_have_account'
+                            return redirect(url_s, code=301)
+                        else:
+                            return jsonify(
+                                json.loads(res.text)), int(res.status_code)
+                else:
+                    return jsonify(json.loads(res.text)), int(res.status_code)
 
 
