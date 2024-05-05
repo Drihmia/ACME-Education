@@ -90,7 +90,13 @@ def verify_email_recieve(token):
         url = url + base
         with requests.post(url, data=json.dumps(data), headers=headers) as res:
             if res.status_code == 201:
-                return jsonify({'status': "EMAIL VERIFIED AND \
+                with requests.get('http://127.0.0.1:3000') as res:
+                    if res.status_code == 200:
+                        url_s = 'http://127.0.0.1:3000'
+                        base = '/login?msg=success_registration'
+                        return redirect(url_s + base, code=301)
+                    else:
+                        return jsonify({'status': "EMAIL VERIFIED AND \
 TEACHER's PROFILE CREATED"}), 201
             else:
                 return jsonify(json.loads(res.text)), int(res.status_code)
@@ -99,8 +105,16 @@ TEACHER's PROFILE CREATED"}), 201
         url = url + base
         with requests.post(url, data=json.dumps(data), headers=headers) as res:
             if res.status_code == 201:
-                return jsonify({'status': "EMAIL VERIFIED AND \
+                with requests.get('http://127.0.0.1:3000') as res:
+                    if res.status_code == 200:
+                        url_s = 'http://127.0.0.1:3000'
+                        base = '/login?msg=success_registration'
+                        return redirect(url_s + base, code=301)
+                    else:
+                        return jsonify({'status': "EMAIL VERIFIED AND \
 STUDENT's PROFILE CREATED"}), 201
             else:
                 return jsonify(
                     json.loads(res.text)), int(res.status_code)
+
+
