@@ -88,7 +88,7 @@ def teachers_list(id=None):
         if 'password' not in data.keys():
             return jsonify({'error': 'Missing password'}), 400
 
-        if 'confirm_password' in data.keys():
+        if 'confirm_password' not in data.keys():
             if data.get('confirm_password'.strip()) != data.get(
                     'password'.strip()):
                 return jsonify({'error': 'password do not match'}), 400

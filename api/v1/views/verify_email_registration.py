@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """This module verify if user's email is valid and fonctionnal"""
 
-from flask import jsonify, request, redirect, url_for
+from flask import jsonify, request, redirect, render_template, url_for
 from itsdangerous import URLSafeTimedSerializer
 import json
 import os
@@ -92,27 +92,25 @@ def verify_email_recieve(token):
             if res.status_code == 201:
                 try:
                     with requests.get('http://127.0.0.1:3000') as res:
+                        print(res.status_code)
                         if res.status_code == 200:
-                            url_s = 'http://127.0.0.1:3000'
-                            base = '/login?msg=success_registration'
-                            return redirect(url_s + base, code=301)
+                            return redirect(url_for('app_views.confirmation'), code=301)
                         raise requests.exceptions.ConnectionError
-                except:
+                except requests.exceptions.ConnectionError:
                     return jsonify({'status': "EMAIL VERIFIED AND \
 TEACHER's PROFILE CREATED"}), 201
             else:
                 # If status code is 700 means teacher's email already in
                 # +our database and it will be redirect to login page.
                 if res.status_code == 700:
-                    with requests.get('http://127.0.0.1:3000') as res:
-                        if res.status_code == 200:
-                            url_s = 'http://127.0.0.1:3000/login?msg=already_have_account'
-                            return redirect(url_s, code=301)
-                        else:
-                            return jsonify(
-                                json.loads(res.text)), int(res.status_code)
-                else:
-                    return jsonify(json.loads(res.text)), int(res.status_code)
+                    try:
+                        with requests.get('http://127.0.0.1:3000') as res:
+                            if res.status_code == 200:
+                                return redirect(url_for('app_views.already_exists'), code=301)
+                            raise requests.exceptions.ConnectionError
+                    except requests.exceptions.ConnectionError:
+                        return jsonify(
+                            json.loads(res.text)), int(res.status_code)
     else:
         base = 'students'
         url = url + base
@@ -121,25 +119,40 @@ TEACHER's PROFILE CREATED"}), 201
                 try:
                     with requests.get('http://127.0.0.1:3000') as res:
                         if res.status_code == 200:
-                            url_s = 'http://127.0.0.1:3000'
-                            base = '/login?msg=success_registration'
-                            return redirect(url_s + base, code=301)
+                            return redirect(url_for('app_views.confirmation'), code=301)
                         raise requests.exceptions.ConnectionError
-                except:
+                except requests.exceptions.ConnectionError:
                     return jsonify({'status': "EMAIL VERIFIED AND \
 STUDENT's PROFILE CREATED"}), 201
             else:
                 # If status code is 700 means student's email already in
                 # +our database and it will be redirect to login page.
                 if res.status_code == 700:
-                    with requests.get('http://127.0.0.1:3000') as res:
-                        if res.status_code == 200:
-                            url_s = 'http://127.0.0.1:3000/login?msg=already_have_account'
-                            return redirect(url_s, code=301)
-                        else:
-                            return jsonify(
-                                json.loads(res.text)), int(res.status_code)
-                else:
-                    return jsonify(json.loads(res.text)), int(res.status_code)
+                    try:
+                        with requests.get('http://127.0.0.1:3000') as res:
+                            if res.status_code == 200:
+                                return redirect(url_for('app_views.already_exists'), code=301)
+                            raise requests.exceptions.ConnectionError
+                    except requests.exceptions.ConnectionError:
+                        return jsonify(
+                            json.loads(res.text)), int(res.status_code)
 
+@app_views.route('/confirmation')
+def confirmation():
+    """ a function that render the confirmation template"""
+    url = 'http://127.0.0.1:3000/login?msg=success_registration'
+    info = 'Registration Successful'
+    message = 'Registration Confirmed! Your account has been successfully created.'
+    login = '   Login  '
+    return render_template('confirme_registration.html', url=url,
+                           info=info, message=message, login=login)
 
+@app_views.route('/already_exists')
+def already_exists():
+    """ a function that render the confirmation template"""
+    url = 'http://127.0.0.1:3000/login?msg=success_registration'
+    info = 'Account Already Exists'
+    message = 'An account with this email address already exists. Would you like to log in instead?'
+    login = '   Login  '
+    return render_template('confirme_registration.html', url=url,
+                           info=info, message=message, login=login)
