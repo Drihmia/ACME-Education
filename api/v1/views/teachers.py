@@ -137,7 +137,8 @@ def teachers_list(id=None):
                                           city=city.name)
 
         else:
-            return jsonify({'error': "provide institution's info, name or id"}), 400
+            return jsonify(
+                {'error': "provide institution's info, name or id"}), 400
 
         if 'phone_number' in data.keys():
             phone_number = data.get('phone_number')
@@ -321,7 +322,7 @@ def teachers_list(id=None):
                         pass
         try:
             teacher.save()
-        except:
+        except Exception:
             storage.rollback()
             return jsonify({
                 'error': 'sth went wrong at line 327, teachers.py api'}), 400

@@ -18,6 +18,7 @@ if not secret_key:
     exit(0)
 serializer = URLSafeTimedSerializer(secret_key)
 
+
 @app_views.route("/verify_email_send", methods=["POST"], strict_slashes=False)
 def verify_email_send():
     if not request.is_json:
@@ -61,17 +62,18 @@ v1/verify_email_recieve/{token}'
             yag.close()
         except YagInvalidEmailAddress:
             return jsonify({'error': 'INVALID EMAIL'}), 400
-    except:
+    except Exception:
         return jsonify({'status': 'SEND VERIFICATION MAIL FAILED'}), 400
 
     return jsonify({'status': 'SEND VERIFICATION MAIL SUCCEEDED'}), 200
+
 
 @app_views.route("/verify_email_recieve/<token>", methods=["GET"],
                  strict_slashes=False)
 def verify_email_recieve(token):
     try:
         data = serializer.loads(token, max_age=3600)
-    except:
+    except Exception:
         return jsonify({'status': 'VERIFICATION FAILS'}), 400
 
     if 'is_teacher' not in data.keys():
@@ -85,15 +87,18 @@ def verify_email_recieve(token):
     if data.get('is_teacher') == 'True':
         # Making a POST request with a with context manager
         base = 'teachers'
-        with requests.post(url + base, data = json.dumps(data), headers=headers) as response:
-            if response.status_code == 200:
+        url = url + base
+        with requests.post(url, data=json.dumps(data), headers=headers) as res:
+            if res.status_code == 200:
                 return jsonify({'status': 'TEACHER VERIFIED'}), 200
             else:
-                return jsonify(json.loads(response.text)), int(response.status_code)
+                return jsonify(json.loads(res.text)), int(res.status_code)
     else:
         base = 'students'
-        with requests.post(url + base, data = json.dumps(data), headers=headers) as response:
-            if response.status_code == 200:
+        url = url + base
+        with requests.post(url, data=json.dumps(data), headers=headers) as res:
+            if res.status_code == 200:
                 return jsonify({'status': 'STUDENT VERIFIED'}), 200
             else:
-                return jsonify(json.loads(response.text)), int(response.status_code)
+                return jsonify(
+                    json.loads(res.text)), int(res.status_code)

@@ -81,7 +81,6 @@ def student_login():
     if not student:
         return jsonify({'error': 'UNKNOWN STUDENT'}), 404
 
-
     if bcrypt.checkpw(data.get('password', '').encode('utf-8'),
                       student.password.encode('utf-8')):
         # Generate JWT token for student with additional information

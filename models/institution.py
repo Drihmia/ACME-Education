@@ -55,18 +55,18 @@ institution_clas = Table('institution_clas', Base.metadata,
 # +it would reduandant to create same lesson for each
 # +institution separately.
 institution_lesson = Table('institution_lesson', Base.metadata,
-                         Column('institution_id', String(60),
-                                ForeignKey('institutions.id',
-                                           onupdate='CASCADE',
-                                           ondelete='CASCADE'),
-                                primary_key=True),
-                         Column('lesson_id', String(60),
-                                ForeignKey('lessons.id',
-                                           onupdate='CASCADE',
-                                           ondelete='CASCADE'),
-                                primary_key=True),
-                         UniqueConstraint('institution_id', 'lesson_id'),
-                         extend_existing=True)
+                           Column('institution_id', String(60),
+                                  ForeignKey('institutions.id',
+                                             onupdate='CASCADE',
+                                             ondelete='CASCADE'),
+                                  primary_key=True),
+                           Column('lesson_id', String(60),
+                                  ForeignKey('lessons.id',
+                                             onupdate='CASCADE',
+                                             ondelete='CASCADE'),
+                                  primary_key=True),
+                           UniqueConstraint('institution_id', 'lesson_id'),
+                           extend_existing=True)
 
 
 class Institution(BaseModel, Base):
@@ -99,12 +99,12 @@ class Institution(BaseModel, Base):
     # many to many relationship's attributes.
     teachers = relationship("Teacher", secondary=institution_teacher,
                             viewonly=False)
+
     subjects = relationship("Subject", secondary=institution_subject,
                             viewonly=False)
-    classes = relationship('Clas', secondary=institution_clas, viewonly=False)
 
-    lessons = relationship('Lesson', secondary=institution_lesson, viewonly=False)
+    classes = relationship('Clas', secondary=institution_clas,
+                           viewonly=False)
 
-    # cities = relationship('City', secondary=cities_institutions,
-    # viewonly=True,
-    # back_populates="institutions")
+    lessons = relationship('Lesson', secondary=institution_lesson,
+                           viewonly=False)

@@ -27,7 +27,6 @@ teacher_student = Table('teacher_student', Base.metadata,
 class Teacher(BaseModel, Base):
     """Representation of Teacher """
     __tablename__ = 'teachers'
-    # __table_args__ = (UniqueConstraint('first_name', 'last_name'), )
 
     # -------------------------------------------------------------
     # Normal attributes.
@@ -66,7 +65,8 @@ def hash_password_before_insert_or_update(_, __, teacher):
     if teacher.password is not None and isinstance(teacher.password, str):
         # Generate a salt and hash the password using bcrypt
         salt = bcrypt.gensalt()
-        teacher.password = bcrypt.hashpw(teacher.password.encode('utf-8'), salt)
+        teacher.password = bcrypt.hashpw(
+            teacher.password.encode('utf-8'), salt)
 
 
 event.listen(Teacher, 'before_insert', hash_password_before_insert_or_update)

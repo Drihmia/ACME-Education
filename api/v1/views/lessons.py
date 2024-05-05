@@ -346,7 +346,7 @@ def public_lessons():
     lessons = storage.all(Lesson).values()
 
     public_lessons = [p_lesson.to_dict() for p_lesson in lessons
-                      if p_lesson.public == True]
+                      if p_lesson.public is True]
 
     return jsonify(public_lessons), 200
 

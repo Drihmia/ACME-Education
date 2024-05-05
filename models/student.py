@@ -75,7 +75,8 @@ def hash_password_before_insert_or_update(_, __, student):
     if student.password is not None and isinstance(student.password, str):
         # Generate a salt and hash the password using bcrypt
         salt = bcrypt.gensalt()
-        student.password = bcrypt.hashpw(student.password.encode('utf-8'), salt)
+        student.password = bcrypt.hashpw(
+            student.password.encode('utf-8'), salt)
 
 
 event.listen(Student, 'before_insert', hash_password_before_insert_or_update)
