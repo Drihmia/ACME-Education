@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """This module contains teacher'S IP"""
 from flask import jsonify, request
+import json
 from werkzeug.exceptions import BadRequest
 from sqlalchemy.exc import IntegrityError
 from api.v1.views import app_views
@@ -146,8 +147,12 @@ def teachers_list(id=None):
         if 'gender' in data.keys():
             gender = data.get('gender')
         else:
-            gender = 'Null'
+            gender = 'N'
 
+        if 'main_subject' in data.keys():
+            main_subject = data.get('main_subject')
+        else:
+            main_subject = 'Null'
         teacher = Teacher(first_name=data.get('first_name').strip(),
                           last_name=data.get('last_name').strip(),
                           email=data.get('email').strip(),
@@ -155,7 +160,8 @@ def teachers_list(id=None):
                           institution=institution.name,
                           city=institution.city,
                           phone_number=phone_number,
-                          gender=gender)
+                          gender=gender,
+                          main_subject=main_subject)
 
         institution.teachers.append(teacher)
 
@@ -198,7 +204,7 @@ def teachers_list(id=None):
 
         tech_dict = teacher.to_dict()
         normal_attr = ['first_name', 'last_name', 'password', 'institution',
-                       'city', 'subject']
+                       'city', 'main_subject', 'phone_number', 'gender']
 
         for k, v in data.items():
             if k in normal_attr:
@@ -211,7 +217,7 @@ def teachers_list(id=None):
         # assign all optional subjects to teacher's object.
         # If subject does not exist, it will be ignored
         if 'subjects_id' in data.keys():
-            subjects_id = data.get('subjects_id').strip()
+            subjects_id = data.get('subjects_id')
 
             # Make sure that subjects_id is an actual list.
             if not isinstance(subjects_id, list):
@@ -221,7 +227,7 @@ def teachers_list(id=None):
             subjects_id = list(set(subjects_id))
 
             # List of subjects IDs already associated with the teacher.
-            teacher_subject_ids = [s.id for s in teacher.subjects]
+            teacher_subject_ids = [s.id for s in teacher.subjects if s]
 
             for subject_id in subjects_id:
                 # Ignore subject that are already associated to this teacher.
@@ -229,8 +235,7 @@ def teachers_list(id=None):
                 if subject_id in teacher_subject_ids:
                     continue
 
-                subject_optional = storage.get(Subject,
-                                               subject_id)
+                subject_optional = storage.get(Subject, subject_id)
                 if subject_optional:
                     try:
                         subject_optional.teachers.append(teacher)
@@ -253,7 +258,7 @@ def teachers_list(id=None):
         # assign all optional institutions to teacher's object.
         # If institution does not exist, it will be ignored
         if 'institutions_id' in data.keys():
-            institutions = data.get('institutions_id').strip()
+            institutions = data.get('institutions_id')
 
             # Make sure that institutions is an actual list.
             if not isinstance(institutions, list):
@@ -285,7 +290,7 @@ def teachers_list(id=None):
         # assign all optional classes to teacher's object.
         # If class does not exist, it will be ignored
         if 'classes_id' in data.keys():
-            classes = data.get('classes_id').strip()
+            classes = data.get('classes_id')
 
             # Make sure that classes is an actual list.
             if not isinstance(classes, list):
@@ -312,8 +317,16 @@ def teachers_list(id=None):
                     except IntegrityError:
                         # If teacher already had that class.
                         pass
-        teacher.save()
-        return jsonify(teacher.to_dict()), 200
+        try:
+            teacher.save()
+        except:
+            storage.rollback()
+            return jsonify({
+                'error': 'sth went wrong at line 327, teachers.py api'}), 400
+
+        teacher = teacher.to_dict()
+
+        return jsonify(teacher), 200
 
     # DELETE's method *******************************************************
     if request.method == 'DELETE':
