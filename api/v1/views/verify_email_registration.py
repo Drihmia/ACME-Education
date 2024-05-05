@@ -111,6 +111,8 @@ TEACHER's PROFILE CREATED"}), 201
                     except requests.exceptions.ConnectionError:
                         return jsonify(
                             json.loads(res.text)), int(res.status_code)
+                return jsonify(
+                    json.loads(res.text)), int(res.status_code)
     else:
         base = 'students'
         url = url + base
@@ -136,6 +138,8 @@ STUDENT's PROFILE CREATED"}), 201
                     except requests.exceptions.ConnectionError:
                         return jsonify(
                             json.loads(res.text)), int(res.status_code)
+                return jsonify(
+                    json.loads(res.text)), int(res.status_code)
 
 @app_views.route('/confirmation')
 def confirmation():
