@@ -212,6 +212,8 @@ def teachers_list(id=None):
                 # +and ignore 0 length values.
                 if v == tech_dict.get(k, "Not Found") or not len(v):
                     continue
+                if k == 'gender' and len(v) != 1:
+                    return jsonify({'error': 'gender must be M/F'}), 400
                 setattr(teacher, k.strip(), v.strip())
 
         # assign all optional subjects to teacher's object.
@@ -325,6 +327,18 @@ def teachers_list(id=None):
                 'error': 'sth went wrong at line 327, teachers.py api'}), 400
 
         teacher = teacher.to_dict()
+
+        if 'subjects' in teacher:
+            del teacher['subjects']
+
+        if 'institutions' in teacher:
+            del teacher['institutions']
+
+        if 'classes' in teacher:
+            del teacher['classes']
+
+        if 'students' in teacher:
+            del teacher['students']
 
         return jsonify(teacher), 200
 
