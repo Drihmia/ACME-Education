@@ -90,28 +90,43 @@ def verify_email_recieve(token):
         url = url + base
         with requests.post(url, data=json.dumps(data), headers=headers) as res:
             if res.status_code == 201:
-                with requests.get('http://127.0.0.1:3000') as res:
-                    if res.status_code == 200:
-                        url_s = 'http://127.0.0.1:3000'
-                        base = '/login?msg=success_registration'
-                        return redirect(url_s + base, code=301)
-                    else:
-                        return jsonify({'status': "EMAIL VERIFIED AND \
+                try:
+                    with requests.get('http://127.0.0.1:3000') as res:
+                        if res.status_code == 200:
+                            url_s = 'http://127.0.0.1:3000'
+                            base = '/login?msg=success_registration'
+                            return redirect(url_s + base, code=301)
+                        raise requests.exceptions.ConnectionError
+                except:
+                    return jsonify({'status': "EMAIL VERIFIED AND \
 TEACHER's PROFILE CREATED"}), 201
             else:
-                return jsonify(json.loads(res.text)), int(res.status_code)
+                # If status code is 700 means students's email already in
+                # +our database and it will be redirect to login page.
+                if res.status_code == 700:
+                    with requests.get('http://127.0.0.1:3000') as res:
+                        if res.status_code == 200:
+                            url_s = 'http://127.0.0.1:3000/login?msg=already_have_account'
+                            return redirect(url_s, code=301)
+                        else:
+                            return jsonify(
+                                json.loads(res.text)), int(res.status_code)
+                else:
+                    return jsonify(json.loads(res.text)), int(res.status_code)
     else:
         base = 'students'
         url = url + base
         with requests.post(url, data=json.dumps(data), headers=headers) as res:
             if res.status_code == 201:
-                with requests.get('http://127.0.0.1:3000') as res:
-                    if res.status_code == 200:
-                        url_s = 'http://127.0.0.1:3000'
-                        base = '/login?msg=success_registration'
-                        return redirect(url_s + base, code=301)
-                    else:
-                        return jsonify({'status': "EMAIL VERIFIED AND \
+                try:
+                    with requests.get('http://127.0.0.1:3000') as res:
+                        if res.status_code == 200:
+                            url_s = 'http://127.0.0.1:3000'
+                            base = '/login?msg=success_registration'
+                            return redirect(url_s + base, code=301)
+                        raise requests.exceptions.ConnectionError
+                except:
+                    return jsonify({'status': "EMAIL VERIFIED AND \
 STUDENT's PROFILE CREATED"}), 201
             else:
                 return jsonify(
