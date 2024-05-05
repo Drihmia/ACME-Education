@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registration Confirmation</title>
+<style>
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f7f7f7;
+  margin: 0;
+  padding: 0;
+}
+    .container {
+      max-height: 60vh;
+      max-width: 70vw;
+    min-height: 45vh;
+    min-width: 50vw;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  h1 {
+    color: #329ccd;
+  }
+  p {
+    color: #666;
+  }
+  .button {
+    display: inline-block;
+    padding: 10px 30px;
+    margin-top: 20px;
+    background-color: #229cc4;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 01.5vw;
+    min-height: 3vh;
+    min-width: 6vw;
+
+  }
+  .button:hover {
+    background-color: #28a745;
+  }
+  /* Media query for small screens */
+  @media screen and (max-width: 600px) {
+      .button {
+        font-size: 5vw; /* Font size for small screens */
+      }
+</style>
+</head>
+<body>
+  <div class="container">
+    {#<h1>Registration Confirmed!</h1>#}
+    <h1>{{ info }}</h1>
+    {#<p>Your account has been successfully created.</p>#}
+    <p>{{ message }}</p>
+    <a href='{{ url }}' class="button">{{ login }}</a>
+  </div>
+</body>
+</html>
