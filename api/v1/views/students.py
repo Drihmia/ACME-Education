@@ -80,11 +80,12 @@ def students_list(id=None):
 
         # -----------------------------------------------------------------
 
-        # checking student's teacher exist in our database.
-        # teacher = storage.query(Teacher).filter(Teacher.email == data.
-        # get("teacher_email")).first()
-        # if not teacher:
-            # return jsonify({'error': "UNKNOWN TEACHER"}), 400
+        # Check if the student's email not in our database as a Teacher.
+        email = data.get('email').strip()
+        if storage.query(Teacher).filter(Teacher.email == email).first():
+            return jsonify(
+                {'error':
+                 f"{email} is already registered as a teacher"}), 409
 
         # -----------------------------------------------------------------
 

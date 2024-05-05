@@ -1,16 +1,16 @@
 #!/usr/bin/python3
 """This module contains teacher'S IP"""
 from flask import jsonify, request
-import json
 from werkzeug.exceptions import BadRequest
 from sqlalchemy.exc import IntegrityError
 from api.v1.views import app_views
-from models.teacher import Teacher
-from models.institution import Institution
 from models.city import City
 from models.clas import Clas
+from models.institution import Institution
 from models.subject import Subject
+from models.student import Student
 from models import storage
+from models.teacher import Teacher
 
 
 @app_views.route('/teachers', methods=['GET', 'POST'], strict_slashes=False)
@@ -72,10 +72,19 @@ def teachers_list(id=None):
         if 'email' not in data.keys():
             return jsonify({'error': 'Missing email'}), 400
 
+        # -------------------------------------------------------
         # Check if the teacher's email not in our database.
         if storage.query(Teacher).filter(Teacher.email == data.
                                          get('email').strip()).first():
             return jsonify({'error': "teacher exists"}), 700
+
+        # -------------------------------------------------------
+        # Check if the Teacher's email not in our database as a student.
+        email = data.get('email').strip()
+        if storage.query(Student).filter(Student.email == email).first():
+            return jsonify(
+                {'error':
+                 f"{email} is already registered as a student"}), 409
 
         # -------------------------------------------------------
 
