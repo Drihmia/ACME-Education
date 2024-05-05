@@ -37,6 +37,7 @@ class DBStorage:
         ACME_MYSQL_DB = getenv('D')
         ACME_ENV = getenv('mode')
         CHARSET_STR = '?charset=utf8mb4&collation=utf8mb4_unicode_ci'
+
         if None in (ACME_MYSQL_USER, ACME_MYSQL_PWD,
                     ACME_MYSQL_HOST, ACME_MYSQL_DB):
             string = "One or more required environment variables are not set."

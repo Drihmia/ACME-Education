@@ -6,12 +6,13 @@ from itsdangerous import URLSafeTimedSerializer
 import json
 import os
 import yagmail
+from yagmail.error import YagInvalidEmailAddress
 from werkzeug.exceptions import BadRequest
 from api.v1.views import app_views
 
 
 # Serializer for generating and validating tokens
-secret_key = os.environ
+secret_key = os.environ.get('SECRET_KEY')
 if not secret_key:
     print("secret key, for serializer, is none")
     exit(0)
@@ -34,17 +35,26 @@ def verify_email_send():
         return jsonify({'error': 'Missing email for verification \
 for sending verification email'}), 400
 
+    EMAIL_SEND = os.environ.get('ACME_EMAIL')
+    if not EMAIL_SEND:
+        return jsonify(error='export ACME_EMAIL="the_email@gmail.com" into ur bashrc file')
     token = serializer.dumps(data)
-
+    print(EMAIL_SEND)
     # Initialize Yagmail with the OAuth2 credentials
-    yag = yagmail.SMTP('newonerad@gmail.com', oauth2_file='~/oauth2_creds.json')
+    yag = yagmail.SMTP(EMAIL_SEND, oauth2_file='~/oauth2_creds.json')
 
     # Send a test email
-    yag.send(
+    sent_successfully = yag.send(
         to=data.get('email'),
         subject='Verification',
         contents=f'http://127.0.0.1:5000/api/v1/verify_email_recieve/{token}'
     )
+    if sent_successfully:
+        print("Email sent successfully!")
+    else:
+        print(sent_successfully)
+        print("Failed to send email. Please check your settings.")
+
     return jsonify({'status': 'SEND VERIFICATION MAIL SUCCEEDED'}), 200
 
 @app_views.route("/verify_email_recieve/<token>", methods=["GET"], strict_slashes=False)

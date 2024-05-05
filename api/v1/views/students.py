@@ -307,9 +307,8 @@ of teacher's IDs"}), 400
             student_teacher_ids = [t.id for t in student.teachers]
 
             for teacher_email in teachers_email:
-                teacher = storage.query(Teacher).filter(Teacher.email ==
-                                                        teacher_email
-                                                        ).first()
+                teacher = storage.query(Teacher).filter(
+                    Teacher.email == teacher_email).first()
                 # I'm not sure which policy  I should adopte,
                 # +forgiven or strict.
                 # I chose to be strict.
