@@ -60,7 +60,7 @@ body {
     {#<h1>Registration Confirmed!</h1>#}
     <h1>{{ info }}</h1>
     {#<p>Your account has been successfully created.</p>#}
-    <p>{{ message }}</p>
+    <p>{{ message  | safe }}</p>
     <a href='{{ url }}' class="button">{{ login }}</a>
   </div>
 </body>

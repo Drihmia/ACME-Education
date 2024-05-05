@@ -117,6 +117,17 @@ TEACHER's PROFILE CREATED"}), 201
                     except requests.exceptions.ConnectionError:
                         return jsonify(
                             json.loads(res.text)), int(res.status_code)
+                elif res.status_code == 409:
+                    try:
+                        with requests.get('http://127.0.0.1:3000') as res:
+                            if res.status_code == 200:
+                                return redirect(
+                                    url_for('app_views.conflict_teacher'),
+                                    code=301)
+                            raise requests.exceptions.ConnectionError
+                    except requests.exceptions.ConnectionError:
+                        return jsonify(
+                            json.loads(res.text)), int(res.status_code)
                 return jsonify(
                     json.loads(res.text)), int(res.status_code)
     else:
@@ -147,6 +158,17 @@ STUDENT's PROFILE CREATED"}), 201
                     except requests.exceptions.ConnectionError:
                         return jsonify(
                             json.loads(res.text)), int(res.status_code)
+                elif res.status_code == 409:
+                    try:
+                        with requests.get('http://127.0.0.1:3000') as res:
+                            if res.status_code == 200:
+                                return redirect(
+                                    url_for('app_views.conflict_student'),
+                                    code=301)
+                            raise requests.exceptions.ConnectionError
+                    except requests.exceptions.ConnectionError:
+                        return jsonify(
+                            json.loads(res.text)), int(res.status_code)
                 return jsonify(
                     json.loads(res.text)), int(res.status_code)
 
@@ -171,5 +193,27 @@ def already_exists():
     message = """An account with this email address already exists.
     Would you like to log in instead?"""
     login = '   Login  '
+    return render_template('confirme_registration.html', url=url,
+                           info=info, message=message, login=login)
+
+
+@app_views.route('/conflict_student')
+def conflict_student():
+    """ a function that render the confirmation template"""
+    url = 'http://127.0.0.1:3000/login?msg=success_registration'
+    info = 'Account Already Exists As Teacher'
+    message = "this email is already registered as a teacher.<br>Cannot sign up as a student"
+    login = 'Login As Teacher'
+    return render_template('confirme_registration.html', url=url,
+                           info=info, message=message, login=login)
+
+
+@app_views.route('/conflict_teacher')
+def conflict_teacher():
+    """ a function that render the confirmation template"""
+    url = 'http://127.0.0.1:3000/login?msg=success_registration'
+    info = 'Account Already Exists As Student'
+    message = """this email is already registered as a student"""
+    login = 'Login As Student '
     return render_template('confirme_registration.html', url=url,
                            info=info, message=message, login=login)
