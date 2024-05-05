@@ -76,7 +76,7 @@ def students_list(id=None):
         # Check if the student's email not in our database.
         if storage.query(Student).filter(Student.email == data.
                                          get('email').strip()).first():
-            return jsonify({'error': "student exists"}), 400
+            return jsonify({'error': "student exists"}), 700
 
         # -----------------------------------------------------------------
 

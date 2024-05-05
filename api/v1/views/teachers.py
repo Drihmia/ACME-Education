@@ -75,7 +75,7 @@ def teachers_list(id=None):
         # Check if the teacher's email not in our database.
         if storage.query(Teacher).filter(Teacher.email == data.
                                          get('email').strip()).first():
-            return jsonify({'error': "teacher exists"}), 400
+            return jsonify({'error': "teacher exists"}), 700
 
         # -------------------------------------------------------
 
@@ -175,7 +175,7 @@ def teachers_list(id=None):
             storage.new(teacher)
             storage.save()
         except IntegrityError:
-            return jsonify({'error': 'teacher exists'}), 400
+            return jsonify({'error': 'teacher exists'}), 700
 
         return jsonify(teacher.to_dict()), 201
 
