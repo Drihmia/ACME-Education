@@ -28,7 +28,7 @@ const validateEmailDomain = (value?: string) => {
   }
 };
 
-export const signupSchema = yup.object().shape({
+export const signupTeacherSchema = yup.object().shape({
   first_name: yup.string().required("First Name is required"),
   last_name: yup.string().required("Last Name is required"),
   email: yup
@@ -37,10 +37,10 @@ export const signupSchema = yup.object().shape({
     .matches(emailRegex, "Email is invalid.")
     .test("is-valid-domain", "Invalid email address", validateEmailDomain)
     .required("Email address is required"),
-  // telephone: yup
-  //   .string()
-  //   .matches(phoneRegex, "Invalid phone number")
-  //   .required("Phone number is required"),
+  phone_number: yup
+    .string()
+    .matches(phoneRegex, "Invalid phone number")
+    .required("Phone number is required"),
   password: yup
     .string()
     .matches(
@@ -54,11 +54,11 @@ export const signupSchema = yup.object().shape({
     .required("Please confirm your password"),
   institution: yup.string().required("Name of institution is required"),
   city: yup.string().required("Name of city is required"),
-  isTeacher: yup.string().oneOf(["true", "false"], "Terms must be accepted").required(),
-  subjects: yup.array().of(yup.string())
+  subjects: yup.array().of(yup.string()),
+  gender: yup.string().oneOf(["F", "M"], "Gender is required").required()
 });
 
-export const updateSchema = yup.object().shape({
+export const signupStudentSchema = yup.object().shape({
   first_name: yup.string().required("First Name is required"),
   last_name: yup.string().required("Last Name is required"),
   email: yup
@@ -67,13 +67,64 @@ export const updateSchema = yup.object().shape({
     .matches(emailRegex, "Email is invalid.")
     .test("is-valid-domain", "Invalid email address", validateEmailDomain)
     .required("Email address is required"),
-  // telephone: yup
-  //   .string()
-  //   .matches(phoneRegex, "Invalid phone number")
-  //   .required("Phone number is required"),
+  phone_number: yup
+    .string()
+    .matches(phoneRegex, "Invalid phone number")
+    .required("Phone number is required"),
+  password: yup
+    .string()
+    .matches(
+      passwordRegex,
+      "Password must be at least 8 characters and have at least one uppercase, one lowercase, a number and a special characters"
+    )
+    .required("Password is required"),
+  confirm_password: yup
+    .string()
+    .oneOf([yup.ref("password")], "Mismatched passwords")
+    .required("Please confirm your password"),
   institution: yup.string().required("Name of institution is required"),
   city: yup.string().required("Name of city is required"),
-  subjects: yup.array().of(yup.string())
+  teacher_email: yup.string(),
+  class_id: yup.string().required("Class id is required"),
+  gender: yup.string().oneOf(["F", "M"], "Gender is required").required()
+});
+
+export const updateTeacherSchema = yup.object().shape({
+  first_name: yup.string().required("First Name is required"),
+  last_name: yup.string().required("Last Name is required"),
+  email: yup
+    .string()
+    .email()
+    .matches(emailRegex, "Email is invalid.")
+    .test("is-valid-domain", "Invalid email address", validateEmailDomain)
+    .required("Email address is required"),
+  phone_number: yup
+    .string()
+    .matches(phoneRegex, "Invalid phone number")
+    .required("Phone number is required"),
+  institution: yup.string().required("Name of institution is required"),
+  city: yup.string().required("Name of city is required"),
+  subjects: yup.array().of(yup.string()),
+});
+
+export const updateStudentSchema = yup.object().shape({
+  first_name: yup.string().required("First Name is required"),
+  last_name: yup.string().required("Last Name is required"),
+  email: yup
+    .string()
+    .email()
+    .matches(emailRegex, "Email is invalid.")
+    .test("is-valid-domain", "Invalid email address", validateEmailDomain)
+    .required("Email address is required"),
+  phone_number: yup
+    .string()
+    .matches(phoneRegex, "Invalid phone number")
+    .required("Phone number is required"),
+  institution: yup.string().required("Name of institution is required"),
+  city: yup.string().required("Name of city is required"),
+  teacher_email: yup.string().email(),
+  class_id: yup.string().required("Class id is required"),
+  gender: yup.string().oneOf(["F", "M"], "Gender is required").required()
 });
 
 export const updatePasswordSchema = yup.object().shape({
@@ -88,7 +139,7 @@ export const updatePasswordSchema = yup.object().shape({
     .string()
     .oneOf([yup.ref("password")], "Mismatched passwords")
     .required("Please confirm your password"),
-})
+});
 
 export const forgotPasswordSchema = yup.object().shape({
   email: yup
@@ -105,5 +156,12 @@ export const signinSchema = yup.object().shape({
     .test("is-valid-domain", "Invalid email address", validateEmailDomain)
     .required("Email address is required"),
   password: yup.string().required(),
-  isTeacher: yup.string().oneOf(["true", "false"], "Terms must be accepted").required()
+  isTeacher: yup
+    .string()
+    .oneOf(["true", "false"], "Terms must be accepted")
+    .required(),
 });
+
+export const signupQuestion = yup.object().shape({
+  answer: yup.string().oneOf(["true", "false"], "Must be a teacher or student").required()
+})

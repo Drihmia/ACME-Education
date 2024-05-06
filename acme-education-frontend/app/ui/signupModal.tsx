@@ -31,10 +31,10 @@ export const SignUpModal = ({
             </>
           )}
         </div>
-        {response.status != "success" &&
-        // <div onClick={() => navigation.push('/login')} className="min-w-24 h-8 self-end flex items-center justify-center p-2 bg-blue-200 hover:bg-blue-700 cursor-pointer rounded-md hover:text-white">
-        //   Continue to login
-        // </div> :
+        {response.status == "success" ?
+        <div onClick={() => navigation.push('/')} className="min-w-24 h-8 self-end flex items-center justify-center p-2 bg-blue-200 hover:bg-blue-700 cursor-pointer rounded-md hover:text-white">
+          Ok
+        </div> :
         <button onClick={closeModal} className="min-w-24 h-8 self-end flex items-center justify-center p-2 bg-blue-200 hover:bg-blue-700 rounded-md hover:text-white">
           Try again
         </button>}

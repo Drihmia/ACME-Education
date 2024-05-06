@@ -53,3 +53,60 @@ export interface lessonFormProps {
   description: string;
   public: string | boolean;
 }
+
+
+interface responseProps {
+  status: string;
+  message: string;
+}
+
+interface selectedCityProps {
+  status: boolean;
+  id: string;
+}
+
+interface teacherSignupProps {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number: string;
+  password: string;
+  confirm_password: string;
+  city: string;
+  city_id?: string;
+  institution: string;
+  institution_id?: string;
+  subjects_id?: string[];
+  gender: string
+}
+
+interface studentSignupProps {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number: string;
+  password: string;
+  confirm_password: string;
+  city: string;
+  city_id?: string;
+  institution: string;
+  institution_id?: string;
+  gender: string;
+  class_id: string;
+  teacher_email: string;
+}
+
+interface radioProps {
+  label: string;
+  name: string;
+  type: string;
+  value: boolean | string;
+}
+
+interface OtherProps {
+  label: string;
+  checkValue?: (val: boolean, id?: string) => void;
+  placeholder?: string;
+  options?: radioProps[];
+  data?: any[];
+}

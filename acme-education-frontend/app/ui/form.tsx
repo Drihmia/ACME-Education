@@ -7,28 +7,13 @@ import {
   useField,
   FieldHookConfig
 } from "formik";
-import { signinSchema } from "../validation/auth";
+import { signinSchema } from "../validation/schema";
 import Link from "next/link";
 import Cookies from 'js-cookie'
 import { useOutsideClick } from "../lib/useOutsideClick";
-import { User, siginProps } from "../types";
+import { OtherProps, User, radioProps, siginProps } from "../types";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/authContext";
-
-interface radioProps {
-  label: string;
-  name: string;
-  type: string;
-  value: boolean;
-}
-
-interface OtherProps {
-  label: string;
-  checkValue?: (val: boolean, id?: string) => void;
-  placeholder?: string;
-  options?: radioProps[];
-  data?: any[];
-}
 
 export const MyTextInput = ({
   label,

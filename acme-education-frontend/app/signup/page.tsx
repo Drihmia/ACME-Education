@@ -1,5 +1,5 @@
-import { SignUpForm } from "../ui/signup";
+import { SignUpQuestion } from "../ui/signup_question";
 
 export default async function Page() {
-  return <SignUpForm action="signup" />;
+  return <SignUpQuestion />;
 }

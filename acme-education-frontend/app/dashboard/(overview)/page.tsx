@@ -2,11 +2,14 @@
 
 import { useAuth } from "@/app/context/authContext";
 import { ProfileSkeleton } from "@/app/ui/skeletons";
-import { Profile } from "@/app/ui/dashboard/profile";
 import { Suspense } from "react";
 import { useRouter } from "next/navigation";
-import { UpdateProfileModal } from "@/app/ui/dashboard/modals/updateProfileModal";
+// import { UpdateProfileModal } from "@/app/ui/dashboard/modals/updateProfileModal";
 import { ProfileModalWrapper } from "@/app/ui/modalWrapper";
+import { TeacherProfile } from "@/app/ui/dashboard/teacherProfile";
+import { StudentProfile } from "@/app/ui/dashboard/studentProfile";
+import { UpdateTeacherModal } from "@/app/ui/dashboard/modals/updateTeacherModal";
+import { UpdateStudentModal } from "@/app/ui/dashboard/modals/updateStudentModal";
 
 export default function Page() {
   const { user } = useAuth()!;
@@ -14,9 +17,7 @@ export default function Page() {
 
   if (!user) return router.push("/login")
 
-  return (
-    <Suspense fallback={<ProfileSkeleton />}>
-      <ProfileModalWrapper ProfileComponent={Profile} Modal={UpdateProfileModal} user={user} />
-    </Suspense>
-  );
+  if (user.class === "Teacher") return <ProfileModalWrapper ProfileComponent={TeacherProfile} Modal={UpdateTeacherModal} user={user} />
+
+  return <ProfileModalWrapper ProfileComponent={StudentProfile} Modal={UpdateStudentModal} user={user} />
 }
