@@ -1,6 +1,18 @@
+# Backend ---------------------------------------:
+# Python
 *.pyc
 *.py_x
 */*.pyc
+*test*.py
+*.txt
+
+# MySQL
+*.sql
+
+# JSON FILE for Oauth2 for sending mails using python
+*.com.json
+
+# Frontend: -------------------------------------:
 *dynamic/
 */node_modules/
 acme-education-frontend/node_modules/
@@ -36,6 +48,3 @@ acme-education-frontend/.vercel
 # typescript
 acme-education-frontend/*.tsbuildinfo
 acme-education-frontend/next-env.d.ts
-
-=======
-*.sql

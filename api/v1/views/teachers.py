@@ -4,12 +4,13 @@ from flask import jsonify, request
 from werkzeug.exceptions import BadRequest
 from sqlalchemy.exc import IntegrityError
 from api.v1.views import app_views
-from models.teacher import Teacher
-from models.institution import Institution
 from models.city import City
 from models.clas import Clas
+from models.institution import Institution
 from models.subject import Subject
+from models.student import Student
 from models import storage
+from models.teacher import Teacher
 
 
 @app_views.route('/teachers', methods=['GET', 'POST'], strict_slashes=False)
@@ -71,10 +72,19 @@ def teachers_list(id=None):
         if 'email' not in data.keys():
             return jsonify({'error': 'Missing email'}), 400
 
+        # -------------------------------------------------------
         # Check if the teacher's email not in our database.
         if storage.query(Teacher).filter(Teacher.email == data.
                                          get('email').strip()).first():
-            return jsonify({'error': "teacher exists"}), 400
+            return jsonify({'error': "teacher exists"}), 700
+
+        # -------------------------------------------------------
+        # Check if the Teacher's email not in our database as a student.
+        email = data.get('email').strip()
+        if storage.query(Student).filter(Student.email == email).first():
+            return jsonify(
+                {'error':
+                 f"{email} is already registered as a student"}), 409
 
         # -------------------------------------------------------
 
@@ -87,7 +97,7 @@ def teachers_list(id=None):
         if 'password' not in data.keys():
             return jsonify({'error': 'Missing password'}), 400
 
-        if 'confirm_password' in data.keys():
+        if 'confirm_password' not in data.keys():
             if data.get('confirm_password'.strip()) != data.get(
                     'password'.strip()):
                 return jsonify({'error': 'password do not match'}), 400
@@ -110,15 +120,11 @@ def teachers_list(id=None):
                 institution = storage.query(Institution).filter(
                     Institution.name == institution_name,
                     Institution.city == city_name).first()
-                # if not institution:
-                # return jsonify({'error': "UNKNOWN INSTITUTION"}), 400
             elif 'city_id' in data.keys():
                 city_id = data.get('city_id').strip()
                 institution = storage.query(Institution).filter(
                     Institution.name == institution_name,
                     Institution.city_id == city_id).first()
-                # if not institution:
-                # return jsonify({'error': "UNKNOWN INSTITUTION"}), 400
             else:
                 return jsonify({'error': "Missin city_id: provide city_id or\
                                 city's name + institution_id"}), 400
@@ -140,14 +146,33 @@ def teachers_list(id=None):
                                           city=city.name)
 
         else:
-            return jsonify({'error': "provide city's info, name or id"}), 400
+            return jsonify(
+                {'error': "provide institution's info, name or id"}), 400
 
+        if 'phone_number' in data.keys():
+            phone_number = data.get('phone_number')
+        else:
+            phone_number = 'Null'
+
+        if 'gender' in data.keys():
+            gender = data.get('gender')
+        else:
+            gender = 'N'
+
+        if 'main_subject' in data.keys():
+            main_subject = data.get('main_subject')
+        else:
+            main_subject = 'Null'
         teacher = Teacher(first_name=data.get('first_name').strip(),
                           last_name=data.get('last_name').strip(),
                           email=data.get('email').strip(),
                           password=data.get('password').strip(),
                           institution=institution.name,
-                          city=institution.city)
+                          city=institution.city,
+                          phone_number=phone_number,
+                          gender=gender,
+                          main_subject=main_subject)
+
         institution.teachers.append(teacher)
 
         try:
@@ -159,7 +184,7 @@ def teachers_list(id=None):
             storage.new(teacher)
             storage.save()
         except IntegrityError:
-            return jsonify({'error': 'teacher exists'}), 400
+            return jsonify({'error': 'teacher exists'}), 700
 
         return jsonify(teacher.to_dict()), 201
 
@@ -189,7 +214,7 @@ def teachers_list(id=None):
 
         tech_dict = teacher.to_dict()
         normal_attr = ['first_name', 'last_name', 'password', 'institution',
-                       'city', 'subject']
+                       'city', 'main_subject', 'phone_number', 'gender']
 
         for k, v in data.items():
             if k in normal_attr:
@@ -197,6 +222,8 @@ def teachers_list(id=None):
                 # +and ignore 0 length values.
                 if v == tech_dict.get(k, "Not Found") or not len(v):
                     continue
+                if k == 'gender' and len(v) != 1:
+                    return jsonify({'error': 'gender must be M/F'}), 400
                 setattr(teacher, k.strip(), v.strip())
 
         # assign all optional subjects to teacher's object.
@@ -212,7 +239,7 @@ def teachers_list(id=None):
             subjects_id = list(set(subjects_id))
 
             # List of subjects IDs already associated with the teacher.
-            teacher_subject_ids = [s.id for s in teacher.subjects]
+            teacher_subject_ids = [s.id for s in teacher.subjects if s]
 
             for subject_id in subjects_id:
                 # Ignore subject that are already associated to this teacher.
@@ -220,14 +247,14 @@ def teachers_list(id=None):
                 if subject_id in teacher_subject_ids:
                     continue
 
-                subject_optional = storage.get(Subject,
-                                               subject_id)
+                subject_optional = storage.get(Subject, subject_id)
                 if subject_optional:
                     try:
                         subject_optional.teachers.append(teacher)
                         subject_optional.save()
                     except IntegrityError:
                         # If teacher already had that subject.
+                        # +Do nothing.
                         pass
 
                     # Update student's subjects automatically
@@ -243,7 +270,7 @@ def teachers_list(id=None):
         # assign all optional institutions to teacher's object.
         # If institution does not exist, it will be ignored
         if 'institutions_id' in data.keys():
-            institutions = data.get('institutions_id').strip()
+            institutions = data.get('institutions_id')
 
             # Make sure that institutions is an actual list.
             if not isinstance(institutions, list):
@@ -269,12 +296,13 @@ def teachers_list(id=None):
                         institution_optional.save()
                     except IntegrityError:
                         # If teacher already had that institution.
+                        # +Do nothing.
                         pass
 
         # assign all optional classes to teacher's object.
         # If class does not exist, it will be ignored
         if 'classes_id' in data.keys():
-            classes = data.get('classes_id').strip()
+            classes = data.get('classes_id')
 
             # Make sure that classes is an actual list.
             if not isinstance(classes, list):
@@ -301,8 +329,28 @@ def teachers_list(id=None):
                     except IntegrityError:
                         # If teacher already had that class.
                         pass
-        teacher.save()
-        return jsonify(teacher.to_dict()), 200
+        try:
+            teacher.save()
+        except Exception:
+            storage.rollback()
+            return jsonify({
+                'error': 'sth went wrong at line 327, teachers.py api'}), 400
+
+        teacher = teacher.to_dict()
+
+        if 'subjects' in teacher:
+            del teacher['subjects']
+
+        if 'institutions' in teacher:
+            del teacher['institutions']
+
+        if 'classes' in teacher:
+            del teacher['classes']
+
+        if 'students' in teacher:
+            del teacher['students']
+
+        return jsonify(teacher), 200
 
     # DELETE's method *******************************************************
     if request.method == 'DELETE':
@@ -319,10 +367,6 @@ def teachers_list(id=None):
                  strict_slashes=False)
 def teachers_list_lessons(id):
     """return a list of all  lessons by teacher"""
-
-    # lessons = storage.query(Lesson).filter(Lesson.teacher_id == id).all()
-    # lessons = storage.query(Teacher).filter(Teacher.id == id).
-    # all()[-1].lessons
 
     # Match faster if the maching is faster and less overload on database.
     teacher = storage.get(Teacher, id)
@@ -344,10 +388,6 @@ def teachers_list_subject(id):
 
     subjects = teacher.subjects
 
-    # two differente approach using query methode from storage.
-    # teacher = storage.query(Teacher).filter(Teacher.id == id).all()
-    # lessons = storage.query(Subject).filter(Subject.subject_id == id).all()
-
     return jsonify([subject.to_dict() for subject in subjects]), 200
 
 
@@ -361,10 +401,6 @@ def teachers_list_institution(id):
         return jsonify({'error': "UNKNOWN TEACHER"}), 403
 
     institutions = teacher.institutions
-
-    # two differente approach using query methode from storage.
-    # teacher = storage.query(Teacher).filter(Teacher.id == id).all()
-    # lessons = storage.query(Subject).filter(Subject.subject_id == id).all()
 
     return jsonify([institution.to_dict() for institution in
                     institutions]), 200
@@ -380,9 +416,5 @@ def teachers_list_class(id):
         return jsonify({'error': "UNKNOWN TEACHER"}), 403
 
     classes = teacher.classes
-
-    # two differente approach using query methode from storage.
-    # teacher = storage.query(Teacher).filter(Teacher.id == id).all()
-    # lessons = storage.query(Subject).filter(Subject.subject_id == id).all()
 
     return jsonify([classe.to_dict() for classe in classes]), 200

@@ -339,6 +339,18 @@ def lessons(id=None):
         return jsonify({}), 200
 
 
+@app_views.route("/public_lessons", methods=["GET"],
+                 strict_slashes=False)
+def public_lessons():
+    """return all public lessons"""
+    lessons = storage.all(Lesson).values()
+
+    public_lessons = [p_lesson.to_dict() for p_lesson in lessons
+                      if p_lesson.public is True]
+
+    return jsonify(public_lessons), 200
+
+
 def is_valid_uuid(s):
     try:
         uuid_obj = uuid.UUID(s)

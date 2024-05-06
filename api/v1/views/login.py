@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """Define the State API"""
+import bcrypt
 from flask import jsonify, request
 from flask_jwt_extended import create_access_token
 from werkzeug.exceptions import BadRequest
@@ -39,16 +40,14 @@ def teacher_login():
     if not teacher:
         return jsonify({'error': 'UNKNOWN TEACHER'}), 404
 
-    # Hashing the teacher's password and compare it with stored hash
-    # +of its original password.
-    dec_pass = sha256(data.get("password", "wrong").encode()).hexdigest()
-
-    if teacher.password == dec_pass:
-        # Generate JWT token for teacher with id and user_type.
+    if bcrypt.checkpw(data.get('password', '').encode('utf-8'),
+                      teacher.password.encode('utf-8')):
+        # generate JWT token for teacher with id and user_type.
         access_token = create_access_token(identity={'id': teacher.id,
                                                      'type': 'teacher'})
 
-        return jsonify({'access_token': access_token, 'user_id': teacher.id, 'class': 'Teacher'}), 200
+        return jsonify({'access_token': access_token,
+                        'user_id': teacher.id, 'class': 'Teacher'}), 200
     else:
         return jsonify({'status': 'ERROR'}), 401
 
@@ -82,15 +81,13 @@ def student_login():
     if not student:
         return jsonify({'error': 'UNKNOWN STUDENT'}), 404
 
-    # Hashing the student's password and compare it with stored hash
-    # +of its original password.
-    dec_pass = sha256(data.get("password", "wrong").encode()).hexdigest()
-
-    if student.password == dec_pass:
+    if bcrypt.checkpw(data.get('password', '').encode('utf-8'),
+                      student.password.encode('utf-8')):
         # Generate JWT token for student with additional information
         access_token = create_access_token(identity={'id': student.id,
                                                      'type': 'student'})
 
-        return jsonify({'access_token': access_token, 'user_id': student.id, 'class': 'Student'}), 200
+        return jsonify({'access_token': access_token,
+                        'user_id': student.id, 'class': 'Student'}), 200
     else:
         return jsonify({'status': 'ERROR'}), 401

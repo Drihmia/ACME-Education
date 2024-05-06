@@ -4,12 +4,12 @@ from flask import jsonify, request
 from werkzeug.exceptions import BadRequest
 from sqlalchemy.exc import IntegrityError
 from api.v1.views import app_views
-from models.student import Student
-from models.teacher import Teacher
-from models.institution import Institution
 from models.city import City
 from models.clas import Clas
+from models.institution import Institution
+from models.student import Student
 from models.subject import Subject
+from models.teacher import Teacher
 from models import storage
 
 
@@ -76,15 +76,16 @@ def students_list(id=None):
         # Check if the student's email not in our database.
         if storage.query(Student).filter(Student.email == data.
                                          get('email').strip()).first():
-            return jsonify({'error': "student exists"}), 400
+            return jsonify({'error': "student exists"}), 700
 
         # -----------------------------------------------------------------
 
-        # checking student's teacher exist in our database.
-        # teacher = storage.query(Teacher).filter(Teacher.email == data.
-        # get("teacher_email")).first()
-        # if not teacher:
-            # return jsonify({'error': "UNKNOWN TEACHER"}), 400
+        # Check if the student's email not in our database as a Teacher.
+        email = data.get('email').strip()
+        if storage.query(Teacher).filter(Teacher.email == email).first():
+            return jsonify(
+                {'error':
+                 f"{email} is already registered as a teacher"}), 409
 
         # -----------------------------------------------------------------
 
@@ -106,8 +107,8 @@ def students_list(id=None):
         else:
             return jsonify({'error': 'Missing confirm_password'}), 400
 
-        # if 'class_id' not in data.keys():
-        #     return jsonify({'error': 'Missing class_id'}), 400
+        if 'class_id' not in data.keys():
+            return jsonify({'error': 'Missing class_id'}), 400
 
         # Check if institution already exist, 1st by its id if it's provided
         # +or by its name.
@@ -125,16 +126,12 @@ def students_list(id=None):
                 institution = storage.query(Institution).filter(
                     Institution.name == institution_name,
                     Institution.city == city_name).first()
-                # if not institution:
-                # return jsonify({'error': "UNKNOWN INSTITUTION"}), 400
 
             elif 'city_id' in data.keys():
                 city_id = data.get('city_id').strip()
                 institution = storage.query(Institution).filter(
                     Institution.name == institution_name,
                     Institution.city_id == city_id).first()
-                # if not institution:
-                # return jsonify({'error': "UNKNOWN INSTITUTION"}), 400
             else:
                 return jsonify({'error': "Provide 'institution' name \
 with 'city' name or 'city_id', or you can provide the 'institution_id'"}), 400
@@ -159,9 +156,9 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
                             }), 400
 
         # Check if the class object exist.
-        # clas = storage.get(Clas, data.get('class_id'))
-        # if not clas:
-        #     return jsonify({'error': "UNKNOWN CLASS"}), 400
+        clas = storage.get(Clas, data.get('class_id'))
+        if not clas:
+            return jsonify({'error': "UNKNOWN CLASS"}), 400
 
         # This one item is not a list of items, should be institution.city.
         if institution.cities:
@@ -190,25 +187,23 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
         else:
             gender = 'N'
 
+        if 'phone_number' in data.keys():
+            phone_number = data.get('phone_number')
+        else:
+            phone_number = 'Null'
+
         try:
             student = Student(first_name=data.get('first_name'),
                               last_name=data.get('last_name'),
                               email=data.get('email'),
                               password=data.get('password'),
+                              class_id=data.get('class_id'),
                               institution_id=institution.id,
                               institution=institution.name,
                               teacher_email=teacher_email,
-                              city=city_name, gender=gender)
-        # try:
-        #     student = Student(first_name=data.get('first_name'),
-        #                       last_name=data.get('last_name'),
-        #                       email=data.get('email'),
-        #                       password=data.get('password'),
-        #                       class_id=data.get('class_id'),
-        #                       institution_id=institution.id,
-        #                       institution=institution.name,
-        #                       teacher_email=teacher_email,
-        #                       city=city_name, gender=gender)
+                              city=city_name,
+                              gender=gender,
+                              phone_number=phone_number)
 
             storage.new(student)
 
@@ -233,13 +228,15 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
         except IntegrityError:
             # storage.rollback()
             return jsonify({'error': 'exists'}), 400
-        # for subject in storage.all(Subject).values():
-        #     try:
-        #         subject.students.append(student)
-        #         storage.save()
-        #         subject.save()
-        #     except IntegrityError:
-        #         pass
+
+        for subject in storage.all(Subject).values():
+            try:
+                subject.students.append(student)
+                storage.save()
+                subject.save()
+            except IntegrityError:
+                pass
+
         try:
             storage.new(student)
             storage.save()
@@ -284,7 +281,7 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
 
         student_dict = student.to_dict()
         normal_attr = ['first_name', 'last_name', 'password', 'institution',
-                       'city']
+                       'city', 'phone_number', 'gender', 'teacher_email']
 
         for k, v in data.items():
             if k in normal_attr:
@@ -292,6 +289,8 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
                 # +and ignore 0 length values
                 if v == student_dict.get(k, "Not Found") or not len(v):
                     continue
+                if k == 'gender' and len(v) != 1:
+                    return jsonify({'error': 'gender must be M/F'}), 400
                 setattr(student, k.strip(), v.strip())
 
         if 'teachers_email' in data.keys():
@@ -299,8 +298,8 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
 
             # Make sure that teachers_email is an actual list.
             if not isinstance(teachers_email, list):
-                return jsonify({'error': "teachers_email must be a list"}
-                               ), 400
+                return jsonify({'error': "teachers_email must be a list \
+of teacher's IDs"}), 400
 
             # Making sure there's no duplicates.
             teachers_email = list(set(teachers_email))
@@ -309,9 +308,8 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
             student_teacher_ids = [t.id for t in student.teachers]
 
             for teacher_email in teachers_email:
-                teacher = storage.query(Teacher).filter(Teacher.email ==
-                                                        teacher_email
-                                                        ).first()
+                teacher = storage.query(Teacher).filter(
+                    Teacher.email == teacher_email).first()
                 # I'm not sure which policy  I should adopte,
                 # +forgiven or strict.
                 # I chose to be strict.
@@ -345,6 +343,17 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
                 student.lessons.extend(st_lessons)
 
         student.save()
+        student = student.to_dict()
+
+        if 'subjects' in student:
+            del student['subjects']
+
+        if 'lessons' in student:
+            del student['lessons']
+
+        if 'teachers' in student:
+            del student['teachers']
+
         return jsonify(student.to_dict()), 200
 
     # DELETE's method *******************************************************
