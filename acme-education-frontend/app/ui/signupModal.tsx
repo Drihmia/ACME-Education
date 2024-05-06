@@ -14,10 +14,13 @@ export const SignUpModal = ({
       <div className="relative w-full max-w-md h-48 p-4 md:p-8 flex flex-col justify-between gap-8 rounded-md bg-white">
         <div className="w-full">
           {response.status == "success" ? (
+            <>
             <h2 className="flex items-center gap-2 text-xl md:text-2xl font-bold text-green-700">
               <Icon color="green" icon="mdi:success-bold" />
               Signup succesfull
             </h2>
+            <p>Check your mail to verify your email</p>
+            </>
           ) : (
             <>
             <h2 className="flex items-center gap-2 text-xl md:text-2xl font-bold text-red-500">
@@ -28,10 +31,10 @@ export const SignUpModal = ({
             </>
           )}
         </div>
-        {response.status == "success" ?
-        <div onClick={() => navigation.push('/login')} className="min-w-24 h-8 self-end flex items-center justify-center p-2 bg-blue-200 hover:bg-blue-700 cursor-pointer rounded-md hover:text-white">
-          Continue to login
-        </div> :
+        {response.status != "success" &&
+        // <div onClick={() => navigation.push('/login')} className="min-w-24 h-8 self-end flex items-center justify-center p-2 bg-blue-200 hover:bg-blue-700 cursor-pointer rounded-md hover:text-white">
+        //   Continue to login
+        // </div> :
         <button onClick={closeModal} className="min-w-24 h-8 self-end flex items-center justify-center p-2 bg-blue-200 hover:bg-blue-700 rounded-md hover:text-white">
           Try again
         </button>}
