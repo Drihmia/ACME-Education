@@ -150,7 +150,7 @@ def lessons(id=None):
 
         # Check if public's attribute is provided.
         if 'public' in data.keys():
-            public = data.get('public').strip()
+            public = data.get('public')
         else:
             public = True
 

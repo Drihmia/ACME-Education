@@ -8,12 +8,12 @@ import { usePathname } from "next/navigation";
 // Map of links to display in the side navigation.
 // Depending on the size of the application, this would be stored in a database.
 const links = [
-  { name: "Home", href: "/dashboard", icon: <Icon icon="ion:home" /> },
-  {
-    name: "Institutions",
-    href: "/dashboard/institutions",
-    icon: <Icon icon="gridicons:institution" />,
-  },
+  { name: "Profile", href: "/dashboard", icon: <Icon icon="iconamoon:profile-circle-fill" /> },
+  // {
+  //   name: "Institutions",
+  //   href: "/dashboard/institutions",
+  //   icon: <Icon icon="gridicons:institution" />,
+  // },
   // {
   //   name: "Subjects",
   //   href: "/dashboard/subjects",

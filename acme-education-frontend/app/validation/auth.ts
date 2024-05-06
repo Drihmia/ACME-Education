@@ -37,10 +37,10 @@ export const signupSchema = yup.object().shape({
     .matches(emailRegex, "Email is invalid.")
     .test("is-valid-domain", "Invalid email address", validateEmailDomain)
     .required("Email address is required"),
-  telephone: yup
-    .string()
-    .matches(phoneRegex, "Invalid phone number")
-    .required("Phone number is required"),
+  // telephone: yup
+  //   .string()
+  //   .matches(phoneRegex, "Invalid phone number")
+  //   .required("Phone number is required"),
   password: yup
     .string()
     .matches(
@@ -54,12 +54,41 @@ export const signupSchema = yup.object().shape({
     .required("Please confirm your password"),
   institution: yup.string().required("Name of institution is required"),
   city: yup.string().required("Name of city is required"),
-  isTeacher: yup.string().oneOf(["true", "false"], "Terms must be accepted").required()
-  // terms: yup
-  //   .boolean()
-  //   .oneOf([true], "Terms must be accepted")
-  //   .required("Terms is required"),
+  isTeacher: yup.string().oneOf(["true", "false"], "Terms must be accepted").required(),
+  subjects: yup.array().of(yup.string())
 });
+
+export const updateSchema = yup.object().shape({
+  first_name: yup.string().required("First Name is required"),
+  last_name: yup.string().required("Last Name is required"),
+  email: yup
+    .string()
+    .email()
+    .matches(emailRegex, "Email is invalid.")
+    .test("is-valid-domain", "Invalid email address", validateEmailDomain)
+    .required("Email address is required"),
+  // telephone: yup
+  //   .string()
+  //   .matches(phoneRegex, "Invalid phone number")
+  //   .required("Phone number is required"),
+  institution: yup.string().required("Name of institution is required"),
+  city: yup.string().required("Name of city is required"),
+  subjects: yup.array().of(yup.string())
+});
+
+export const updatePasswordSchema = yup.object().shape({
+  password: yup
+    .string()
+    .matches(
+      passwordRegex,
+      "Password must be at least 8 characters and have at least one uppercase, one lowercase, a number and a special characters"
+    )
+    .required("Password is required"),
+  confirm_password: yup
+    .string()
+    .oneOf([yup.ref("password")], "Mismatched passwords")
+    .required("Please confirm your password"),
+})
 
 export const forgotPasswordSchema = yup.object().shape({
   email: yup

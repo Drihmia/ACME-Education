@@ -202,7 +202,7 @@ def teachers_list(id=None):
         # assign all optional subjects to teacher's object.
         # If subject does not exist, it will be ignored
         if 'subjects_id' in data.keys():
-            subjects_id = data.get('subjects_id').strip()
+            subjects_id = data.get('subjects_id')
 
             # Make sure that subjects_id is an actual list.
             if not isinstance(subjects_id, list):

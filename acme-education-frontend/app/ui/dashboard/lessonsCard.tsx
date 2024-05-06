@@ -2,6 +2,7 @@ import { deleteLesson } from "@/app/lib/fetch";
 import { lessonFormProps } from "@/app/types";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Link from "next/link";
+import { mutate } from "swr";
 
 interface lessonCardProps {
   index: number;
@@ -30,10 +31,18 @@ export const LessonCard = ({ index, lesson, openModal }: lessonCardProps) => {
         >
           <Icon icon="akar-icons:edit" />
         </Link>
-        <button onClick={async() => {
-            // "use server"
-            await deleteLesson(lesson.id!)
-          }} className="w-8 h-8 flex items-center justify-center p-2 text-white hover:bg-white hover:text-black rounded">
+        <button onClick={async () => {
+              if (confirm("Are you sure you delete this lesson?")) {
+                const res = await deleteLesson(lesson.id!);
+                // console.log(res);
+                if (res["error"]) {
+                  alert("Something went wrong.");
+                } else {
+                  mutate(`http://127.0.0.1:5000/api/v1/teachers/${lesson.teacher_id}/lessons`)
+                  alert("Lesson deleted");
+                }
+              }
+            }} className="w-8 h-8 flex items-center justify-center p-2 text-white hover:bg-white hover:text-black rounded">
           <Icon icon="material-symbols:delete-outline" />
         </button>
       </div>

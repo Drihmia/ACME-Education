@@ -18,6 +18,7 @@ import { useAuth } from "@/app/context/authContext";
 interface radioProps {
   label: string;
   name: string;
+  type: string;
   value: boolean;
 }
 
@@ -68,7 +69,7 @@ export const MyTextAndSelectInput = ({
   ClassAttributes<HTMLInputElement> &
   FieldHookConfig<string>) => {
   const [field, meta, helpers] = useField(props);
-  const [filteredData, setData] = useState<any[]>([]);
+  const [filteredData, setData] = useState<any[]>(data!);
   const [focused, setFocus] = useState(false);
 
   const openFocus = () => setFocus(true);
@@ -211,10 +212,10 @@ export const MySelect = ({
 //create your input component
 //in this case im defining the radio input
 //this component can be contained in another file
-export const InputField = ({ label, name, value }: radioProps) => {
+export const InputField = ({ label, name, value, type }: radioProps) => {
   return (
-    <label htmlFor={name} className="block font-normal">
-      <input type="radio" name={name} value={`${value}`} />
+    <label htmlFor={`${value}`} className="font-normal flex items-center gap-1">
+      <input id={`${value}`} type={type} name={name} value={`${value}`} />
       {label}
     </label>
   );
@@ -232,17 +233,18 @@ export const FieldSet = ({
   FieldHookConfig<string>) => {
   const [field, meta] = useField(props);
   return (
-    <div className="w-full">
+    <div className="w-full md:col-span-full">
       <label className="w-full font-medium">
         {label}
         {/* make sure the radios are contained in a fieldset */}
-        <fieldset {...field} {...props} className="w-full flex items-center gap-4">
+        <fieldset {...field} {...props} className="w-full grid grid-cols-2 gap-2 p-2">
           {options?.map((option, i) => (
             <InputField
               key={`${i}`}
               name={option.name}
               label={option.label}
               value={option.value}
+              type={option.type}
             />
           ))}
         </fieldset>
@@ -331,8 +333,8 @@ export const SignInForm = () => {
               label="Are you a Teacher or a Student?"
               name="isTeacher"
               options={[
-                { name: "isTeacher", label: "Teacher", value: true },
-                { name: "isTeacher", label: "Student", value: false },
+                { name: "isTeacher", label: "Teacher", value: true, type: "radio" },
+                { name: "isTeacher", label: "Student", value: false, type: "radio" },
               ]}
             />
             <button

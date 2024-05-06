@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { LessonCard } from "./lessonsCard";
 import { Icon } from "@iconify/react/dist/iconify.js";
@@ -6,6 +8,7 @@ import useSWR from "swr";
 import { LessonsSkeleton } from "../skeletons";
 import { fetcher } from "@/app/lib/fetch";
 import { lessonFormProps } from "@/app/types";
+import { useEffect, useState } from "react";
 
 export const Lessons = ({
   openModal,
@@ -14,15 +17,23 @@ export const Lessons = ({
 }) => {
   const { user } = useAuth()!;
 
-  const { data: lessonsData, error } = useSWR(
+  // const [lessons, setLessons] = useState<lessonFormProps[] | null>(null);
+
+  const { data: lessons, error } = useSWR(
     `http://127.0.0.1:5000/api/v1/teachers/${user?.user_id}/lessons`,
     fetcher,
     { suspense: true }
   );
 
-  if (!lessonsData) return <LessonsSkeleton />;
+  // useEffect(() => {
+  //   fetch(`http://127.0.0.1:5000/api/v1/teachers/${user?.user_id}/lessons`)
+  //     .then((res) => res.json())
+  //     .then((data) => setLessons(data));
+  // }, [user?.user_id]);
+
 
   if (error) return <p>Error while fetching data...</p>;
+  // if (!lessons) return <LessonsSkeleton />
 
   return (
     <div className="w-full grid gap-4">
@@ -39,15 +50,20 @@ export const Lessons = ({
             <Icon icon="mdi:add-bold" /> Publish New Lesson
           </Link>
         </div>
-        {lessonsData.length > 0 ? (
+        {lessons.length > 0 ? (
           <ul className="w-full flex flex-col gap-2 pt-4 pb-12">
             <li className="w-full grid grid-cols-[1fr_7fr_1fr] p-2 bg-blue-50 rounded-md">
               <span className="font-semibold">S/N</span>
               <span className="font-semibold">Title</span>
               <span className="font-semibold">Public</span>
             </li>
-            {lessonsData.map((lesson: lessonFormProps, i: number) => (
-              <LessonCard key={`${i}`} index={i} lesson={lesson} openModal={openModal} />
+            {lessons.map((lesson: lessonFormProps, i: number) => (
+              <LessonCard
+                key={`${i}`}
+                index={i}
+                lesson={lesson}
+                openModal={openModal}
+              />
             ))}
           </ul>
         ) : (

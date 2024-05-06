@@ -16,6 +16,14 @@ export interface institutionProps {
   __class__: string;
 }
 
+export interface subjectProps {
+  created_at: string;
+  id: string;
+  name: string;
+  updated_at: string;
+  __class__: string;
+}
+
 export interface siginProps {
   email: string;
   password: string;
