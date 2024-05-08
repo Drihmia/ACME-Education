@@ -8,9 +8,10 @@ interface lessonCardProps {
   index: number;
   lesson: lessonFormProps;
   openModal: (id: any) => void;
+  user_class: string
 }
 
-export const LessonCard = ({ index, lesson, openModal }: lessonCardProps) => {
+export const LessonCard = ({ index, lesson, openModal, user_class }: lessonCardProps) => {
   return (
     <li
       className={`group relative w-full grid grid-cols-[1fr_7fr_1fr] p-2 ${
@@ -21,7 +22,8 @@ export const LessonCard = ({ index, lesson, openModal }: lessonCardProps) => {
       <span className="group-hover:opacity-0">{index + 1}.</span>
       <span>{lesson.name}</span>
       <span>{lesson.public == true ? "Yes" : "No"}</span>
-      <div
+      { user_class == "Teacher" && (
+        <div
         onClick={(e) => e.stopPropagation()}
         className="hidden absolute top-0 left-2 h-full group-hover:flex items-center"
       >
@@ -34,7 +36,6 @@ export const LessonCard = ({ index, lesson, openModal }: lessonCardProps) => {
         <button onClick={async () => {
               if (confirm("Are you sure you delete this lesson?")) {
                 const res = await deleteLesson(lesson.id!);
-                // console.log(res);
                 if (res["error"]) {
                   alert("Something went wrong.");
                 } else {
@@ -46,6 +47,7 @@ export const LessonCard = ({ index, lesson, openModal }: lessonCardProps) => {
           <Icon icon="material-symbols:delete-outline" />
         </button>
       </div>
+      )}
     </li>
   );
 };

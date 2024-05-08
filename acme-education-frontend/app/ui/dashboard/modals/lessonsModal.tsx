@@ -1,3 +1,4 @@
+import { useAuth } from "@/app/context/authContext";
 import { deleteLesson } from "@/app/lib/fetch";
 import { lessonFormProps } from "@/app/types";
 import { Icon } from "@iconify/react/dist/iconify.js";
@@ -11,6 +12,8 @@ export const LessonModal = ({
   closeModal: () => void;
   item: lessonFormProps;
 }) => {
+  const { user } = useAuth()!;
+
   return (
     <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black/25">
       <div className="relative w-full max-w-2xl min-h-96 p-4 md:p-8 flex flex-col justify-between gap-8 rounded-md bg-white">
@@ -26,7 +29,6 @@ export const LessonModal = ({
           <p className="text-lg md:text-xl font-semibold">
             {item.institution_id}
           </p>
-          {/* <p className="md:text-lg font-medium">{item.}</p> */}
         </div>
         <article className="w-full">
           <h3 className="text-xl md:text-2xl font-bold">Description</h3>
@@ -35,32 +37,35 @@ export const LessonModal = ({
             Download lesson
           </Link>
         </article>
-        <div className="w-full self-end flex items-center gap-2">
-          <Link
-            href={`/dashboard/lessons/edit/${item.id}`}
-            className="w-24 h-8 flex items-center justify-center p-2 bg-blue-200 hover:bg-blue-700 rounded-md hover:text-white"
-          >
-            <Icon icon="akar-icons:edit" /> Edit
-          </Link>
-          <button
-            onClick={async () => {
-              if (confirm("Are you sure you delete this lesson?")) {
-                const res = await deleteLesson(item.id!);
-                console.log(res);
-                if (res["error"]) {
-                  alert("Something went wrong.");
-                } else {
-                  mutate(`http://127.0.0.1:5000/api/v1/teachers/${item.teacher_id}/lessons`)
-                  alert("Lesson deleted");
-                  closeModal();
+        {user?.class === "Teacher" && (
+          <div className="w-full self-end flex items-center gap-2">
+            <Link
+              href={`/dashboard/lessons/edit/${item.id}`}
+              className="w-24 h-8 flex items-center justify-center p-2 bg-blue-200 hover:bg-blue-700 rounded-md hover:text-white"
+            >
+              <Icon icon="akar-icons:edit" /> Edit
+            </Link>
+            <button
+              onClick={async () => {
+                if (confirm("Are you sure you delete this lesson?")) {
+                  const res = await deleteLesson(item.id!);
+                  if (res["error"]) {
+                    alert("Something went wrong.");
+                  } else {
+                    mutate(
+                      `http://127.0.0.1:5000/api/v1/teachers/${item.teacher_id}/lessons`
+                    );
+                    alert("Lesson deleted");
+                    closeModal();
+                  }
                 }
-              }
-            }}
-            className="w-24 h-8 flex items-center justify-center p-2 bg-red-200 hover:bg-red-700 rounded-md hover:text-white"
-          >
-            <Icon icon="material-symbols:delete-outline" /> Delete
-          </button>
-        </div>
+              }}
+              className="w-24 h-8 flex items-center justify-center p-2 bg-red-200 hover:bg-red-700 rounded-md hover:text-white"
+            >
+              <Icon icon="material-symbols:delete-outline" /> Delete
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

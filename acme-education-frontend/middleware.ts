@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const protectedRoutes = ['/dashboard']
+const teacherOnlyRoutes = ['/dashboard/lessons/add', '/dashboard/lessons/edit']
 const authRoutes = ['/', '/login', '/signup']
 
 
