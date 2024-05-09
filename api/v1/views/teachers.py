@@ -186,7 +186,21 @@ def teachers_list(id=None):
         except IntegrityError:
             return jsonify({'error': 'teacher exists'}), 700
 
-        return jsonify(teacher.to_dict()), 201
+        teacher = teacher.to_dict()
+
+        if 'subjects' in teacher:
+            del teacher['subjects']
+
+        if 'institutions' in teacher:
+            del teacher['institutions']
+
+        if 'classes' in teacher:
+            del teacher['classes']
+
+        if 'students' in teacher:
+            del teacher['students']
+
+        return jsonify(teacher), 201
 
     # PUT's method *******************************************************
     if request.method == 'PUT':
@@ -201,12 +215,26 @@ def teachers_list(id=None):
         if not data:
             return jsonify({'error': 'No data'}), 422
 
-        if 'password' in data.keys() and 'confirm_password' in data.keys():
-            if data.get('confirm_password').strip() != data.get(
-                    'password').strip():
-                return jsonify({'error': 'password do not match'}), 400
-            else:
-                del data['confirm_password']
+        if 'password' in data.keys() and 'confirm_password' not in data.keys():
+            del data['password']
+        elif 'password' not in data.keys() and 'confirm_password' in data.keys():
+            del data['confirm_password']
+        elif 'password' in data.keys() and 'confirm_password' in data.keys():
+            pwd = data.get('password')
+            c_pwd = data.get('confirm_password')
+
+            if not isinstance(pwd, str):
+                data.update({'password': '123'})
+
+            if not isinstance(c_pwd, str):
+                data.update({'confirm_password': '456'})
+
+            elif len(pwd) >= 8 and len(c_pwd) >= 8:
+                if data.get('confirm_password').strip() != data.get(
+                        'password').strip():
+                    return jsonify({'error': 'password do not match'}), 400
+                else:
+                    del data['confirm_password']
 
         teacher = storage.get(Teacher, id)
         if not teacher:
@@ -220,6 +248,13 @@ def teachers_list(id=None):
             if k in normal_attr:
                 # Accept only attr that already part of object
                 # +and ignore 0 length values.
+                if not isinstance(v, str):
+                    try:
+                        v = str(v)
+                    except TypeError as e:
+                        print(e)
+                        continue
+
                 if v == tech_dict.get(k, "Not Found") or not len(v):
                     continue
                 if k == 'gender' and len(v) != 1:

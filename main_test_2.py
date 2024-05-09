@@ -212,25 +212,25 @@ list_objects.extend(class_list)
 teacher_1 = Teacher(first_name='Redouane', last_name='DRIHMIA',
                     email='red1@gmail.com', password='red1',
                     institution=inst_1.name, city=inst_1.city, gender='M',
-                    phone_number='+212683984948')
+                    phone_number='+212683984948', main_subject=PC.name)
 teacher_1.save()
 
 teacher_2 = Teacher(first_name='DRIHMIA', last_name='Redouane',
                     email='red2@gmail.com', password='red2',
                     institution=inst_11.name, city=inst_11.city, gender='M',
-                    phone_number='+2126123456452')
+                    phone_number='+2126123456452', main_subject=PH.name)
 teacher_2.save()
 
 teacher_3 = Teacher(first_name='OMER', last_name='Mohamed',
                     email='omer1@gmail.com', password='omer1',
                     institution=inst_1.name, city=inst_1.city, gender='M',
-                    phone_number='+212698765432')
+                    phone_number='+212698765432', main_subject=HG.name)
 teacher_3.save()
 
 teacher_4 = Teacher(first_name='OMER', last_name='OMER',
                     email='omer2@gmail.com', password='omer2',
                     institution=inst_2.name, city=inst_2.city, gender='M',
-                    phone_number='+212610928374')
+                    phone_number='+212610928374', main_subject=EN.name)
 teacher_4.save()
 
 # set relations with teacher's objects.
@@ -308,7 +308,11 @@ list_objects.extend(student_list)
 # set relations with student's objects.
 # With teachers.
 teacher_1.students.extend([Marwan, Hicham, Fatima])
+teacher_1.save()
+print(teacher_1.students)
+teacher_2.students.extend([Marwan, Fatima])
 teacher_2.students.extend([Yasmine])
+teacher_2.save()
 # With subjects.
 for sub in subject_list:
     sub.students.extend(student_list)
@@ -327,7 +331,9 @@ cc_less_1 = Lesson(name='Periodic Classification of Chemical Elements',
                    description='lesson N6 for my student related to Chemistry',
                    # institution_id=inst_1.id,
                    subject_id=PC.id,
-                   teacher_id=teacher_1.id)
+                   subject=PC.name,
+                   teacher_id=teacher_1.id,
+                   teacher=teacher_1.first_name + ' ' + teacher_1.last_name)
 cc_less_1.save()
 
 
@@ -338,8 +344,10 @@ cc_less_2 = Lesson(name='Direct electric current',
                    description='lesson N6 for my student related to Physics',
                    # institution_id=inst_1.id,
                    subject_id=PC.id,
+                   subject=PC.name,
                    teacher_id=teacher_1.id,
-                   public=False)
+                   public=False,
+                   teacher=teacher_1.first_name + ' ' + teacher_1.last_name)
 cc_less_2.save()
 
 cc_lesson_list = [cc_less_1, cc_less_2]
@@ -352,7 +360,9 @@ f_less_1 = Lesson(name='Magnetic Field Chapter',
                   description='lesson 11 for my 1st bac student',
                   # institution_id=inst_1.id,
                   subject_id=PC.id,
-                  teacher_id=teacher_1.id)
+                   subject=PC.name,
+                  teacher_id=teacher_1.id,
+                  teacher=teacher_1.first_name + ' ' + teacher_1.last_name)
 f_less_1.save()
 
 idd = '14vaHIxaq3OdcLlphJkHV0mmnIriUUW8C'
@@ -362,8 +372,10 @@ f_less_2 = Lesson(name='Laplace\'s Force - out of the curriculum',
                   description='lesson 12 for my 1st bac student',
                   # institution_id=inst_2.id,
                   subject_id=PC.id,
+                   subject=PC.name,
                   teacher_id=teacher_1.id,
-                  public=False)
+                  public=False,
+                  teacher=teacher_1.first_name + ' ' + teacher_1.last_name)
 f_less_2.save()
 
 f_lesson_list = [f_less_1, f_less_2]
@@ -407,6 +419,7 @@ for clss in class_list:
     elif clss.name == '2BAC':
         # clss.teachers.extend([teacher_3, teacher_4])
         pass
+    clss.save()
 # **********************************************
 
 # for subject in subject_list:

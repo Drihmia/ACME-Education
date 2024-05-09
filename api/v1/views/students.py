@@ -37,12 +37,14 @@ def students_list(id=None):
 
         the 1st example is faster
 
-    PUT: Update first_name, last_name, password, and list of  email teachers
+    PUT: Update first_name, last_name, password, and list of  email teachers...
 
-        data = {'first_name', 'last_name', 'password',
+        data = {'first_name', 'last_name', 'password', institution, city,
+                'phone number', 'gender', 'confirm_password'**,
                 'teachers_email': list of email}
 
-        all those attributes are optional.
+        ** confirm_password is required if password is provided.
+        all those attributes are optional except **.
     """
 
     # GET's method *******************************************************
@@ -212,12 +214,12 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
             if teacher:
                 student.lessons.extend(teacher.lessons)
 
-                for subject in teacher.subjects:
-                    subject.students.append(student)
-                    try:
-                        subject.save()
-                    except IntegrityError:
-                        storage.rollback()
+                #for subject in teacher.subjects:
+                    # subject.students.append(student)
+                    # try:
+                        # subject.save()
+                    # except IntegrityError:
+                        # storage.rollback()
 
                 teacher.students.append(student)
                 try:
@@ -229,10 +231,11 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
             # storage.rollback()
             return jsonify({'error': 'exists'}), 400
 
+        # Assign all subject to student's profile.
         for subject in storage.all(Subject).values():
             try:
                 subject.students.append(student)
-                storage.save()
+                # storage.save()
                 subject.save()
             except IntegrityError:
                 pass
@@ -253,6 +256,16 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
         student = student.to_dict()
         if 'institutions' in student:
             del student['institutions']
+
+        if 'lessons' in student:
+            del student['lessons']
+
+        if 'teachers' in student:
+            del student['teachers']
+
+        if 'subjects' in student:
+            del student['subjects']
+
         return jsonify(student), 201
 
     # PUT's method *******************************************************
@@ -268,12 +281,26 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
         if not data:
             return jsonify({'error': 'No data'}), 422
 
-        if 'password' in data.keys() and 'confirm_password' in data.keys():
-            if data.get('confirm_password').strip() != data.get(
-                    'password').strip():
-                return jsonify({'error': 'password do not match'}), 400
-            else:
-                del data['confirm_password']
+        if 'password' in data.keys() and 'confirm_password' not in data.keys():
+            del data['password']
+        elif 'password' not in data.keys() and 'confirm_password' in data.keys():
+            del data['confirm_password']
+        elif 'password' in data.keys() and 'confirm_password' in data.keys():
+            pwd = data.get('password')
+            c_pwd = data.get('confirm_password')
+
+            if not isinstance(pwd, str):
+                data.update({'password': '123'})
+
+            if not isinstance(c_pwd, str):
+                data.update({'confirm_password': '456'})
+
+            elif len(pwd) >= 8 and len(c_pwd) >= 8:
+                if data.get('confirm_password').strip() != data.get(
+                        'password').strip():
+                    return jsonify({'error': 'password do not match'}), 400
+                else:
+                    del data['confirm_password']
 
         student = storage.get(Student, id)
         if not student:
@@ -353,6 +380,9 @@ of teacher's IDs"}), 400
 
         if 'teachers' in student:
             del student['teachers']
+
+        if 'institutions' in student:
+            del student['institutions']
 
         return jsonify(student.to_dict()), 200
 
