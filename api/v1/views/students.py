@@ -384,7 +384,7 @@ of teacher's IDs"}), 400
         if 'institutions' in student:
             del student['institutions']
 
-        return jsonify(student.to_dict()), 200
+        return jsonify(student), 200
 
     # DELETE's method *******************************************************
     if request.method == 'DELETE':
@@ -402,8 +402,12 @@ of teacher's IDs"}), 400
 def students_list_lessons(id):
     """return a list of all  lessons by student"""
 
-    # lessons = storage.query(Lesson).filter(Lesson.student_id == id).all()
-    lessons = storage.query(Student).filter(Student.id == id).all()[-1].lessons
+    student = storage.query(Student).filter(Student.id == id).first()
+    if student:
+        lessons = student.lessons
+    else:
+        lessons = []
+    lessons = student.lessons if student else []
 
     return jsonify([lesson.to_dict() for lesson in lessons]), 200
 

@@ -74,9 +74,10 @@ def hash_password_before_insert_or_update(_, __, student):
     """Hashing the password before store it into database"""
     if student.password is not None and isinstance(student.password, str):
         # Generate a salt and hash the password using bcrypt
-        salt = bcrypt.gensalt()
-        student.password = bcrypt.hashpw(
-            student.password.encode('utf-8'), salt)
+        if len(student.password) != 60:
+            salt = bcrypt.gensalt()
+            student.password = bcrypt.hashpw(
+                student.password.encode('utf-8'), salt)
 
 
 event.listen(Student, 'before_insert', hash_password_before_insert_or_update)
