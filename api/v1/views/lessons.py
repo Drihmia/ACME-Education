@@ -6,10 +6,11 @@ import uuid
 from werkzeug.exceptions import BadRequest
 from api.v1.views import app_views
 from models import storage
-from models.lesson import Lesson
-from models.teacher import Teacher
 from models.clas import Clas
 from models.institution import Institution
+from models.lesson import Lesson
+from models.teacher import Teacher
+from models.subject import Subject
 
 
 @app_views.route("/lessons", methods=["GET", "POST"],
@@ -100,6 +101,7 @@ def lessons(id=None):
         teacher = storage.get(Teacher, teacher_id)
         if not teacher:
             return jsonify({'error': "UNKNOWN TEACHER"}), 403
+        teacher_fullname = teacher.first_name + ' ' + teacher.last_name.upper()
 
         subject_id = data.get('subject_id').strip()
         teacher_subject_ids = [sub.id for sub in teacher.subjects if sub]
@@ -142,6 +144,10 @@ def lessons(id=None):
         download_link = data.get('download_link').strip()
         subject_id = data.get('subject_id').strip()
 
+        subject_obj = storage.get(Subject, subject_id)
+        if not subject_obj:
+            return jsonify ({'error': 'UNKNOWN SUBJECT'}), 403
+
         # Check if description's attribute is provided.
         if 'description' in data.keys():
             description = data.get('description').strip()
@@ -157,7 +163,9 @@ def lessons(id=None):
         try:
             lesson = Lesson(name=name, download_link=download_link,  # A must
                             subject_id=subject_id, teacher_id=teacher_id,
-                            description=description, public=public)  # Option.
+                            description=description, public=public,  # Option.
+                            subject=subject_obj.name,
+                            teacher=teacher_fullname)
         except IntegrityError:
             storage.rollback()
             return jsonify({'error': 'lesson exists'}), 400
@@ -250,25 +258,29 @@ def lessons(id=None):
             except IntegrityError:
                 storage.rollback()
 
-        # Assign lesson to all teacher's lesson that belong to the classes
+        # Assign lesson to all teacher's student that belong to the classes
         # +subjects and institutions chosen by the teacher.
         for student in teacher.students:
             student_subjects_ids = [sub.id for sub in student.subjects]
+            print(student.last_name)
 
-            if lesson.subjects.id not in student_subjects_ids:
-                continue
-            if not student.institutions:
-                continue
+            # if lesson.subjects.id not in student_subjects_ids:
+                # continue
+
+            # I have ignored this to align with frontend.
+            # Will be activated after MVP.
+            # if not student.institutions:
+                # continue
 
             # Student has only 1 institution, please mind the 's'.
             student_id = student.institutions.id
-            teacher_institutions_ids = [i.id for i in institutions if i]
-            if student_id not in teacher_institutions_ids:
-                continue
+            # teacher_institutions_ids = [i.id for i in institutions if i]
+            # if student_id not in teacher_institutions_ids:
+                # continue
 
-            teacher_classes_ids = [c.id for c in classes if c]
-            if student_id not in teacher_classes_ids:
-                continue
+#             teacher_classes_ids = [c.id for c in classes if c]
+            # if student_id not in teacher_classes_ids:
+                # continue
             student.lessons.append(lesson)
             try:
                 student.save()
@@ -281,22 +293,26 @@ def lessons(id=None):
         except IntegrityError:
             storage.rollback()
 
-        # try:
-        # storage.save()
-        # except IntegrityError as f:
-        # storage.rollback()
-        # f = str(f)
-        # if 'Duplicate' in f:
-        # return jsonify({'error': 'lesson exists'}), 400
-        # for s_id in must_ids:
-        # if s_id in f[:f.find('REFERENCES')]:
-        # return jsonify({'error': f'unknown: {s_id}'}), 400
-        # if 'Cannot add or update a child row' in str(f):
-        # f = str(f)[str(f).find('CONSTRAINT'):].split()[4][2:-2]
-        # return jsonify({'error': f'unknown: {f}'}), 400
-        # return jsonify({'error': 'lesson exists'}), 400
+        lesson = lesson.to_dict()
 
-        return jsonify(lesson.to_dict()), 201
+        # Remove all list of objects assigned to this lesson
+        # +by many to many or one to many or many to one relationship.
+        if 'classes' in lesson:
+            del lesson['classes']
+
+        if 'subjects' in lesson:
+            del lesson['subjects']
+
+        if 'students' in lesson:
+            del lesson['students']
+
+        if 'teachers' in lesson:
+            del lesson['teachers']
+
+        if 'institutions' in lesson:
+            del lesson['institutions']
+
+        return jsonify(lesson), 201
 
     # PUT's method *******************************************************
     if request.method == 'PUT':
@@ -326,7 +342,26 @@ def lessons(id=None):
                 setattr(lesson, k.strip(), v.strip())
 
         lesson.save()
-        return jsonify(lesson.to_dict()), 200
+
+        # Remove all list of objects assigned to this lesson
+        # +by many to many or one to many or many to one relationship.
+        if 'classes' in lesson:
+            del lesson['classes']
+
+        if 'subjects' in lesson:
+            del lesson['subjects']
+
+        if 'students' in lesson:
+            del lesson['students']
+
+        if 'teachers' in lesson:
+            del lesson['teachers']
+
+        if 'institutions' in lesson:
+            del lesson['institutions']
+
+
+        return jsonify(lesson), 200
 
     # DELETE's method *******************************************************
     if request.method == 'DELETE':

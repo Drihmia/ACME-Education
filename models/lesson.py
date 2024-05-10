@@ -23,6 +23,10 @@ class Lesson(BaseModel, Base):
     description = Column(String(1024, collation='utf8mb4_unicode_ci'),
                          nullable=True)
     public = Column(Boolean, nullable=True, default=True)
+    subject = Column(String(64, collation='utf8mb4_unicode_ci'),
+                  nullable=True)
+    teacher = Column(String(64, collation='utf8mb4_unicode_ci'),
+                  nullable=True)
 
     # Many to one relationship's attributes.
     # institution_id = Column(String(60), ForeignKey('institutions.id'),

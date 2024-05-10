@@ -57,7 +57,7 @@ class Teacher(BaseModel, Base):
                                 viewonly=True)
     classes = relationship('Clas', secondary=clas_teacher, viewonly=True)
     students = relationship('Student', secondary=teacher_student,
-                            viewonly=True)
+                            viewonly=False)
 
 
 def hash_password_before_insert_or_update(_, __, teacher):
