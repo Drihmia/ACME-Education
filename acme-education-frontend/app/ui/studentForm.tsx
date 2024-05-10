@@ -37,8 +37,14 @@ export const StudentForm = ({
   const [institutionsData, setInstitutionsData] = useState<institutionProps[]>(
     []
   );
+  const [classes, setClasses] = useState<any[]>([]);
+  const [teachers, setTeachers] = useState<any[]>([]);
 
   const [selectedCity, setCity] = useState<selectedCityProps>({
+    status: false,
+    id: "",
+  });
+  const [selectedInstitute, setInstitute] = useState<selectedCityProps>({
     status: false,
     id: "",
   });
@@ -49,17 +55,54 @@ export const StudentForm = ({
         `http://127.0.0.1:5000/api/v1/cities/${selectedCity.id}/institutions`
       )
         .then((res) => res.json())
-        .then((data) => setInstitutionsData(data));
+        .then((data) => {
+          setInstitutionsData(data);
+        });
     } else {
       setInstitutionsData([]);
     }
   }, [selectedCity]);
 
-  const checkValue = (status: boolean, id?: string) => {
-    if (status) {
-      setCity({ status: true, id: id! });
+  useEffect(() => {
+    (async () => {
+      if (selectedInstitute.id != "") {
+        const fetchSchoolClasses = fetch(
+          `http://127.0.0.1:5000/api/v1/institutions/${selectedInstitute.id}/classes`
+        ).then((res) => res.json());
+        const fetchSchoolTeachers = fetch(
+          `http://127.0.0.1:5000/api/v1/institutions/${selectedInstitute.id}/teachers`
+        ).then((res) => res.json());
+
+        const [schoolClasses, schoolTeachers] = await Promise.all([
+          fetchSchoolClasses,
+          fetchSchoolTeachers,
+        ]);
+        setClasses(schoolClasses);
+        setTeachers(schoolTeachers);
+      } else {
+        setClasses([]);
+        setTeachers([]);
+      }
+    })();
+  }, [selectedInstitute]);
+
+  const checkValue = (value: string) => {
+    if (value === "city") {
+      return (status: boolean, id?: string) => {
+        if (status) {
+          setCity({ status: true, id: id! });
+        } else {
+          setCity({ status: false, id: "" });
+        }
+      };
     } else {
-      setCity({ status: false, id: "" });
+      return (status: boolean, id?: string) => {
+        if (status) {
+          setInstitute({ status: true, id: id! });
+        } else {
+          setInstitute({ status: false, id: "" });
+        }
+      };
     }
   };
 
@@ -71,7 +114,6 @@ export const StudentForm = ({
   if (!citiesData) return <LoadingSkeleton />;
 
   const submitForm = async (values: studentSignupProps) => {
-    console.log("clicked");
     const city = citiesData?.find(
       (item: cityProps) => item.name == values.city
     );
@@ -81,6 +123,17 @@ export const StudentForm = ({
       (item: institutionProps) => item.name == values.institution
     );
     if (institution) values.institution_id = institution.id;
+
+
+    const clas = classes.find((item: any) => item.name == values.class);
+    if (clas) values.class_id = clas.id;
+
+    if (action === "update") {
+      delete values.password
+      delete values.confirm_password
+    }
+
+    console.log(values);
 
     try {
       const response = await fetch(
@@ -157,92 +210,101 @@ export const StudentForm = ({
             confirm_password: "",
             institution: action == "update" ? profile.institution : "",
             city: action == "update" ? profile.city : "",
-            gender: "",
-            class_id: action == "update" ? profile.class_id : "",
-            teacher_email: "",
+            gender: action == "update" ? profile.gender : "",
+            class: action == "update" ? profile.class.name : "",
+            teacher_email: action == "update" ? profile.teacher_email : "",
           }}
           validationSchema={
             action === "update" ? updateStudentSchema : signupStudentSchema
           }
           onSubmit={(values, { setSubmitting }) => {
-            console.log("submitting values");
-            
             submitForm(values);
             setSubmitting(false);
           }}
         >
-          <Form className="w-full flex flex-col md:grid md:grid-cols-2 md:gap-4 lg:gap-6 items-center p-4 md:p-8 lg:px-16">
-            <MyTextInput
-              label="First Name"
-              name="first_name"
-              type="text"
-              placeholder="John"
-            />
-            <MyTextInput
-              label="Last Name"
-              name="last_name"
-              type="text"
-              placeholder="Doe"
-            />
-            <MyTextInput
-              label="Email Address"
-              name="email"
-              type="email"
-              placeholder="you@example.com"
-            />
-            <MyTextInput
-              label="Phone Number"
-              name="phone_number"
-              type="number"
-              placeholder="+2334045002001"
-            />
-            <MyTextInput
-              label="Class ID"
-              name="class_id"
-              type="text"
-              placeholder=""
-              disabled={profile ? true : false}
-            />
-            <MyTextAndSelectInput
-              label="City"
-              name="city"
-              data={citiesData}
-              checkValue={checkValue}
-              type="text"
-              placeholder="e.g MarsCity"
-              disabled={profile ? true : false}
-            />
-            <MyTextAndSelectInput
-              label="Name of Institution"
-              name="institution"
-              data={institutionsData}
-              type="text"
-              disabled={!selectedCity.status}
-              placeholder="e.g Insitute of Science and Technology"
-            />
-            {action === "signup" && (
-              <>
+          {({ values }) => {
+            return (
+              <Form className="w-full flex flex-col md:grid md:grid-cols-2 md:gap-4 lg:gap-6 items-center p-4 md:p-8 lg:px-16">
                 <MyTextInput
-                  label="Teacher's Email"
+                  label="First Name"
+                  name="first_name"
+                  type="text"
+                  placeholder="John"
+                />
+                <MyTextInput
+                  label="Last Name"
+                  name="last_name"
+                  type="text"
+                  placeholder="Doe"
+                />
+                <MyTextInput
+                  label="Email Address"
+                  name="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  disabled={profile ? true : false}
+                />
+                <MyTextInput
+                  label="Phone Number"
+                  name="phone_number"
+                  type="string"
+                  placeholder="+2334045002001"
+                />
+                {action === "signup" && (
+                  <>
+                    <MyTextInput
+                      label="Password"
+                      name="password"
+                      type="password"
+                      placeholder=""
+                    />
+                    <MyTextInput
+                      label="Confirm Password"
+                      name="confirm_password"
+                      type="password"
+                      placeholder=""
+                    />
+                  </>
+                )}
+                <MyTextAndSelectInput
+                  label="City"
+                  name="city"
+                  data={citiesData}
+                  checkValue={checkValue("city")}
+                  type="text"
+                  placeholder="e.g MarsCity"
+                  disabled={profile ? true : false}
+                />
+                <MyTextAndSelectInput
+                  label="Name of Institution"
+                  name="institution"
+                  data={institutionsData}
+                  checkValue={checkValue("institute")}
+                  type="text"
+                  disabled={action === "signup" ? !selectedCity.status : true}
+                  placeholder="e.g Insitute of Science and Technology"
+                />
+                <MyTextAndSelectInput
+                  label="Class"
+                  name="class"
+                  data={classes}
+                  type="text"
+                  placeholder="Class 1"
+                  disabled={
+                    action === "signup" ? !selectedInstitute.status : true
+                  }
+                />
+                <MyTextAndSelectInput
+                  label="Teacher"
                   name="teacher_email"
                   type="email"
-                  placeholder=""
+                  data={teachers}
+                  placeholder="teacher@example.com"
+                  disabled={
+                    action === "signup" ? !selectedInstitute.status : true
+                  }
                 />
-                <MyTextInput
-                  label="Password"
-                  name="password"
-                  type="password"
-                  placeholder=""
-                />
-                <MyTextInput
-                  label="Confirm Password"
-                  name="confirm_password"
-                  type="password"
-                  placeholder=""
-                />
-              </>
-            )}
-            <FieldSet
+                <FieldSet
                   label="Gender"
                   name="gender"
                   options={[
@@ -251,41 +313,43 @@ export const StudentForm = ({
                       label: "Male",
                       value: "M",
                       type: "radio",
+                      checked: values.gender === "M" ? true : false,
                     },
                     {
                       name: "gender",
                       label: "Female",
                       value: "F",
                       type: "radio",
+                      checked: values.gender === "F" ? true : false,
                     },
                   ]}
                 />
-            <div className="flex items-center gap-4 justify-center md:col-span-full">
-              <button
-              onClick={() => console.log('clicked')
-              }
-                type="submit"
-                className="w-40 py-2 mt-8 bg-blue-100 text-black hover:text-white hover:bg-blue-700 capitalize rounded-xl"
-              >
-                {action === "signup" ? "sign up" : "update"}
-              </button>
-              {action === "update" && (
-                <div
-                  onClick={() => {
-                    if (
-                      confirm("Are you sure you want to go cancel?") &&
-                      close
-                    ) {
-                      close();
-                    }
-                  }}
-                  className="w-40 mt-8 flex items-center gap-1 justify-center p-2 bg-slate-200 hover:bg-black rounded-xl hover:text-white cursor-pointer"
-                >
-                  <Icon icon="pajamas:cancel" /> Cancel
+                <div className="flex items-center gap-4 justify-center md:col-span-full">
+                  <button
+                    type="submit"
+                    className="w-40 py-2 mt-8 bg-blue-100 text-black hover:text-white hover:bg-blue-700 capitalize rounded-xl"
+                  >
+                    {action === "signup" ? "sign up" : "update"}
+                  </button>
+                  {action === "update" && (
+                    <div
+                      onClick={() => {
+                        if (
+                          confirm("Are you sure you want to go cancel?") &&
+                          close
+                        ) {
+                          close();
+                        }
+                      }}
+                      className="w-40 mt-8 flex items-center gap-1 justify-center p-2 bg-slate-200 hover:bg-black rounded-xl hover:text-white cursor-pointer"
+                    >
+                      <Icon icon="pajamas:cancel" /> Cancel
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </Form>
+              </Form>
+            );
+          }}
         </Formik>
       </div>
       {isModal && action === "signup" && (

@@ -2,18 +2,25 @@
 
 import Link from "next/link";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { lessonFormProps } from "@/app/types";
+import { lessonFormProps, subjectProps } from "@/app/types";
 import { LessonCard } from "./dashboard/lessonsCard";
+import { useState } from "react";
+import { FilterForm } from "./filterForm";
 
 export const TeacherLessonsView = ({
   user_class,
   lessons,
+  subjects,
   openModal,
 }: {
   user_class: string;
   lessons: lessonFormProps[];
+  subjects: subjectProps[];
   openModal: (val: string) => void;
 }) => {
+  const [filteredLessons, setFilteredLessons] =
+    useState<lessonFormProps[]>(lessons);
+
   return (
     <div className="w-full flex flex-col gap-2">
       <div className="w-full flex items-center justify-between py-4">
@@ -27,14 +34,15 @@ export const TeacherLessonsView = ({
           <Icon icon="mdi:add-bold" /> Publish New Lesson
         </Link>
       </div>
-      {lessons.length > 0 ? (
+      <FilterForm subjects={subjects} lessons={lessons} setLessons={setFilteredLessons} />
+      {filteredLessons.length > 0 ? (
         <ul className="w-full flex flex-col gap-2 pt-4 pb-12">
           <li className="w-full grid grid-cols-[1fr_7fr_1fr] p-2 bg-blue-50 rounded-md">
             <span className="font-semibold">S/N</span>
             <span className="font-semibold">Title</span>
             <span className="font-semibold">Public</span>
           </li>
-          {lessons.map((lesson: lessonFormProps, i: number) => (
+          {filteredLessons.map((lesson: lessonFormProps, i: number) => (
             <LessonCard
               key={`${i}`}
               index={i}

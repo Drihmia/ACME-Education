@@ -157,7 +157,8 @@ export const TeacherForm = ({
             confirm_password: "",
             institution: action == "update" ? profile.institution : "",
             city: action == "update" ? profile.city : "",
-            gender: ""
+            gender: action == "update" ? profile.gender : "",
+            subjects: action == "update" ? profile.subjects.map((sub: any) => sub.id) : [],
           }}
           validationSchema={action === "update" ? updateTeacherSchema : signupTeacherSchema}
           onSubmit={(values, { setSubmitting }) => {
@@ -165,121 +166,130 @@ export const TeacherForm = ({
             setSubmitting(false);
           }}
         >
-          <Form className="w-full flex flex-col md:grid md:grid-cols-2 md:gap-4 lg:gap-6 items-center p-4 md:p-8 lg:px-16">
-            <MyTextInput
-              label="First Name"
-              name="first_name"
-              type="text"
-              placeholder="John"
-            />
-            <MyTextInput
-              label="Last Name"
-              name="last_name"
-              type="text"
-              placeholder="Doe"
-            />
-            <MyTextInput
-              label="Email Address"
-              name="email"
-              type="email"
-              placeholder="you@example.com"
-            />
-            <MyTextInput
-              label="Phone Number"
-              name="phone_number"
-              type="number"
-              placeholder="+2334045002001"
-            />
-            {action === "signup" && (
-              <>
+          {({ values }) => {
+            return (
+              (
+                <Form className="w-full flex flex-col md:grid md:grid-cols-2 md:gap-4 lg:gap-6 items-center p-4 md:p-8 lg:px-16">
                 <MyTextInput
-                  label="Password"
-                  name="password"
-                  type="password"
-                  placeholder=""
+                  label="First Name"
+                  name="first_name"
+                  type="text"
+                  placeholder="John"
                 />
                 <MyTextInput
-                  label="Confirm Password"
-                  name="confirm_password"
-                  type="password"
-                  placeholder=""
+                  label="Last Name"
+                  name="last_name"
+                  type="text"
+                  placeholder="Doe"
+                />
+                <MyTextInput
+                  label="Email Address"
+                  name="email"
+                  type="email"
+                  placeholder="you@example.com"
+                />
+                <MyTextInput
+                  label="Phone Number"
+                  name="phone_number"
+                  type="number"
+                  placeholder="+2334045002001"
+                />
+                {action === "signup" && (
+                  <>
+                    <MyTextInput
+                      label="Password"
+                      name="password"
+                      type="password"
+                      placeholder=""
+                    />
+                    <MyTextInput
+                      label="Confirm Password"
+                      name="confirm_password"
+                      type="password"
+                      placeholder=""
+                    />
+                  </>
+                )}
+                <MyTextAndSelectInput
+                  label="City"
+                  name="city"
+                  data={citiesData}
+                  checkValue={checkValue}
+                  type="text"
+                  placeholder="e.g MarsCity"
+                  disabled={profile ? true : false}
+                />
+                <MyTextAndSelectInput
+                  label="Name of Institution"
+                  name="institution"
+                  data={institutionsData}
+                  type="text"
+                  disabled={!selectedCity.status}
+                  placeholder="e.g Insitute of Science and Technology"
                 />
                 <FieldSet
-                label="Gender"
-                name="gender"
-                disabled={profile ? true : false}
-                options={[
-                  {
-                    name: "gender",
-                    label: "Male",
-                    value: "M",
-                    type: "radio",
-                  },
-                  {
-                    name: "gender",
-                    label: "Female",
-                    value: "F",
-                    type: "radio",
-                  },
-                ]}
-              />
-              </>
-            )}
-            <MyTextAndSelectInput
-              label="City"
-              name="city"
-              data={citiesData}
-              checkValue={checkValue}
-              type="text"
-              placeholder="e.g MarsCity"
-              disabled={profile ? true : false}
-            />
-            <MyTextAndSelectInput
-              label="Name of Institution"
-              name="institution"
-              data={institutionsData}
-              type="text"
-              disabled={!selectedCity.status}
-              placeholder="e.g Insitute of Science and Technology"
-            />
-            {action === "update" && subjectsList && (
-              <FieldSet
-                label="Subjects"
-                name="subjects_id"
-                options={subjectsList.map((sub: any) => {
-                  const newSub = { ...sub };
-                  newSub.label = sub.name;
-                  newSub.name = "subjects_id";
-                  newSub.value = sub.id;
-                  newSub.type = "checkbox";
-                  return newSub;
-                })}
-              />
-            )}
-            <div className="flex items-center gap-4 justify-center md:col-span-full">
-              <button
-                type="submit"
-                className="w-40 py-2 mt-8 bg-blue-100 text-black hover:text-white hover:bg-blue-700 capitalize rounded-xl"
-              >
-                {action === "signup" ? "sign up" : "update"}
-              </button>
-              {action === "update" && (
-                <div
-                  onClick={() => {
-                    if (
-                      confirm("Are you sure you want to go cancel?") &&
-                      close
-                    ) {
-                      close();
-                    }
-                  }}
-                  className="w-40 mt-8 flex items-center gap-1 justify-center p-2 bg-slate-200 hover:bg-black rounded-xl hover:text-white cursor-pointer"
-                >
-                  <Icon icon="pajamas:cancel" /> Cancel
+                    label="Gender"
+                    name="gender"
+                    disabled={profile ? true : false}
+                    options={[
+                      {
+                        name: "gender",
+                        label: "Male",
+                        value: "M",
+                        type: "radio",
+                        checked: values.gender === "M" ? true : false
+                      },
+                      {
+                        name: "gender",
+                        label: "Female",
+                        value: "F",
+                        type: "radio",
+                        checked: values.gender === "F" ? true : false
+                      },
+                    ]}
+                  />
+                {action === "update" && subjectsList && (
+                  <FieldSet
+                    label="Subjects"
+                    name="subjects_id"
+                    options={subjectsList.map((sub: any) => {
+                      const newSub = { ...sub };
+                      newSub.label = sub.name;
+                      newSub.name = "subjects_id";
+                      newSub.value = sub.id;
+                      newSub.type = "checkbox";
+                      newSub.checked = values.subjects.includes(sub.id) ? true : false;
+                      return newSub;
+                    })}
+                  />
+                )}
+                <div className="flex items-center gap-4 justify-center md:col-span-full">
+                  <button
+                    type="submit"
+                    className="w-40 py-2 mt-8 bg-blue-100 text-black hover:text-white hover:bg-blue-700 capitalize rounded-xl"
+                  >
+                    {action === "signup" ? "sign up" : "update"}
+                  </button>
+                  {action === "update" && (
+                    <div
+                      onClick={() => {
+                        if (
+                          confirm("Are you sure you want to go cancel?") &&
+                          close
+                        ) {
+                          close();
+                        }
+                      }}
+                      className="w-40 mt-8 flex items-center gap-1 justify-center p-2 bg-slate-200 hover:bg-black rounded-xl hover:text-white cursor-pointer"
+                    >
+                      <Icon icon="pajamas:cancel" /> Cancel
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </Form>
+              </Form>
+              )
+            )
+          }}
         </Formik>
       </div>
       {isModal && action === "signup" && (

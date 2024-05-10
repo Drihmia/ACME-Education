@@ -14,7 +14,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Form, Formik } from "formik";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 
 export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
   const navigation = useRouter();
@@ -42,10 +42,10 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
           modifiedData.subject = subject.name;
           setLesson(modifiedData);
         });
-      }
-    }, [id, subjectsData]);
-    
-  if (!institutionsData || !subjectsData) return <p>Loading</p>
+    }
+  }, [id, subjectsData]);
+
+  if (!institutionsData || !subjectsData) return <p>Loading</p>;
   // if (!subjectsData || !institutionsData || (!lesson && action == "Edit")) return <p>Loading......</p>;
   if (!lesson && action == "Edit") return <p>Loading......</p>;
   if (lesson && action == "Edit") console.log(lesson);
@@ -84,6 +84,11 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
         alert(res_data["error"]);
       } else {
         alert(`Lesson ${action == "Add" ? "added" : "updated"}`);
+        mutate(
+          `http://127.0.0.1:5000/api/v1/${user?.class.toLowerCase()}s/${
+            user?.user_id
+          }/lessons`
+        );
         navigation.push("/dashboard/lessons");
       }
 

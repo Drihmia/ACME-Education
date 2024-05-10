@@ -23,6 +23,8 @@ export const TeacherProfile = ({ user, openModal }: { user: User, openModal: (it
 
   if (!profile || !subjectsList) return <ProfileSkeleton />
 
+  profile.subjects = subjectsList
+
   return (
     <div className="w-full h-full flex flex-col gap-4 md:gap-8">
       <h1 className={`text-2xl md:text-3xl font-bold`}>
@@ -44,7 +46,7 @@ export const TeacherProfile = ({ user, openModal }: { user: User, openModal: (it
             </li>
             <li className="text-lg md:text-xl font-medium">
               Gender:{" "}
-              <span className="font-normal">{profile.gender}</span>
+              <span className="font-normal">{profile.gender === "M" ? "Male" : "Female" }</span>
             </li>
             <li className="text-lg md:text-xl font-medium">
               City:{" "}
@@ -56,7 +58,7 @@ export const TeacherProfile = ({ user, openModal }: { user: User, openModal: (it
             </li>
             <li className="text-lg md:text-xl font-medium">
               Subjects:{" "}
-              <span className="font-normal">{subjectsList.length > 0 ? subjectsList.map((sub: any) => sub.name).join(", ") : "You dont have any subjects" }</span>
+              <span className="font-normal">{profile.subjects.length > 0 ? profile.subjects.map((sub: any) => sub.name).join(", ") : "You dont have any subjects" }</span>
             </li>
           </ul>
           </div>

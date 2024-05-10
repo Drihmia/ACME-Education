@@ -39,7 +39,6 @@ export const signupTeacherSchema = yup.object().shape({
     .required("Email address is required"),
   phone_number: yup
     .string()
-    .matches(phoneRegex, "Invalid phone number")
     .required("Phone number is required"),
   password: yup
     .string()
@@ -69,7 +68,6 @@ export const signupStudentSchema = yup.object().shape({
     .required("Email address is required"),
   phone_number: yup
     .string()
-    .matches(phoneRegex, "Invalid phone number")
     .required("Phone number is required"),
   password: yup
     .string()
@@ -84,8 +82,8 @@ export const signupStudentSchema = yup.object().shape({
     .required("Please confirm your password"),
   institution: yup.string().required("Name of institution is required"),
   city: yup.string().required("Name of city is required"),
-  teacher_email: yup.string(),
-  class_id: yup.string().required("Class id is required"),
+  teacher: yup.string(),
+  class: yup.string().required("Class is required"),
   gender: yup.string().oneOf(["F", "M"], "Gender is required").required()
 });
 
@@ -100,7 +98,6 @@ export const updateTeacherSchema = yup.object().shape({
     .required("Email address is required"),
   phone_number: yup
     .string()
-    .matches(phoneRegex, "Invalid phone number")
     .required("Phone number is required"),
   institution: yup.string().required("Name of institution is required"),
   city: yup.string().required("Name of city is required"),
@@ -118,12 +115,11 @@ export const updateStudentSchema = yup.object().shape({
     .required("Email address is required"),
   phone_number: yup
     .string()
-    .matches(phoneRegex, "Invalid phone number")
     .required("Phone number is required"),
   institution: yup.string().required("Name of institution is required"),
   city: yup.string().required("Name of city is required"),
-  teacher_email: yup.string().email(),
-  class_id: yup.string().required("Class id is required"),
+  // teacher_email: yup.string().email(),
+  // class_id: yup.string().required("Class id is required"),
   gender: yup.string().oneOf(["F", "M"], "Gender is required").required()
 });
 

@@ -85,15 +85,17 @@ interface studentSignupProps {
   last_name: string;
   email: string;
   phone_number: string;
-  password: string;
-  confirm_password: string;
+  password?: string;
+  confirm_password?: string;
   city: string;
   city_id?: string;
   institution: string;
   institution_id?: string;
   gender: string;
-  class_id: string;
+  class_id?: string;
+  class: string;
   teacher_email: string;
+  // teacher: string;
 }
 
 interface radioProps {
@@ -101,6 +103,7 @@ interface radioProps {
   name: string;
   type: string;
   value: boolean | string;
+  checked: boolean
 }
 
 interface OtherProps {
@@ -109,4 +112,11 @@ interface OtherProps {
   placeholder?: string;
   options?: radioProps[];
   data?: any[];
+}
+
+interface searchProps {
+  label: string;
+  setData: (data: string) => void;
+  placeholder: string;
+  data: any[];
 }

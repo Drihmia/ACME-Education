@@ -30,7 +30,8 @@ export const SignUpQuestion = () => {
             setSubmitting(false);
           }}
         >
-          <Form className="w-full flex flex-col md:grid md:grid-cols-2 lg:gap-4 items-center p-4 md:p-8 lg:px-16">
+          {({ values }) => (
+            <Form className="w-full flex flex-col lg:gap-4 items-center p-4 md:p-8 lg:px-16">
             <FieldSet
                 label="Are you a Teacher or a Student?"
                 name="answer"
@@ -40,12 +41,14 @@ export const SignUpQuestion = () => {
                     label: "Teacher",
                     value: true,
                     type: "radio",
+                    checked: values.answer === "true" ? true : false
                   },
                   {
                     name: "answer",
                     label: "Student",
                     value: false,
                     type: "radio",
+                    checked: values.answer === "false" ? true : false
                   },
                 ]}
               />
@@ -58,6 +61,7 @@ export const SignUpQuestion = () => {
               </button>
             </div>
           </Form>
+          )}
         </Formik>
       </div>
 

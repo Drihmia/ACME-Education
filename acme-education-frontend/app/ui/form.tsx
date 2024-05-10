@@ -1,17 +1,23 @@
 "use client";
 
-import React, { ClassAttributes, InputHTMLAttributes, useState } from "react";
-import {
-  Formik,
-  Form,
-  useField,
-  FieldHookConfig
-} from "formik";
+import React, {
+  ClassAttributes,
+  InputHTMLAttributes,
+  useEffect,
+  useState,
+} from "react";
+import { Formik, Form, useField, FieldHookConfig } from "formik";
 import { signinSchema } from "../validation/schema";
 import Link from "next/link";
-import Cookies from 'js-cookie'
+import Cookies from "js-cookie";
 import { useOutsideClick } from "../lib/useOutsideClick";
-import { OtherProps, User, radioProps, siginProps } from "../types";
+import {
+  OtherProps,
+  User,
+  radioProps,
+  searchProps,
+  siginProps,
+} from "../types";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/authContext";
 
@@ -44,6 +50,7 @@ export const MyTextInput = ({
     </div>
   );
 };
+
 export const MyTextAndSelectInput = ({
   label,
   checkValue,
@@ -53,7 +60,26 @@ export const MyTextAndSelectInput = ({
   InputHTMLAttributes<HTMLInputElement> &
   ClassAttributes<HTMLInputElement> &
   FieldHookConfig<string>) => {
-  const [field, meta, helpers] = useField(props);
+  const [field, meta, helpers] = useField({
+    name: props.name,
+    validate: (value) => {
+      let msg: string | undefined = undefined;
+
+      if (data?.length == 0) return msg
+      
+      const isValuePresent = data?.find((item) => item.name === value || item.email === value);
+
+      if (isValuePresent) {
+        if (checkValue) checkValue(true, isValuePresent.id);
+      } else {
+        if (checkValue) checkValue(false);
+        msg = "Please choose from list.";
+      }
+
+      return msg;
+    },
+    type: props.type,
+  });
   const [filteredData, setData] = useState<any[]>(data!);
   const [focused, setFocus] = useState(false);
 
@@ -65,7 +91,7 @@ export const MyTextAndSelectInput = ({
     closeFocus();
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     let value = event.target.value;
 
     const searchRegex = new RegExp(value, "gi");
@@ -75,18 +101,102 @@ export const MyTextAndSelectInput = ({
     }) as any[];
 
     setData(filter);
+  };
 
-    // check if value is in data array
-    const isValuePresent = data?.find(item => item.name === value)
+  const ref = useOutsideClick(closeFocus);
 
-    if (checkValue) {
+  return (
+    <div ref={ref} className="relative w-full mb-4 z-1">
+      <label
+        className="relative w-full font-semibold text-black"
+        htmlFor={props.id || props.name}
+      >
+        {label}
+        <input
+          onFocus={openFocus}
+          className={`w-full p-2 md:px-4 md:py-3 tablet:mt-1 laptop:mt-2 font-normal text-base border ${
+            meta.error ? "border-red-600" : "border-dark/25"
+          } hover:border-dark/50 focus:border-dark/75 outline-none rounded-xl md:rounded-2xl`}
+          {...field}
+          {...props}
+          onChange={(e) => {
+            field.onChange(e);
+            handleChange(e);
+          }}
+        />
+      </label>
+      {meta.touched && meta.error ? (
+        <div className="error text-xs text-red-600">{meta.error}</div>
+      ) : null}
+      {focused && filteredData.length > 0 && (
+        <ul className="absolute w-full max-h-48 overflow-y-scroll top-full left-0 flex flex-col gap-1 p-1 md:p-2 bg-white rounded-md shadow-md z-10">
+          {filteredData.map((item, i) => (
+            <li
+              className="w-full p-1 cursor-pointer hover:bg-blue-700 hover:text-white rounded"
+              key={i}
+              onClick={() => {
+                setValue(item.name || item.email);
+                if (checkValue) {
+                  checkValue(true, item.id);
+                }
+              }}
+            >
+              {item.name || item.email}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
+export const MyTextAndCheckInput = ({
+  label,
+  checkValue,
+  data,
+  ...props
+}: OtherProps &
+  InputHTMLAttributes<HTMLInputElement> &
+  ClassAttributes<HTMLInputElement> &
+  FieldHookConfig<string>) => {
+  const [field, meta, helpers] = useField({
+    name: props.name,
+    validate: (value) => {
+      let msg: string | undefined = undefined;
+      const isValuePresent = data?.find((item) => item.name === value);
+
       if (isValuePresent) {
-        checkValue(true, isValuePresent.id)
+        if (checkValue) checkValue(true, isValuePresent.id);
       } else {
-        checkValue(false)
-        helpers.setError("Please choose from list.")
+        if (checkValue) checkValue(false);
+        msg = "Please choose from list.";
       }
-    }
+
+      return msg;
+    },
+    type: props.type,
+  });
+  const [filteredData, setData] = useState<any[]>(data!);
+  const [focused, setFocus] = useState(false);
+
+  const openFocus = () => setFocus(true);
+  const closeFocus = () => setFocus(false);
+
+  const setValue = (value: string) => {
+    helpers.setValue(value);
+    closeFocus();
+  };
+
+  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    let value = event.target.value;
+
+    const searchRegex = new RegExp(value, "gi");
+
+    const filter = data?.filter((res) => {
+      if (searchRegex.test(res.name)) return res;
+    }) as any[];
+
+    setData(filter);
   };
 
   const ref = useOutsideClick(closeFocus);
@@ -123,7 +233,7 @@ export const MyTextAndSelectInput = ({
               onClick={() => {
                 setValue(city.name);
                 if (checkValue) {
-                  checkValue(true, city.id)
+                  checkValue(true, city.id);
                 }
               }}
             >
@@ -135,6 +245,8 @@ export const MyTextAndSelectInput = ({
     </div>
   );
 };
+
+
 
 export const MyTextArea = ({
   label,
@@ -197,10 +309,22 @@ export const MySelect = ({
 //create your input component
 //in this case im defining the radio input
 //this component can be contained in another file
-export const InputField = ({ label, name, value, type }: radioProps) => {
+export const InputField = ({
+  label,
+  name,
+  value,
+  type,
+  checked,
+}: radioProps) => {
   return (
     <label htmlFor={`${value}`} className="font-normal flex items-center gap-1">
-      <input id={`${value}`} type={type} name={name} value={`${value}`} />
+      <input
+        id={`${value}`}
+        type={type}
+        name={name}
+        value={`${value}`}
+        checked={checked}
+      />
       {label}
     </label>
   );
@@ -218,11 +342,16 @@ export const FieldSet = ({
   FieldHookConfig<string>) => {
   const [field, meta] = useField(props);
   return (
-    <div className="w-full md:col-span-full">
+    <div className="w-full">
+      {/* <div className="w-full md:col-span-full"> */}
       <label className="w-full font-medium">
         {label}
         {/* make sure the radios are contained in a fieldset */}
-        <fieldset {...field} {...props} className="w-full grid grid-cols-2 gap-2 p-2">
+        <fieldset
+          {...field}
+          {...props}
+          className="w-full grid grid-cols-2 gap-2 p-2"
+        >
           {options?.map((option, i) => (
             <InputField
               key={`${i}`}
@@ -230,6 +359,7 @@ export const FieldSet = ({
               label={option.label}
               value={option.value}
               type={option.type}
+              checked={option.checked}
             />
           ))}
         </fieldset>
@@ -241,14 +371,12 @@ export const FieldSet = ({
   );
 };
 
-
 export const SignInForm = () => {
-  const { updateUser } = useAuth()!
+  const { updateUser } = useAuth()!;
   // const [error, setError] = useState<string | null>()
   const router = useRouter();
 
   const submitForm = async (values: siginProps) => {
-
     try {
       const response = await fetch(
         `http://127.0.0.1:5000/api/v1/${
@@ -265,11 +393,11 @@ export const SignInForm = () => {
 
       const user: User = await response.json();
       if (user.access_token) {
-        Cookies.set("currentUser", JSON.stringify(user))
-        updateUser()
-        router.push("/dashboard")
+        Cookies.set("currentUser", JSON.stringify(user));
+        updateUser();
+        router.push("/dashboard");
       } else {
-        alert("Invalid credentials, try again.")
+        alert("Invalid credentials, try again.");
       }
       // if (response.status != 200) setError("Invalid credentials");
     } catch (e) {
@@ -277,8 +405,8 @@ export const SignInForm = () => {
       if (e instanceof Error) {
         errorMessage = e.message;
       }
-      alert(errorMessage)
-    } 
+      alert(errorMessage);
+    }
   };
 
   return (
@@ -291,44 +419,58 @@ export const SignInForm = () => {
           initialValues={{
             email: "",
             password: "",
-            isTeacher: ""
+            isTeacher: "",
           }}
           validationSchema={signinSchema}
           onSubmit={(values, { setSubmitting }) => {
             setTimeout(() => {
-              submitForm(values)
+              submitForm(values);
               setSubmitting(false);
             }, 400);
           }}
         >
-          <Form className="w-full flex flex-col items-center p-4 md:p-8 lg:px-16">
-            <MyTextInput
-              label="Email"
-              name="email"
-              type="email"
-              placeholder="you@example.com"
-            />
-            <MyTextInput
-              label="Password"
-              name="password"
-              type="password"
-              placeholder=""
-            />
-            <FieldSet
-              label="Are you a Teacher or a Student?"
-              name="isTeacher"
-              options={[
-                { name: "isTeacher", label: "Teacher", value: true, type: "radio" },
-                { name: "isTeacher", label: "Student", value: false, type: "radio" },
-              ]}
-            />
-            <button
-              type="submit"
-              className="w-40 py-2 mt-4 bg-blue-100 text-black hover:text-white hover:bg-blue-700 capitalize rounded-2xl"
-            >
-              login
-            </button>
-          </Form>
+          {({ values }) => (
+            <Form className="w-full flex flex-col items-center p-4 md:p-8 lg:px-16">
+              <MyTextInput
+                label="Email"
+                name="email"
+                type="email"
+                placeholder="you@example.com"
+              />
+              <MyTextInput
+                label="Password"
+                name="password"
+                type="password"
+                placeholder=""
+              />
+              <FieldSet
+                label="Are you a Teacher or a Student?"
+                name="isTeacher"
+                options={[
+                  {
+                    name: "isTeacher",
+                    label: "Teacher",
+                    value: true,
+                    type: "radio",
+                    checked: values.isTeacher === "true" ? true : false,
+                  },
+                  {
+                    name: "isTeacher",
+                    label: "Student",
+                    value: false,
+                    type: "radio",
+                    checked: values.isTeacher === "false" ? true : false,
+                  },
+                ]}
+              />
+              <button
+                type="submit"
+                className="w-40 py-2 mt-4 bg-blue-100 text-black hover:text-white hover:bg-blue-700 capitalize rounded-2xl"
+              >
+                login
+              </button>
+            </Form>
+          )}
         </Formik>
         <div className="w-full text-center lg:flex lg:items-center lg:justify-between lg:px-8">
           <Link

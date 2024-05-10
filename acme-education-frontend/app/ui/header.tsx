@@ -21,7 +21,7 @@ export const Header = () => {
           ACME Education
         </Link>
       </div>
-      <div className="flex items-center font-bold">
+      {/* <div className="flex items-center font-bold">
         <p className="md:hidden uppercase">menu</p>
         <button
           onClick={handleNav}
@@ -31,7 +31,7 @@ export const Header = () => {
         >
           <Icon icon="ci:hamburger-md" />
         </button>
-      </div>
+      </div> */}
       {!user && (
         <nav
           id="nav_overlay"
