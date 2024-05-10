@@ -1,16 +1,21 @@
 "use client";
 
-import { useAuth } from "@/app/context/authContext";
 import { LessonForm } from "@/app/ui/dashboard/lessonForm";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import Cookies from 'js-cookie'
 
 export default function Page() {
-  const { user } = useAuth()!
-  const router = useRouter()
+  const router = useRouter();
 
-  if (user?.class != "Teacher") {
-    alert("You do not have permission to access this route.")
-    router.push("/dashboard")
-  }
-    return (<LessonForm action="Add" />)
-  }
+  useEffect(() => {
+    const user = JSON.parse(Cookies.get("currentUser")!)
+    
+    if (user && user.class != "Teacher") {
+      alert(`You do not have permission to access this route.`);
+      router.push("/dashboard");
+    }
+  }, []);
+
+  return <LessonForm action="Add" />;
+}

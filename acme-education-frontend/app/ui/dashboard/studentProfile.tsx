@@ -105,7 +105,7 @@ export const StudentProfile = ({
                 ))}
               </p>
             ) : (
-              <span className="font-normal text-sm">
+              <span className="font-normal text-sm block">
                 You do not have any subject.
               </span>
             )}

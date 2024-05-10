@@ -2,18 +2,24 @@ import { Form, Formik, useField, useFormik, useFormikContext } from "formik";
 import { filterSchema } from "../validation/filter";
 import { FieldSet, MyTextAndSelectInput, MyTextInput } from "./form";
 import { lessonFormProps, subjectProps } from "../types";
+import { useState } from "react";
+import { LessonCard } from "./dashboard/lessonsCard";
 
 interface filterFormProps {
   subjects: subjectProps[];
   lessons: lessonFormProps[];
-  setLessons: (values: lessonFormProps[]) => void;
+  openModal: (val: string) => void;
+  user_class: string
 }
 
 export const FilterForm = ({
   subjects,
   lessons,
-  setLessons,
+  openModal,
+  user_class
 }: filterFormProps) => {
+  const [filteredLessons, setFilteredLessons] = useState(lessons)
+
   const applyFilter = (values: {
     subject: string;
     name: string;
@@ -38,10 +44,11 @@ export const FilterForm = ({
         if (!lesson.public && values.public === "false") return lesson;
       });
 
-    setLessons(data);
+    setFilteredLessons(data);
   };
 
   return (
+    <>
     <div className="w-full">
       <p className="font-semibold text-lg mt-4">Filter By</p>
       <Formik
@@ -56,14 +63,12 @@ export const FilterForm = ({
           setSubmitting(false);
         }}
         onReset={(values, { resetForm }) => {
-          // alert(values);
-          // resetForm()
           values = {
             subject: "",
             name: "",
             public: "",
           };
-          setLessons(lessons)
+          setFilteredLessons(lessons)
         }}
       >
         {({ values }) => (
@@ -74,6 +79,7 @@ export const FilterForm = ({
             data={subjects}
             type="text"
             placeholder="e.g Mathematics"
+            optional={true}
           />
           <MyTextInput
             label="Name"
@@ -119,5 +125,28 @@ export const FilterForm = ({
         )}
       </Formik>
     </div>
+    {filteredLessons.length > 0 ? (
+      <ul className="w-full flex flex-col gap-2 pt-4 pb-12">
+        <li className="w-full grid grid-cols-[0.75fr_5fr_2fr_2fr_0.5fr] p-2 bg-blue-50 rounded-md">
+          <span className="font-semibold">S/N</span>
+          <span className="font-semibold">Title</span>
+          <span className="font-semibold">Subject</span>
+          <span className="font-semibold">Author</span>
+          <span className="font-semibold">Public</span>
+        </li>
+        {filteredLessons.map((lesson: lessonFormProps, i: number) => (
+          <LessonCard
+            key={`${i}`}
+            index={i}
+            lesson={lesson}
+            openModal={openModal}
+            user_class={user_class}
+          />
+        ))}
+      </ul>
+    ) : (
+      <p>You do not have any published lessons.</p>
+    )}
+    </>
   );
 };

@@ -28,10 +28,12 @@ export const TeacherForm = ({
   const [isModal, setModal] = useState(false);
   const closeModal = () => setModal(false);
 
-  const [institutionsData, setInstitutionsData] = useState<institutionProps[]>(
+  const [institutions, setInstitutions] = useState<institutionProps[]>(
     []
   );
-  const [subjectsList, setSubjects] = useState<any[]>([])
+  const [subjects, setSubjects] = useState<any[]>([])
+
+  const [teacherClasses, setTeacherClasses] = useState<any[]>([])
 
   const [selectedCity, setCity] = useState<selectedCityProps>({
     status: false,
@@ -48,9 +50,9 @@ export const TeacherForm = ({
         `http://127.0.0.1:5000/api/v1/cities/${selectedCity.id}/institutions`
       )
         .then((res) => res.json())
-        .then((data) => setInstitutionsData(data));
+        .then((data) => setInstitutions(data));
     } else {
-      setInstitutionsData([]);
+      setInstitutions([]);
     }
   }, [selectedCity]);
 
@@ -62,18 +64,28 @@ export const TeacherForm = ({
     }
   };
 
-  const { data: citiesData } = useSWR(
+  const { data: cities } = useSWR(
     "http://127.0.0.1:5000/api/v1/cities",
     fetcher
   );
+  const { data: classes } = useSWR(
+    "http://127.0.0.1:5000/api/v1/classes",
+    fetcher
+  );
+
+  useEffect(() => {
+    if (profile) {
+      fetch(`http://127.0.0.1:5000/api/v1/teachers/${profile.id}/classes`).then(res => res.json()).then(data => setTeacherClasses(data))
+    }
+  }, [])
 
   const submitForm = async (values: teacherSignupProps) => {
-    const city = citiesData?.find(
+    const city = cities?.find(
       (item: cityProps) => item.name == values.city
     );
     if (city) values.city_id = city.id;
 
-    const institution = institutionsData?.find(
+    const institution = institutions?.find(
       (item: institutionProps) => item.name == values.institution
     );
     if (institution) values.institution_id = institution.id;
@@ -104,7 +116,12 @@ export const TeacherForm = ({
           if (close) {
             close();
           }
-          if (profile) mutate(`http://127.0.0.1:5000/api/v1/teachers/${profile.id}`);
+          if (profile) {
+            mutate(`http://127.0.0.1:5000/api/v1/teachers/${profile.id}`);
+            mutate(`http://127.0.0.1:5000/api/v1/teachers/${profile.id}/subjects`);
+            mutate(`http://127.0.0.1:5000/api/v1/teachers/${profile.id}/classes`);
+            mutate(`http://127.0.0.1:5000/api/v1/teachers/${profile.id}/institutions`);
+          }
         }
       }
     } catch (e) {
@@ -118,8 +135,8 @@ export const TeacherForm = ({
     }
   };
 
-  if (!citiesData) return <LoadingSkeleton />
-
+  if (!cities || (action === 'update' && (!classes || !teacherClasses))) return <LoadingSkeleton />
+  
   return (
     <>
       <div
@@ -159,6 +176,8 @@ export const TeacherForm = ({
             city: action == "update" ? profile.city : "",
             gender: action == "update" ? profile.gender : "",
             subjects: action == "update" ? profile.subjects.map((sub: any) => sub.id) : [],
+            classes: action == "update" ? profile.classes.map((cls: any) => cls.id) : [],
+            institutions: action == "update" ? profile.institutions.map((ins: any) => ins.id) : [],
           }}
           validationSchema={action === "update" ? updateTeacherSchema : signupTeacherSchema}
           onSubmit={(values, { setSubmitting }) => {
@@ -213,7 +232,7 @@ export const TeacherForm = ({
                 <MyTextAndSelectInput
                   label="City"
                   name="city"
-                  data={citiesData}
+                  data={cities}
                   checkValue={checkValue}
                   type="text"
                   placeholder="e.g MarsCity"
@@ -222,7 +241,7 @@ export const TeacherForm = ({
                 <MyTextAndSelectInput
                   label="Name of Institution"
                   name="institution"
-                  data={institutionsData}
+                  data={institutions}
                   type="text"
                   disabled={!selectedCity.status}
                   placeholder="e.g Insitute of Science and Technology"
@@ -230,7 +249,6 @@ export const TeacherForm = ({
                 <FieldSet
                     label="Gender"
                     name="gender"
-                    disabled={profile ? true : false}
                     options={[
                       {
                         name: "gender",
@@ -248,11 +266,13 @@ export const TeacherForm = ({
                       },
                     ]}
                   />
-                {action === "update" && subjectsList && (
+                {action === "update" && subjects && (
+                  <>
                   <FieldSet
                     label="Subjects"
                     name="subjects_id"
-                    options={subjectsList.map((sub: any) => {
+                    customStyle="col-span-full"
+                    options={subjects.map((sub: any) => {
                       const newSub = { ...sub };
                       newSub.label = sub.name;
                       newSub.name = "subjects_id";
@@ -262,6 +282,35 @@ export const TeacherForm = ({
                       return newSub;
                     })}
                   />
+                  <FieldSet
+                    label="Classes"
+                    name="classes_id"
+                    customStyle="col-span-full"
+                    options={classes.map((cls: any) => {
+                      const newSub = { ...cls };
+                      newSub.label = cls.name;
+                      newSub.name = "classes_id";
+                      newSub.value = cls.id;
+                      newSub.type = "checkbox";
+                      newSub.checked = values.classes.includes(cls.id) ? true : false;
+                      return newSub;
+                    })}
+                  />
+                  <FieldSet
+                    label="Institutions"
+                    name="institutions_id"
+                    customStyle="col-span-full h-96 overflow-y-scroll"
+                    options={institutions.map((ins: any) => {
+                      const newSub = { ...ins };
+                      newSub.label = ins.name;
+                      newSub.name = "institutions_id";
+                      newSub.value = ins.id;
+                      newSub.type = "checkbox";
+                      newSub.checked = values.institutions.includes(ins.id) ? true : false;
+                      return newSub;
+                    })}
+                  />
+                  </>
                 )}
                 <div className="flex items-center gap-4 justify-center md:col-span-full">
                   <button

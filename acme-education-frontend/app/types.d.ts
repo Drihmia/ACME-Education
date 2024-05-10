@@ -43,15 +43,18 @@ export interface UserContext {
 
 export interface lessonFormProps {
   id?: string;
-  subject?: string;
+  subject: string;
   subject_id?: string;
-  institution: string;
+  institution?: string;
   institution_id?: string;
   teacher_id?: string;
+  teacher?: string;
   name: string;
   download_link: string;
   description: string;
   public: string | boolean;
+  class?: string;
+  class_id?: string
 }
 
 
@@ -107,11 +110,13 @@ interface radioProps {
 }
 
 interface OtherProps {
+  customStyle?: string;
   label: string;
   checkValue?: (val: boolean, id?: string) => void;
   placeholder?: string;
   options?: radioProps[];
   data?: any[];
+  optional?: boolean
 }
 
 interface searchProps {

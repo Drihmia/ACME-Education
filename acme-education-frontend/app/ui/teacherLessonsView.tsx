@@ -2,24 +2,40 @@
 
 import Link from "next/link";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { lessonFormProps, subjectProps } from "@/app/types";
-import { LessonCard } from "./dashboard/lessonsCard";
-import { useState } from "react";
+import { User } from "@/app/types";
 import { FilterForm } from "./filterForm";
+import { LessonsSkeleton } from "./skeletons";
+import useSWR from "swr";
+import { fetcher } from "../lib/fetch";
 
 export const TeacherLessonsView = ({
-  user_class,
-  lessons,
-  subjects,
+  user,
   openModal,
 }: {
-  user_class: string;
-  lessons: lessonFormProps[];
-  subjects: subjectProps[];
+  user: User;
   openModal: (val: string) => void;
 }) => {
-  const [filteredLessons, setFilteredLessons] =
-    useState<lessonFormProps[]>(lessons);
+
+  const { data: lessons } = useSWR(
+    user
+      ? `http://127.0.0.1:5000/api/v1/${user.class.toLowerCase()}s/${
+          user.user_id
+        }/lessons`
+      : null,
+    fetcher
+  );
+
+  const { data: subjects } = useSWR(
+    user
+      ? `http://127.0.0.1:5000/api/v1/${user.class.toLowerCase()}s/${
+          user.user_id
+        }/subjects`
+      : null,
+    fetcher
+  );
+  
+  if (!lessons || !subjects || !user) return <LessonsSkeleton />;
+
 
   return (
     <div className="w-full flex flex-col gap-2">
@@ -34,27 +50,7 @@ export const TeacherLessonsView = ({
           <Icon icon="mdi:add-bold" /> Publish New Lesson
         </Link>
       </div>
-      <FilterForm subjects={subjects} lessons={lessons} setLessons={setFilteredLessons} />
-      {filteredLessons.length > 0 ? (
-        <ul className="w-full flex flex-col gap-2 pt-4 pb-12">
-          <li className="w-full grid grid-cols-[1fr_7fr_1fr] p-2 bg-blue-50 rounded-md">
-            <span className="font-semibold">S/N</span>
-            <span className="font-semibold">Title</span>
-            <span className="font-semibold">Public</span>
-          </li>
-          {filteredLessons.map((lesson: lessonFormProps, i: number) => (
-            <LessonCard
-              key={`${i}`}
-              index={i}
-              lesson={lesson}
-              openModal={openModal}
-              user_class={user_class}
-            />
-          ))}
-        </ul>
-      ) : (
-        <p>You do not have any published lessons.</p>
-      )}
+      <FilterForm subjects={subjects} lessons={lessons} openModal={openModal} user_class={user.class} />
     </div>
   );
 };

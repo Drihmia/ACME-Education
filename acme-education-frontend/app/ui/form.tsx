@@ -55,6 +55,7 @@ export const MyTextAndSelectInput = ({
   label,
   checkValue,
   data,
+  optional,
   ...props
 }: OtherProps &
   InputHTMLAttributes<HTMLInputElement> &
@@ -65,9 +66,11 @@ export const MyTextAndSelectInput = ({
     validate: (value) => {
       let msg: string | undefined = undefined;
 
-      if (data?.length == 0) return msg
-      
-      const isValuePresent = data?.find((item) => item.name === value || item.email === value);
+      if (data?.length == 0 || optional) return msg;
+
+      const isValuePresent = data?.find(
+        (item) => item.name === value || item.email === value
+      );
 
       if (isValuePresent) {
         if (checkValue) checkValue(true, isValuePresent.id);
@@ -104,6 +107,13 @@ export const MyTextAndSelectInput = ({
   };
 
   const ref = useOutsideClick(closeFocus);
+
+  useEffect(() => {
+    if (data && data.length > 0 && field.value && checkValue) {
+      const item = data.find((d) => d.name === field.value);
+      if (item) checkValue(true, item.id);
+    }
+  }, []);
 
   return (
     <div ref={ref} className="relative w-full mb-4 z-1">
@@ -246,8 +256,6 @@ export const MyTextAndCheckInput = ({
   );
 };
 
-
-
 export const MyTextArea = ({
   label,
   ...props
@@ -309,13 +317,10 @@ export const MySelect = ({
 //create your input component
 //in this case im defining the radio input
 //this component can be contained in another file
-export const InputField = ({
-  label,
-  name,
-  value,
-  type,
-  checked,
-}: radioProps) => {
+export const Radio = ({ label, name, value, type, checked }: radioProps) => {
+  const [isChecked, setIsChecked] = useState(checked);
+
+  const handleChange = (e: React.ChangeEvent) => setIsChecked((prev) => !prev);
   return (
     <label htmlFor={`${value}`} className="font-normal flex items-center gap-1">
       <input
@@ -323,7 +328,28 @@ export const InputField = ({
         type={type}
         name={name}
         value={`${value}`}
-        checked={checked}
+        checked={isChecked}
+        onChange={handleChange}
+      />
+      {label}
+    </label>
+  );
+};
+
+export const CheckBox = ({ label, name, value, type, checked }: radioProps) => {
+  const [isChecked, setIsChecked] = useState(checked);
+
+  const handleChange = (e: React.ChangeEvent) => setIsChecked((prev) => !prev);
+
+  return (
+    <label htmlFor={`${value}`} className="font-normal flex items-center gap-1">
+      <input
+        id={`${value}`}
+        type={type}
+        onChange={handleChange}
+        name={name}
+        value={`${value}`}
+        checked={isChecked}
       />
       {label}
     </label>
@@ -334,6 +360,7 @@ export const InputField = ({
 //this component can be contained in another file
 export const FieldSet = ({
   label,
+  customStyle,
   options,
   ...props
 }: OtherProps &
@@ -342,7 +369,7 @@ export const FieldSet = ({
   FieldHookConfig<string>) => {
   const [field, meta] = useField(props);
   return (
-    <div className="w-full">
+    <div className={`w-full ${customStyle}`}>
       {/* <div className="w-full md:col-span-full"> */}
       <label className="w-full font-medium">
         {label}
@@ -352,16 +379,30 @@ export const FieldSet = ({
           {...props}
           className="w-full grid grid-cols-2 gap-2 p-2"
         >
-          {options?.map((option, i) => (
-            <InputField
-              key={`${i}`}
-              name={option.name}
-              label={option.label}
-              value={option.value}
-              type={option.type}
-              checked={option.checked}
-            />
-          ))}
+          {options?.map((option, i) => {
+            if (option.type === "radio") {
+              return (
+                <Radio
+                  key={`${i}`}
+                  name={option.name}
+                  label={option.label}
+                  value={option.value}
+                  type={option.type}
+                  checked={option.checked}
+                />
+              );
+            }
+            return (
+              <CheckBox
+                key={`${i}`}
+                name={option.name}
+                label={option.label}
+                value={option.value}
+                type={option.type}
+                checked={option.checked}
+              />
+            );
+          })}
         </fieldset>
       </label>
       {meta.touched && meta.error ? (

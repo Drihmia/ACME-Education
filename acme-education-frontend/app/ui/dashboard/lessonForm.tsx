@@ -15,18 +15,23 @@ import { Form, Formik } from "formik";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import useSWR, { mutate } from "swr";
+import { LoadingSkeleton } from "../skeletons";
 
 export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
   const navigation = useRouter();
   const { user } = useAuth()!;
   const [lesson, setLesson] = useState<lessonFormProps | null>(null);
 
-  const { data: institutionsData } = useSWR(
+  const { data: institutions } = useSWR(
     `http://127.0.0.1:5000/api/v1/teachers/${user?.user_id}/institutions`,
     fetcher
   );
-  const { data: subjectsData } = useSWR(
+  const { data: subjects } = useSWR(
     `http://127.0.0.1:5000/api/v1/teachers/${user?.user_id}/subjects`,
+    fetcher
+  );
+  const { data: classes } = useSWR(
+    `http://127.0.0.1:5000/api/v1/teachers/${user?.user_id}/classes`,
     fetcher
   );
 
@@ -36,35 +41,37 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
         .then((res) => res.json())
         .then((data) => {
           const modifiedData = { ...data };
-          const subject = subjectsData.find(
+          const subject = subjects.find(
             (item: subjectProps) => item.id === modifiedData.subject_id
           );
           modifiedData.subject = subject.name;
           setLesson(modifiedData);
         });
     }
-  }, [id, subjectsData]);
+  }, [id, subjects]);
 
-  if (!institutionsData || !subjectsData) return <p>Loading</p>;
-  // if (!subjectsData || !institutionsData || (!lesson && action == "Edit")) return <p>Loading......</p>;
-  if (!lesson && action == "Edit") return <p>Loading......</p>;
-  if (lesson && action == "Edit") console.log(lesson);
+  if (!institutions || !subjects || !classes) return <LoadingSkeleton />;
+  if (!lesson && action == "Edit") return <LoadingSkeleton />;
+  
 
   const submitForm = async (values: lessonFormProps) => {
-    const institution = institutionsData?.find(
+    const institution = institutions?.find(
       (item: institutionProps) => item.name == values.institution
     );
     if (institution) values.institution_id = institution.id;
 
-    const subject = subjectsData?.find(
+    const subject = subjects?.find(
       (item: subjectProps) => item.name == values.subject
     );
     if (subject) values.subject_id = subject.id;
 
+    const cls = classes?.find((item: any) => item.name == values.class);
+    if (cls) values.class_id = cls.id;
+
     values.teacher_id = user?.user_id;
     values.public = values.public === "true" ? true : false;
 
-    // console.log(values);
+    console.log(values);
 
     try {
       const response = await fetch(
@@ -83,12 +90,12 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
       if (res_data["error"]) {
         alert(res_data["error"]);
       } else {
-        alert(`Lesson ${action == "Add" ? "added" : "updated"}`);
         mutate(
           `http://127.0.0.1:5000/api/v1/${user?.class.toLowerCase()}s/${
             user?.user_id
           }/lessons`
         );
+        alert(`Lesson ${action == "Add" ? "added" : "updated"}`);
         navigation.push("/dashboard/lessons");
       }
 
@@ -114,12 +121,13 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
       </div>
       <Formik
         initialValues={{
-          subject: id ? lesson?.subject! : "",
-          institution: id ? lesson?.institution! : "",
-          name: id ? lesson?.name! : "",
-          download_link: id ? lesson?.download_link! : "",
-          description: id ? lesson?.description! : "",
-          public: id ? lesson?.public! : "true",
+          subject: id && lesson ? lesson.subject : "",
+          institution: id && lesson ? lesson.institution : "",
+          name: id && lesson ? lesson.name : "",
+          download_link: id && lesson ? lesson.download_link : "",
+          description: id && lesson ? lesson.description : "",
+          public: id && lesson ? lesson.public : "true",
+          class: id && lesson ? lesson.class : "",
         }}
         validationSchema={lessonSchema}
         onSubmit={(values, { setSubmitting }) => {
@@ -128,45 +136,71 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
         }}
       >
         <Form className="w-full flex flex-col items-center md:grid md:grid-cols-2 md:gap-4 lg:gap-8 p-4 md:p-8 lg:px-16">
-          <MyTextAndSelectInput
-            label="Subject"
-            name="subject"
-            data={subjectsData}
-            type="text"
-            placeholder="e.g Mathematics"
-          />
-          <MyTextAndSelectInput
-            label="Name of Institution"
-            name="institution"
-            data={institutionsData}
-            type="text"
-            placeholder="e.g Insitute of Science and Technology"
-          />
           <MyTextInput
-            label="Name"
+            label="Title of lesson"
             name="name"
             type="text"
             placeholder="you@example.com"
           />
+          <MyTextAndSelectInput
+            label="Subject"
+            name="subject"
+            data={subjects}
+            type="text"
+            placeholder="e.g Mathematics"
+            disabled={action === "Add" ? false : true}
+          />
+          {action === "Add" && (
+            <>
+              <MyTextAndSelectInput
+                label="Institution (Optional)"
+                name="institution"
+                data={institutions}
+                type="text"
+                placeholder="e.g Insitute of Science and Technology"
+                optional={true}
+              />
+              <MyTextAndSelectInput
+                label="Class (Optional)"
+                name="class"
+                data={classes}
+                type="text"
+                placeholder="e.g Primary One"
+                optional={true}
+              />
+            </>
+          )}
           <MyTextInput
             label="Download URL"
             name="download_link"
             type="text"
             placeholder="you@example.com"
           />
+          <FieldSet
+            label="Should the lesson be publicly available?"
+            name="public"
+            options={[
+              {
+                name: "public",
+                label: "Yes",
+                value: true,
+                type: "radio",
+                checked: true,
+              },
+              {
+                name: "public",
+                label: "No",
+                value: false,
+                type: "radio",
+                checked: false,
+              },
+            ]}
+          />
           <MyTextArea
             label="Description"
             name="description"
             type="text"
             placeholder="Write a description of the lesson"
-          />
-          <FieldSet
-            label="Should the lesson be publicly available?"
-            name="public"
-            options={[
-              { name: "public", label: "Yes", value: true, type: "radio" },
-              { name: "public", label: "No", value: false, type: "radio" },
-            ]}
           />
           <div className="w-full flex items-center justify-end gap-2 col-span-full">
             <button
@@ -180,10 +214,14 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
                 onClick={async () => {
                   if (confirm("Are you sure you delete this lesson?")) {
                     const res = await deleteLesson(lesson?.id!);
-                    console.log(res);
                     if (res["error"]) {
                       alert("Something went wrong.");
                     } else {
+                      mutate(
+                        `http://127.0.0.1:5000/api/v1/${user?.class.toLowerCase()}s/${
+                          user?.user_id
+                        }/lessons`
+                      );
                       alert("Lesson deleted");
                       navigation.push("/dashboard/lessons");
                     }

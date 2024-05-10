@@ -124,13 +124,13 @@ export const HomePage = () => {
           </li>
         </ul>
       <div className="text-center">
-        <p className="text-gray-700">
+        <p className="text-gray-700 mb-4">
           Stay tuned as we continue to shape the future of education, one
           feature at a time.
         </p>
-        <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-4">
+        <Link href={"/signup"} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-4">
           Discover More
-        </button>
+        </Link>
       </div>
       </div>
     </main>

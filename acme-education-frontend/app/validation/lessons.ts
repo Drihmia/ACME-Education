@@ -2,7 +2,7 @@ import * as yup from "yup";
 
 export const lessonSchema = yup.object().shape({
     subject: yup.string().required("Subject required"),
-    institution: yup.string().required("Institution ID required"),
+    institution: yup.string(),
     name: yup.string().required("Name of lesson required"),
     download_link: yup.string().required("Download link to lesson required"),
     description: yup.string().required("Description of lesson required"),

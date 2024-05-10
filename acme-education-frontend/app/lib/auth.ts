@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { User } from '../types'
 
 export const useLogOut = () => {

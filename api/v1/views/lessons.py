@@ -337,12 +337,16 @@ def lessons(id=None):
         for k, v in data.items():
             if k in normal_attr:
                 # Accept only normal attributes and ignore 0 length values
+                if isinstance(v, bool):
+                    setattr(lesson, k.strip(), v)
+                    continue
                 if v == lesson_dict.get(k) or not len(v):
                     continue
                 setattr(lesson, k.strip(), v.strip())
 
         lesson.save()
 
+        lesson = lesson.to_dict()
         # Remove all list of objects assigned to this lesson
         # +by many to many or one to many or many to one relationship.
         if 'classes' in lesson:

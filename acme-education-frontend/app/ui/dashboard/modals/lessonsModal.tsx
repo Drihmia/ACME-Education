@@ -26,13 +26,13 @@ export const LessonModal = ({
         <div className="w-full grid gap-4 md:gap-8">
           <div className="w-full">
             <h2 className="text-2xl md:text-3xl font-bold">{item.name}</h2>
-            <p>{item.teacher_id}</p>
-            <p className="text-lg md:text-xl font-semibold">
-              {item.institution_id}
+            <p className="text-lg md:text-xl font-medium">
+              {item.subject}
+            <p className="text-lg md:text-xl font-medium">By {item.teacher}</p>
             </p>
           </div>
           <article className="w-full">
-            <h3 className="text-xl md:text-2xl font-bold">Description</h3>
+            <h3 className="text-xl md:text-2xl font-semibold">Description</h3>
             <p>{item.description}</p>
             <Link href={item.download_link} className="text-blue-500 underline">
               Download lesson
