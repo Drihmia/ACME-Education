@@ -262,7 +262,6 @@ def lessons(id=None):
         # +subjects and institutions chosen by the teacher.
         for student in teacher.students:
             student_subjects_ids = [sub.id for sub in student.subjects]
-            print(student.last_name)
 
             # if lesson.subjects.id not in student_subjects_ids:
                 # continue
@@ -339,10 +338,14 @@ def lessons(id=None):
                 # Accept only normal attributes and ignore 0 length values
                 if v == lesson_dict.get(k) or not len(v):
                     continue
-                setattr(lesson, k.strip(), v.strip())
+                if isinstance(v, bool):
+                    setattr(lesson, k.strip(), v)
+                else:
+                    setattr(lesson, k.strip(), v.strip())
 
         lesson.save()
 
+        lesson = lesson.to_dict()
         # Remove all list of objects assigned to this lesson
         # +by many to many or one to many or many to one relationship.
         if 'classes' in lesson:

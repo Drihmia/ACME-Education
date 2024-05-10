@@ -224,12 +224,12 @@ def teachers_list(id=None):
             c_pwd = data.get('confirm_password')
 
             if not isinstance(pwd, str):
-                data.update({'password': '123'})
+                data.update({'password': '1'})
 
             if not isinstance(c_pwd, str):
-                data.update({'confirm_password': '456'})
+                data.update({'confirm_password': '4'})
 
-            elif len(pwd) >= 8 and len(c_pwd) >= 8:
+            elif len(pwd) >= 3 and len(c_pwd) >= 3:
                 if data.get('confirm_password').strip() != data.get(
                         'password').strip():
                     return jsonify({'error': 'password do not match'}), 400
