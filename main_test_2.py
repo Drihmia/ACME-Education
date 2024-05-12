@@ -10,63 +10,12 @@ from models.lesson import Lesson
 from models.clas import Clas
 from models.state import State
 from models.city import City
+
+
 list_objects = []
-
-# Creating states.
-# RSK = State(name='RSK')
-# RSK.save()
-# try:
-# RSK = State(name='RSK')
-# RSK.save()
-# except Exception as e:
-# storage.rollback()
-# RSK = State(name='RSK')
-# RSK.save()
-# print(e)
-
-# SAFI = State(name='SAF')
-# SAFI.save()
-# T_T = State(name='TANGE-TETOUAN')
-# T_T.save()
-
-# Creating cities.
-# SALE = City(name='SAL', state_id=RSK.id)
-# SALE.save()
-# S_K = City(name='SIDI KACE', state_id=RSK.id)
-# S_K.save()
-# TANGER = City(name='TANGE', state_id=T_T.id)
-# TANGER.save()
-# JADIDA = City(name='JADID', state_id=SAFI.id)
-# JADIDA.save()
-
-# list_objects.extend([RSK, SAFI, T_T, SALE, S_K, TANGER, JADIDA])
-
-
-# # Creating institutions.
-# inst_1 = Institution(name='LYCEE ALMANDAR ALJAMI', city=SALE.name,
-# state=RSK.name, city_id=SALE.id)
-# inst_1.save()
-# inst_11 = Institution(name='LYCEE ALMANDAR ALJAMIL', city=S_K.name,
-# state=RSK.name, city_id=S_K.id)
-# inst_11.save()
-# inst_2 = Institution(name='LYCEE JABIR IBN HAYA', city=SALE.name,
-# state=RSK.name, city_id=SALE.id)
-# inst_2.save()
-# inst_22 = Institution(name='LYCEE JABIR IBN HAYAE', city=TANGER.name,
-# state=T_T.name, city_id=TANGER.id)
-# inst_22.save()
-# inst_3 = Institution(name='LYCEE QUADI AAD', city=SALE.name,
-# state=RSK.name, city_id=SALE.id)
-# inst_3.save()
-# inst_33 = Institution(name='LYCEE QUADI AAD', city=JADIDA.name,
-# state=SAFI.name, city_id=JADIDA.id)
-# inst_33.save()
-# inst_4 = Institution(name='LYCEE ALMONABI', city=SALE.name,
-# state=RSK.name, city_id=SALE.id)
-# inst_4.save()
 inst_1 = storage.query(Institution).filter((Institution.name).like(
-    'LYCEE QUALIFIANT ALMANDAR ALJAMIL'),
-                                           Institution.city == 'Sale').first()
+    'Lycee Qualifiant ALMANDAR ALJAMIL'),
+                                           Institution.city.like('Sal%')).first()
 print('inst_1')
 if not inst_1:
     exit(1)
@@ -78,36 +27,36 @@ print('inst_11')
 if not inst_11:
     exit(1)
 inst_2 = storage.query(Institution).filter(Institution.name.like(
-    'LYCEE QUALIFIANT JABER IBN HAYANE'),
+    'Lycee Qualifiant JABER IBN HAYANE'),
                                            Institution.city.like('SAL%'
                                                                  )).first()
 print('inst_2')
 if not inst_2:
     exit(1)
 inst_22 = storage.query(Institution).filter(Institution.name.like(
-    'LYCEE COLLEGIAL JABIR BNOU HAYYANE'),
+    'COLLEGE JABIR BNOU HAYYANE'),
                                             Institution.city.like('tanger%')
                                             ).first()
 print('inst_22')
 if not inst_22:
     exit(1)
 inst_3 = storage.query(Institution).filter(Institution.name.like(
-    'LYCEE QUALIFIANT KADI AYAD'),
+    'Lycee Qualifiant KADI AYAD'),
                                            Institution.city.like('salE')
                                            ).first()
 print('inst_3')
 if not inst_3:
     exit(1)
 inst_33 = storage.query(Institution).filter(Institution.name.like
-                                            ('LYCEE QUALIFIANT EL KADI AYAD'),
+                                            ('Lycee Qualifiant EL KADI AYAD'),
                                             Institution.city.like('El Jadida')
                                             ).first()
 print('inst_33')
 if not inst_33:
     exit(1)
 inst_4 = storage.query(Institution).filter(Institution.name.like
-                                           ('LYCEE QUALIFIANT AL MOUTANABI'),
-                                           Institution.city.like('sale')
+                                           ('Lycee Qualifiant AL MOUTANABI'),
+                                           Institution.city.like('sal%')
                                            ).first()
 print('inst_4')
 if not inst_4:
@@ -157,36 +106,36 @@ list_objects.extend(subject_list)
 
 # Creating classes.
 # High school
-cc_english = Clas(name='(English) Commun Core', abbr='CC_EN')
+cc_english = Clas(name='Tronc commun (English)', abbr='CC_EN')
 cc_english.save()
 
-cc_arabic = Clas(name='(Arabic) Commun Core', abbr='CC_AR')
+cc_arabic = Clas(name='Tronc commun (Arabic)', abbr='CC_AR')
 cc_arabic.save()
 
-cc_french = Clas(name='(French) Commun Core', abbr='CC_FR')
+cc_french = Clas(name='Tronc commun (French)', abbr='CC_FR')
 cc_french.save()
 
-bac1_english = Clas(name='(English) 1ère année du Baccalauréat',
+bac1_english = Clas(name='1ère année du Baccalauréat (English)',
                     abbr='1BAC_EN')
 bac1_english.save()
 
-bac1_arabic = Clas(name='(Arabic) 1ère année du Baccalauréat',
+bac1_arabic = Clas(name='1ère année du Baccalauréat (Arabic)',
                    abbr='1BAC_AR')
 bac1_arabic.save()
 
-bac1_french = Clas(name='(French) 1ère année du Baccalauréat',
+bac1_french = Clas(name='1ère année du Baccalauréat (French)',
                    abbr='1BAC_FR')
 bac1_french.save()
 
-bac2_english = Clas(name='(English) 2ème année du Baccalauréat',
+bac2_english = Clas(name='2ème année du Baccalauréat (English)',
                     abbr='2BAC_EN')
 bac2_english.save()
 
-bac2_arabic = Clas(name='(Arabic) 2ème année du Baccalauréat',
+bac2_arabic = Clas(name='2ème année du Baccalauréat (Arabic)',
                    abbr='2BAC_AR')
 bac2_arabic.save()
 
-bac2_french = Clas(name='(French) 2ème année du Baccalauréat',
+bac2_french = Clas(name='2ème année du Baccalauréat (French)',
                    abbr='2BAC_FR')
 bac2_french.save()
 
@@ -280,24 +229,28 @@ list_objects.extend(teacher_list)
 Marwan = Student(first_name='student_1', last_name='marwan',
                  email='marwan@gmail.com', password='marwan',
                  institution_id=inst_1.id, class_id=cc_french.id,
+                 institution=inst_1.name, city=inst_1.city,
                  teacher_email='red1@gmail.com',
                  gender='M')
 Marwan.save()
 Hicham = Student(first_name='student_2', last_name='hicham',
                  email='hicham@gmail.com', password='hicham',
                  institution_id=inst_1.id, class_id=cc_french.id,
+                 institution=inst_1.name, city=inst_1.city,
                  teacher_email='red1@gmail.com',
                  gender='M')
 Hicham.save()
 Fatima = Student(first_name='student_3', last_name='fatima',
                  email='fatima@gmail.com', password='fatima',
                  institution_id=inst_1.id, class_id=bac1_french.id,
+                 institution=inst_1.name, city=inst_1.city,
                  teacher_email='red1@gmail.com',
                  gender='F')
 Fatima.save()
 Yasmine = Student(first_name='student_4', last_name='yasmine',
                   email='yasmine@gmail.com', password='yasmine',
                   institution_id=inst_1.id, class_id=bac1_french.id,
+                 institution=inst_1.name, city=inst_1.city,
                   teacher_email='red2@gmail.com',
                   gender='F')   # incomplete
 Yasmine.save()
@@ -309,7 +262,6 @@ list_objects.extend(student_list)
 # With teachers.
 teacher_1.students.extend([Marwan, Hicham, Fatima])
 teacher_1.save()
-print(teacher_1.students)
 teacher_2.students.extend([Marwan, Fatima])
 teacher_2.students.extend([Yasmine])
 teacher_2.save()
@@ -318,18 +270,12 @@ for sub in subject_list:
     sub.students.extend(student_list)
     sub.save()
 
-
-# set relations with student's objects.
-# for student in student_list:
-# student.subjects.extend(student_list)
-
 # Creating lessons.
 # Commun Core
 d1 = 'https://drive.google.com/file/d/1rnI4FRlHJxFqvNE_7M1o7jDDgfzJ782U/view'
 cc_less_1 = Lesson(name='Periodic Classification of Chemical Elements',
                    download_link=d1,
                    description='lesson N6 for my student related to Chemistry',
-                   # institution_id=inst_1.id,
                    subject_id=PC.id,
                    subject=PC.name,
                    teacher_id=teacher_1.id,
@@ -342,7 +288,6 @@ d2 = f'https://drive.google.com/file/d/{idd}view?usp=sharing'
 cc_less_2 = Lesson(name='Direct electric current',
                    download_link=d2,
                    description='lesson N6 for my student related to Physics',
-                   # institution_id=inst_1.id,
                    subject_id=PC.id,
                    subject=PC.name,
                    teacher_id=teacher_1.id,
@@ -358,9 +303,8 @@ d1 = 'https://drive.google.com/file/d/14Ls7YwsYD9nFzYQ8KjlhGmi_E5wf61uM/view'
 f_less_1 = Lesson(name='Magnetic Field Chapter',
                   download_link=d1,
                   description='lesson 11 for my 1st bac student',
-                  # institution_id=inst_1.id,
                   subject_id=PC.id,
-                   subject=PC.name,
+                  subject=PC.name,
                   teacher_id=teacher_1.id,
                   teacher=teacher_1.first_name + ' ' + teacher_1.last_name)
 f_less_1.save()
@@ -370,9 +314,8 @@ d2 = f'https://drive.google.com/file/d/{idd}/view?usp=sharing'
 f_less_2 = Lesson(name='Laplace\'s Force - out of the curriculum',
                   download_link=d2,
                   description='lesson 12 for my 1st bac student',
-                  # institution_id=inst_2.id,
                   subject_id=PC.id,
-                   subject=PC.name,
+                  subject=PC.name,
                   teacher_id=teacher_1.id,
                   public=False,
                   teacher=teacher_1.first_name + ' ' + teacher_1.last_name)
@@ -391,48 +334,38 @@ Fatima.lessons.extend(f_lesson_list)
 Fatima.save()
 Yasmine.lessons.extend(f_lesson_list)
 Yasmine.save()
-
+# With classes
+cc_french.lessons.extend([cc_less_1, cc_less_2])
+cc_french.save()
+bac1_french.lessons.extend([f_less_1, f_less_2])
+bac1_french.save()
+# With institution.
+inst_1.lessons.extend([cc_less_1, cc_less_2, f_less_1])
+inst_1.save()
+inst_2.lessons.extend([f_less_2])
+inst_2.save()
 
 # Setting general many to many relationship's information:
 #  \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 # Institution: ------------------------------
-for institution in institution_list:
-    institution.subjects.extend(subject_list)
-    institution.classes.extend(class_list)
-    institution.lessons.extend(f_lesson_list)
-    institution.lessons.extend(cc_lesson_list)
+print(
+    "Setting relationship between institution and thier classes and subjects")
+institutions_db = storage.all(Institution).values()
+subjects_db = storage.all(Subject).values()
+classes_db = storage.all(Clas).values()
+for institution in institutions_db:
+    # print("------------- : ", institution.name)
+    institution.subjects.extend(subjects_db)
+    institution.classes.extend(classes_db)
     institution.save()
 
 # --------------------------------------------
 
-
-# Classes: ***********************************
-# print(class_list[-1])
-for clss in class_list:
-    if clss.name == 'CC':
-        clss.lessons.extend(cc_lesson_list)
-        # clss.teachers.extend([teacher_1, teacher_2])
-    elif clss.name == '1BAC':
-        clss.lessons.extend(f_lesson_list)
-        # clss.teachers.extend([teacher_1, teacher_2])
-    elif clss.name == '2BAC':
-        # clss.teachers.extend([teacher_3, teacher_4])
-        pass
-    clss.save()
-# **********************************************
-
-# for subject in subject_list:
-# if subject.name == 'PC':
-# subject.teachers.extend([teacher_1, teacher_2])
-# elif subject.name == 'MATH':
-# subject.teachers.extend([teacher_3, teacher_4])
-
-
 # Commit al objects: ////////////////////////////////
 
-for obj in list_objects:
-    obj.save()
+# for obj in list_objects:
+# obj.save()
 storage.save()
 
 # //////////////////////////////////////////////////
@@ -449,3 +382,4 @@ stats = {
     'lessons': storage.count(Lesson)
 }
 print(stats)
+print("finished")

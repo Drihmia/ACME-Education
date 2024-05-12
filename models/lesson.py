@@ -28,9 +28,6 @@ class Lesson(BaseModel, Base):
     teacher = Column(String(64, collation='utf8mb4_unicode_ci'),
                   nullable=True)
 
-    # Many to one relationship's attributes.
-    # institution_id = Column(String(60), ForeignKey('institutions.id'),
-    # nullable=False)                     # A must
     subject_id = Column(String(60), ForeignKey('subjects.id'),
                         nullable=False)                         # A must
     teacher_id = Column(String(60), ForeignKey('teachers.id'),

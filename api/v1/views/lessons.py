@@ -261,21 +261,15 @@ def lessons(id=None):
         # Assign lesson to all teacher's student that belong to the classes
         # +subjects and institutions chosen by the teacher.
         for student in teacher.students:
-            student_subjects_ids = [sub.id for sub in student.subjects]
 
-            # if lesson.subjects.id not in student_subjects_ids:
-                # continue
+            if not student.institutions:
+                continue
 
-            # I have ignored this to align with frontend.
-            # Will be activated after MVP.
-            # if not student.institutions:
-                # continue
+            teacher_institutions_ids = [i.id for i in institutions if i]
 
             # Student has only 1 institution, please mind the 's'.
-            student_id = student.institutions.id
-            # teacher_institutions_ids = [i.id for i in institutions if i]
-            # if student_id not in teacher_institutions_ids:
-                # continue
+            if student.institutions.id not in teacher_institutions_ids:
+                continue
 
 #             teacher_classes_ids = [c.id for c in classes if c]
             # if student_id not in teacher_classes_ids:
@@ -341,10 +335,7 @@ def lessons(id=None):
                     continue
                 if v == lesson_dict.get(k) or not len(v):
                     continue
-                if isinstance(v, bool):
-                    setattr(lesson, k.strip(), v)
-                else:
-                    setattr(lesson, k.strip(), v.strip())
+                setattr(lesson, k.strip(), v.strip())
 
         lesson.save()
 

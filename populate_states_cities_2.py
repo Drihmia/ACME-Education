@@ -10,7 +10,7 @@ from models.state import State
 from models.city import City
 
 
-with open('schools.json', 'r') as file:
+with open('schools.json', 'r', encoding="utf-8") as file:
     data = load(file)
 
     dic = {}
@@ -31,18 +31,17 @@ with open('schools.json', 'r') as file:
         if not refresh % 20:
             refresh = 0
             cities = storage.all(City).values()
+            print(len(cities_name), "+++++++++++++++++++ before refreshing")
             cities_name = [city.name for city in cities]
-            print(len(cities_name), "+++++++++++++++++++")
+            print(len(cities_name), "+++++++++++++++++++ after refreshing")
 
         state_name = shool.get('REGION')
         state_id = dic.get(state_name, 'None')
 
+        count = count + 1
         if state_id == 'None':
             print(f"---------------------------    {state_name} not found")
-            count = count + 1
             continue
-        else:
-            count = count + 1
 
         print(f'--------------------------{count} of {length / 8} : {refresh}')
 

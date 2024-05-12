@@ -84,10 +84,6 @@ class Institution(BaseModel, Base):
                   nullable=True)  # It's optional.
 
     # One to many relationship's attributes.
-    lessons = relationship("Lesson",
-                           backref="institutions",
-                           cascade="all, delete, delete-orphan")
-
     students = relationship("Student",
                             backref="institutions",
                             cascade="all, delete, delete-orphan")

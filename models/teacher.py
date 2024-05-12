@@ -51,13 +51,13 @@ class Teacher(BaseModel, Base):
 
     # -------------------------------------------------------------
     # many to many relationship's attributes.
+    students = relationship('Student', secondary=teacher_student,
+                            viewonly=False)
     subjects = relationship("Subject", secondary=subject_teacher,
                             viewonly=True)
     institutions = relationship('Institution', secondary=institution_teacher,
                                 viewonly=True)
     classes = relationship('Clas', secondary=clas_teacher, viewonly=True)
-    students = relationship('Student', secondary=teacher_student,
-                            viewonly=False)
 
 
 def hash_password_before_insert_or_update(_, __, teacher):

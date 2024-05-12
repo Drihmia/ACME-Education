@@ -19,7 +19,7 @@ with open('schools.json', 'r', encoding='utf-8') as file:
 
     dic = {}
     for city in storage.all(City).values():
-        dic.update({city.name: city.id})
+        dic.update({city.name.lower(): city.id})
 
     institutions = storage.all(Institution).values()
     institutions_name = [institution.name for institution in institutions]
@@ -27,16 +27,16 @@ with open('schools.json', 'r', encoding='utf-8') as file:
     length = len(data)
     for shool in data:
         count += 1
-        print(f'{count} of {length}: {(count/length) * 100}%')
+        # print(f'{count} of {length}: {((count/length) * 100): .3f}%')
         school_name = shool.get('NOM_ETABLISSENTFR')
         if school_name is None:
-            print(shool)
+            print("schol's name is missing -------------------------------", shool.get('NOM_ETABLISSENTAR'))
             continue
 
         if school_name in institutions_name:
             continue
         city_name = shool.get('PROVINCE')
-        city_id = dic.get(city_name)
+        city_id = dic.get(city_name.lower())
         institution = Institution(name=school_name,
                                   city=city_name,
                                   city_id=city_id)
@@ -44,7 +44,8 @@ with open('schools.json', 'r', encoding='utf-8') as file:
             storage.new(institution)
             storage.save()
         except IntegrityError as e:
-            print(e)
+            if 'Duplicate entry ' not in str(e):
+                print(e)
             storage.rollback()
 
 print('statistics:')
