@@ -15,7 +15,8 @@ from models.city import City
 list_objects = []
 inst_1 = storage.query(Institution).filter((Institution.name).like(
     'Lycee Qualifiant ALMANDAR ALJAMIL'),
-                                           Institution.city.like('Sal%')).first()
+                                           Institution.city.like(
+                                               'Sal%')).first()
 print('inst_1')
 if not inst_1:
     exit(1)
@@ -106,48 +107,48 @@ list_objects.extend(subject_list)
 
 # Creating classes.
 # High school
-cc_english = Clas(name='Tronc commun (English)', abbr='CC_EN')
+cc_english = Clas(name='Tronc commun (English)', alias='TC En')
 cc_english.save()
 
-cc_arabic = Clas(name='Tronc commun (Arabic)', abbr='CC_AR')
+cc_arabic = Clas(name='Tronc commun (Arabic)', alias='TC Ar')
 cc_arabic.save()
 
-cc_french = Clas(name='Tronc commun (French)', abbr='CC_FR')
+cc_french = Clas(name='Tronc commun (French)', alias='TC Fr')
 cc_french.save()
 
 bac1_english = Clas(name='1ère année du Baccalauréat (English)',
-                    abbr='1BAC_EN')
+                    alias='1BAC En')
 bac1_english.save()
 
 bac1_arabic = Clas(name='1ère année du Baccalauréat (Arabic)',
-                   abbr='1BAC_AR')
+                   alias='1BAC Ar')
 bac1_arabic.save()
 
 bac1_french = Clas(name='1ère année du Baccalauréat (French)',
-                   abbr='1BAC_FR')
+                   alias='1BAC Fr')
 bac1_french.save()
 
 bac2_english = Clas(name='2ème année du Baccalauréat (English)',
-                    abbr='2BAC_EN')
+                    alias='2BAC En')
 bac2_english.save()
 
 bac2_arabic = Clas(name='2ème année du Baccalauréat (Arabic)',
-                   abbr='2BAC_AR')
+                   alias='2BAC Ar')
 bac2_arabic.save()
 
 bac2_french = Clas(name='2ème année du Baccalauréat (French)',
-                   abbr='2BAC_FR')
+                   alias='2BAC Fr')
 bac2_french.save()
 
 
 # Middle school
-ac1 = Clas(name='1ère année du collège', abbr='AC1')
+ac1 = Clas(name='1ère année du collège', alias='1AC')
 ac1.save()
 
-ac2 = Clas(name='2ème année du collège', abbr='AC2')
+ac2 = Clas(name='2ème année du collège', alias='2AC')
 ac2.save()
 
-ac3 = Clas(name='3ème année du collège', abbr='AC3')
+ac3 = Clas(name='3ème année du collège', alias='3AC')
 ac3.save()
 
 
@@ -250,7 +251,7 @@ Fatima.save()
 Yasmine = Student(first_name='student_4', last_name='yasmine',
                   email='yasmine@gmail.com', password='yasmine',
                   institution_id=inst_1.id, class_id=bac1_french.id,
-                 institution=inst_1.name, city=inst_1.city,
+                  institution=inst_1.name, city=inst_1.city,
                   teacher_email='red2@gmail.com',
                   gender='F')   # incomplete
 Yasmine.save()

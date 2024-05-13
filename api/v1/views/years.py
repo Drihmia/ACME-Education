@@ -6,8 +6,8 @@ from models import storage
 from models.clas import Clas
 
 
-@app_views.route("/classes", methods=["GET", "POST"], strict_slashes=False)
-@app_views.route("/classes/<id>", methods=["GET", "POST"],
+@app_views.route("/classes", methods=["GET"], strict_slashes=False)
+@app_views.route("/classes/<id>", methods=["GET"],
                  strict_slashes=False)
 def classes(id=None):
     """
@@ -22,12 +22,12 @@ def classes(id=None):
 
     clas = storage.get(Clas, id)
     if not clas:
-        return jsonify({'error': "UNKNOWN CLASS"}), 403
+        return jsonify({'error': "UNKNOWN CLASS"}), 400
 
     return jsonify(clas.to_dict()), 200
 
 
-@app_views.route("/classes/<id>/students", methods=["GET", "POST"],
+@app_views.route("/classes/<id>/students", methods=["GET"],
                  strict_slashes=False)
 def classes_students(id=None):
     """
@@ -36,14 +36,14 @@ def classes_students(id=None):
 
     clas = storage.get(Clas, id)
     if not clas:
-        return jsonify({'error': "UNKNOWN CLASS"}), 403
+        return jsonify({'error': "UNKNOWN CLASS"}), 400
 
     students = clas.students
     students_dict = [student.to_dict() for student in students]
     return jsonify(students_dict), 200
 
 
-@app_views.route("/classes/<id>/lessons", methods=["GET", "POST"],
+@app_views.route("/classes/<id>/lessons", methods=["GET"],
                  strict_slashes=False)
 def classes_lessons(id=None):
     """
@@ -52,14 +52,14 @@ def classes_lessons(id=None):
 
     clas = storage.get(Clas, id)
     if not clas:
-        return jsonify({'error': "UNKNOWN CLASS"}), 403
+        return jsonify({'error': "UNKNOWN CLASS"}), 400
 
     lessons = clas.lessons
     lessons_dict = [lesson.to_dict() for lesson in lessons]
     return jsonify(lessons_dict), 200
 
 
-@app_views.route("/classes/<id>/teachers", methods=["GET", "POST"],
+@app_views.route("/classes/<id>/teachers", methods=["GET"],
                  strict_slashes=False)
 def classes_teachers(id=None):
     """
@@ -68,14 +68,14 @@ def classes_teachers(id=None):
 
     clas = storage.get(Clas, id)
     if not clas:
-        return jsonify({'error': "UNKNOWN CLASS"}), 403
+        return jsonify({'error': "UNKNOWN CLASS"}), 400
 
     teachers = clas.teachers
     teachers_dict = [teacher.to_dict() for teacher in teachers]
     return jsonify(teachers_dict), 200
 
 
-@app_views.route("/classes/<id>/institutions", methods=["GET", "POST"],
+@app_views.route("/classes/<id>/institutions", methods=["GET"],
                  strict_slashes=False)
 def classes_institutions(id=None):
     """
@@ -84,7 +84,7 @@ def classes_institutions(id=None):
 
     clas = storage.get(Clas, id)
     if not clas:
-        return jsonify({'error': "UNKNOWN CLASS"}), 403
+        return jsonify({'error': "UNKNOWN CLASS"}), 400
 
     institutions = clas.institutions
     institutions_dict = [institution.to_dict() for institution in institutions]

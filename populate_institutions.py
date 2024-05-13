@@ -30,7 +30,6 @@ with open('schools.json', 'r', encoding='utf-8') as file:
         # print(f'{count} of {length}: {((count/length) * 100): .3f}%')
         school_name = shool.get('NOM_ETABLISSENTFR')
         if school_name is None:
-            print("schol's name is missing -------------------------------", shool.get('NOM_ETABLISSENTAR'))
             continue
 
         if school_name in institutions_name:

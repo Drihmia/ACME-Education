@@ -23,7 +23,7 @@ def allSubs(id=None):
 
     subject = storage.get(Subject, id)
     if not subject:
-        return jsonify({'error': "UNKNOWN STUBJECT"}), 403
+        return jsonify({'error': "UNKNOWN STUBJECT"}), 400
 
     return jsonify(subject.to_dict()), 200
 
@@ -39,7 +39,7 @@ def subject_institutions(id):
 
         subject = storage.get(Subject, id)
         if not subject:
-            return jsonify({'error': "UNKNOWN STUBJECT"}), 403
+            return jsonify({'error': "UNKNOWN STUBJECT"}), 400
         institutions = [institution.to_dict() for institution in
                         subject.institutions]
 
@@ -58,7 +58,7 @@ def subject_lessons(id):
 
         subject = storage.get(Subject, id)
         if not subject:
-            return jsonify({'error': "UNKNOWN STUBJECT"}), 403
+            return jsonify({'error': "UNKNOWN STUBJECT"}), 400
         lessons = [lesson.to_dict() for lesson in subject.lessons]
 
         return jsonify(lessons), 200
@@ -75,7 +75,7 @@ def subject_teachers(id):
 
         subject = storage.get(Subject, id)
         if not subject:
-            return jsonify({'error': "UNKNOWN STUBJECT"}), 403
+            return jsonify({'error': "UNKNOWN STUBJECT"}), 400
         teachers = [teacher.to_dict() for teacher in subject.teachers]
 
         return jsonify(teachers), 200

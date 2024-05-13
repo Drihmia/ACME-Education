@@ -50,23 +50,63 @@ into ur bashrc file')
 
     try:
         # Initialize Yagmail with the OAuth2 credentials
+
         yag = yagmail.SMTP(EMAIL_SEND, oauth2_file='~/oauth2_creds.json')
 
+        user = 'Teacher' if data.get('is_teacher') is True else 'Student'
+        verification_link = f"http://127.0.0.1:5000/api/v1\
+            /verify_email_recieve/{token}"
+        content = """Dear {user},
+
+        Thank you for registering with ACME EDUCATION! To complete your \
+        registration, please verify your email address by clicking the \
+        button below:
+
+        <div style="justify-content: space-around; display: flex;">
+
+        <a href="{verification_link}" style="display: inline-block; padding: \
+        10px 20px; background-color: #007bff; color: #fff; text-decoration: \
+        none; border-radius: 5px; position: absolute;">Verify Your Account</a>
+
+        </div>
+
+        If you're unable to click the button, you can copy and paste the \
+        following link into your browser:
+        {verification_link}
+
+        By verifying your email address, you'll gain access to all the \
+        features of ACME EDUCATION, including personalized learning \
+        resources, interactive courses, and collaboration tools.
+
+        If you did not register for an account with ACME EDUCATION, \
+        please ignore this email or contact us immediately at \
+        <a href="mailto:{contact_email}"> ACME EDUCATION </a> \
+        to report any unauthorized activity.
+
+        Thank you for choosing ACME EDUCATION!
+
+        Best regards,
+        The ACME EDUCATION Team"""
         try:
             # Send a test email
             yag.send(
-                to=data.get('email'),
-                subject='Verification',
-                contents=f'http://127.0.0.1:5000/api/\
-v1/verify_email_recieve/{token}'
+                to=data.get('email').strip(),  # Destination.
+                subject='Confirm Your Email Address',
+                contents=content.format(
+                    token=token, user=user, contact_email=EMAIL_SEND,
+                    verification_link=verification_link)
             )
 
             # Close connection.
             yag.close()
         except YagInvalidEmailAddress:
             return jsonify({'error': 'INVALID EMAIL'}), 400
-    except Exception:
-        return jsonify({'status': 'SEND VERIFICATION MAIL FAILED'}), 400
+
+    except Exception as e:
+        print(e)
+        return jsonify({
+            'status': 'SEND VERIFICATION MAIL FAILED, Check credentials'
+        }), 400
 
     return jsonify({'status': 'SEND VERIFICATION MAIL SUCCEEDED'}), 200
 
@@ -87,7 +127,7 @@ def verify_email_recieve(token):
     url = 'http://127.0.0.1:5000/api/v1/'
     headers = {'Content-Type': 'application/json'}
 
-    if data.get('is_teacher') == 'True':
+    if data.get('is_teacher') is True:
         # Making a POST request with a with context manager
         base = 'teachers'
         url = url + base
@@ -202,7 +242,8 @@ def conflict_student():
     """ a function that render the confirmation template"""
     url = 'http://127.0.0.1:3000/login?msg=success_registration'
     info = 'Account Already Exists As Teacher'
-    message = "this email is already registered as a teacher.<br>Cannot sign up as a student"
+    message = "this email is already registered as a teacher.\
+        <br>Cannot sign up as a student"
     login = 'Login As Teacher'
     return render_template('confirme_registration.html', url=url,
                            info=info, message=message, login=login)

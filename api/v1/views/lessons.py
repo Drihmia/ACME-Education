@@ -62,7 +62,7 @@ def lessons(id=None):
                 data = less[seek].to_dict()
                 return jsonify(data), 200
             except KeyError:
-                return jsonify({"error": ""}), 404
+                return jsonify({"error": "UNKNOWN LESSON"}), 404
 
     # POST's method *******************************************************
     if request.method == 'POST':
@@ -146,7 +146,7 @@ def lessons(id=None):
 
         subject_obj = storage.get(Subject, subject_id)
         if not subject_obj:
-            return jsonify ({'error': 'UNKNOWN SUBJECT'}), 403
+            return jsonify({'error': 'UNKNOWN SUBJECT'}), 400
 
         # Check if description's attribute is provided.
         if 'description' in data.keys():
@@ -220,11 +220,11 @@ def lessons(id=None):
 
         # ---------------------------------------------------------
         if 'institution_id' in data.keys() and \
-                not is_valid_uuid(data.get('institution_id')):
+                is_valid_uuid(data.get('institution_id')):
             institution_id = data.get('institution_id').strip()
             institution = storage.get(Institution, institution_id)
             if not institution:
-                return jsonify({'error': "UNKNOWN INSTITUTION"}), 403
+                return jsonify({'error': "UNKNOWN INSTITUTION"}), 400
             institutions = [institution]
         else:
             institutions = teacher.institutions
@@ -240,11 +240,12 @@ def lessons(id=None):
 
         # ---------------------------------------------------------
         if 'class_id' in data.keys() and \
-                not is_valid_uuid(data.get('class_id')):
+                is_valid_uuid(data.get('class_id')):
             class_id = data.get('class_id').strip()
             clas = storage.get(Clas, class_id)
             if not clas:
-                return jsonify({'error': "UNKNOWN CLASS"}), 403
+                return jsonify({'error': "UNKNOWN CLASS"}), 400
+            setattr(lesson, 'class_alias', clas.alias)
             classes = [clas]
         else:
             classes = teacher.classes
@@ -356,7 +357,6 @@ def lessons(id=None):
 
         if 'institutions' in lesson:
             del lesson['institutions']
-
 
         return jsonify(lesson), 200
 
