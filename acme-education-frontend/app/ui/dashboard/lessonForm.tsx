@@ -23,21 +23,21 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
   const [lesson, setLesson] = useState<lessonFormProps | null>(null);
 
   const { data: institutions } = useSWR(
-    `http://127.0.0.1:5000/api/v1/teachers/${user?.user_id}/institutions`,
+    `http://${process.env.NEXT_API_ADDRESS}/api/v1/teachers/${user?.user_id}/institutions`,
     fetcher
   );
   const { data: subjects } = useSWR(
-    `http://127.0.0.1:5000/api/v1/teachers/${user?.user_id}/subjects`,
+    `http://${process.env.NEXT_API_ADDRESS}/api/v1/teachers/${user?.user_id}/subjects`,
     fetcher
   );
   const { data: classes } = useSWR(
-    `http://127.0.0.1:5000/api/v1/teachers/${user?.user_id}/classes`,
+    `http://${process.env.NEXT_API_ADDRESS}/api/v1/teachers/${user?.user_id}/classes`,
     fetcher
   );
 
   useEffect(() => {
     if (id) {
-      fetch(`http://127.0.0.1:5000/api/v1/lessons/${id}`)
+      fetch(`http://${process.env.NEXT_API_ADDRESS}/api/v1/lessons/${id}`)
         .then((res) => res.json())
         .then((data) => {
           const modifiedData = { ...data };
@@ -75,7 +75,7 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/api/v1/lessons/${id ? id : ""}`,
+        `http://${process.env.NEXT_API_ADDRESS}/api/v1/lessons/${id ? id : ""}`,
         {
           method: action === "Add" ? "POST" : "PUT",
           body: JSON.stringify(values),
@@ -91,7 +91,7 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
         alert(res_data["error"]);
       } else {
         mutate(
-          `http://127.0.0.1:5000/api/v1/${user?.class.toLowerCase()}s/${
+          `http://${process.env.NEXT_API_ADDRESS}/api/v1/${user?.class.toLowerCase()}s/${
             user?.user_id
           }/lessons`
         );
@@ -218,7 +218,7 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
                       alert("Something went wrong.");
                     } else {
                       mutate(
-                        `http://127.0.0.1:5000/api/v1/${user?.class.toLowerCase()}s/${
+                        `http://${process.env.NEXT_API_ADDRESS}/api/v1/${user?.class.toLowerCase()}s/${
                           user?.user_id
                         }/lessons`
                       );

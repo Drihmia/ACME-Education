@@ -48,3 +48,5 @@ acme-education-frontend/.vercel
 # typescript
 acme-education-frontend/*.tsbuildinfo
 acme-education-frontend/next-env.d.ts
+
+acme-education-frontend/.env

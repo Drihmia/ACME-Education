@@ -41,13 +41,13 @@ export const TeacherForm = ({
   });
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/api/v1/subjects").then(res => res.json()).then(data => setSubjects(data))
+    fetch(`http://${process.env.NEXT_API_ADDRESS}/api/v1/subjects`).then(res => res.json()).then(data => setSubjects(data))
   }, [])
   
   useEffect(() => {
     if (selectedCity.id != "") {
       fetch(
-        `http://127.0.0.1:5000/api/v1/cities/${selectedCity.id}/institutions`
+        `http://${process.env.NEXT_API_ADDRESS}/api/v1/cities/${selectedCity.id}/institutions`
       )
         .then((res) => res.json())
         .then((data) => setInstitutions(data));
@@ -65,17 +65,17 @@ export const TeacherForm = ({
   };
 
   const { data: cities } = useSWR(
-    "http://127.0.0.1:5000/api/v1/cities",
+    `http://${process.env.NEXT_API_ADDRESS}/api/v1/cities`,
     fetcher
   );
   const { data: classes } = useSWR(
-    "http://127.0.0.1:5000/api/v1/classes",
+    `http://${process.env.NEXT_API_ADDRESS}/api/v1/classes`,
     fetcher
   );
 
   useEffect(() => {
     if (profile) {
-      fetch(`http://127.0.0.1:5000/api/v1/teachers/${profile.id}/classes`).then(res => res.json()).then(data => setTeacherClasses(data))
+      fetch(`http://${process.env.NEXT_API_ADDRESS}/api/v1/teachers/${profile.id}/classes`).then(res => res.json()).then(data => setTeacherClasses(data))
     }
   }, [])
 
@@ -94,7 +94,7 @@ export const TeacherForm = ({
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/api/v1/teachers/${action == "update" ? profile.id : ""}`,
+        `http://${process.env.NEXT_API_ADDRESS}/api/v1/teachers/${action == "update" ? profile.id : ""}`,
         {
           method: action == "signup" ? "POST" : "PUT",
           body: JSON.stringify(values),
@@ -117,10 +117,10 @@ export const TeacherForm = ({
             close();
           }
           if (profile) {
-            mutate(`http://127.0.0.1:5000/api/v1/teachers/${profile.id}`);
-            mutate(`http://127.0.0.1:5000/api/v1/teachers/${profile.id}/subjects`);
-            mutate(`http://127.0.0.1:5000/api/v1/teachers/${profile.id}/classes`);
-            mutate(`http://127.0.0.1:5000/api/v1/teachers/${profile.id}/institutions`);
+            mutate(`http://${process.env.NEXT_API_ADDRESS}/api/v1/teachers/${profile.id}`);
+            mutate(`http://${process.env.NEXT_API_ADDRESS}/api/v1/teachers/${profile.id}/subjects`);
+            mutate(`http://${process.env.NEXT_API_ADDRESS}/api/v1/teachers/${profile.id}/classes`);
+            mutate(`http://${process.env.NEXT_API_ADDRESS}/api/v1/teachers/${profile.id}/institutions`);
           }
         }
       }

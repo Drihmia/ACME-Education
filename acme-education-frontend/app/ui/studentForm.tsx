@@ -52,7 +52,7 @@ export const StudentForm = ({
   useEffect(() => {
     if (selectedCity.id != "") {
       fetch(
-        `http://127.0.0.1:5000/api/v1/cities/${selectedCity.id}/institutions`
+        `http://${process.env.NEXT_API_ADDRESS}/api/v1/cities/${selectedCity.id}/institutions`
       )
         .then((res) => res.json())
         .then((data) => {
@@ -67,10 +67,10 @@ export const StudentForm = ({
     (async () => {
       if (selectedInstitute.id != "") {
         const fetchSchoolClasses = fetch(
-          `http://127.0.0.1:5000/api/v1/institutions/${selectedInstitute.id}/classes`
+          `http://${process.env.NEXT_API_ADDRESS}/api/v1/institutions/${selectedInstitute.id}/classes`
         ).then((res) => res.json());
         const fetchSchoolTeachers = fetch(
-          `http://127.0.0.1:5000/api/v1/institutions/${selectedInstitute.id}/teachers`
+          `http://${process.env.NEXT_API_ADDRESS}/api/v1/institutions/${selectedInstitute.id}/teachers`
         ).then((res) => res.json());
 
         const [schoolClasses, schoolTeachers] = await Promise.all([
@@ -107,7 +107,7 @@ export const StudentForm = ({
   };
 
   const { data: citiesData } = useSWR(
-    "http://127.0.0.1:5000/api/v1/cities",
+    `http://${process.env.NEXT_API_ADDRESS}/api/v1/cities`,
     fetcher
   );
 
@@ -137,7 +137,7 @@ export const StudentForm = ({
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/api/v1/students/${
+        `http://${process.env.NEXT_API_ADDRESS}/api/v1/students/${
           action == "update" ? profile.id : ""
         }`,
         {
@@ -162,7 +162,7 @@ export const StudentForm = ({
             close();
           }
           if (profile)
-            mutate(`http://127.0.0.1:5000/api/v1/students/${profile.id}`);
+            mutate(`http://${process.env.NEXT_API_ADDRESS}/api/v1/students/${profile.id}`);
         }
       }
     } catch (e) {

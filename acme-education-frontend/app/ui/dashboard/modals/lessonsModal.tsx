@@ -55,7 +55,7 @@ export const LessonModal = ({
                     alert("Something went wrong.");
                   } else {
                     mutate(
-                      `http://127.0.0.1:5000/api/v1/teachers/${item.teacher_id}/lessons`
+                      `http://${process.env.NEXT_API_ADDRESS}/api/v1/teachers/${item.teacher_id}/lessons`
                     );
                     alert("Lesson deleted");
                     closeModal();

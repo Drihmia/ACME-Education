@@ -81,7 +81,7 @@
 //   };
 
 //   const { data: citiesData } = useSWR(
-//     `http://127.0.0.1:5000/api/v1/cities`,
+//     `http://${process.env.NEXT_API_ADDRESS}/api/v1/cities`,
 //     fetcher
 //   );
 
