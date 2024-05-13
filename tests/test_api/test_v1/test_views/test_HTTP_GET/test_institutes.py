@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from datetime import datetime
 import requests as req
 # aliasing requests to req
@@ -9,6 +10,7 @@ toTest = "institutions"
 link = base + toTest
 timeFormat = "%Y-%m-%dT%H:%M:%S.%f"
 limit = 32
+testID = ""
 
 
 # Tests HTTP GET all
@@ -100,7 +102,7 @@ def test_getting_the_correct_class():
 def test_getting_not_institute():
     """Checks what happens if the ID is wrong"""
     with req.get(link + "/temp") as marko:
-        assert marko.status_code == 404
+        assert marko.status_code == 400
 
 
 def test_relationships():

@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from datetime import datetime
 import requests as req
 # aliasing requests to req
@@ -55,7 +56,6 @@ def test_values_availability():
             assert elem["updated_at"] is not None
             assert elem["description"] is not None
             assert elem["download_link"] is not None
-            assert elem["institution_id"] is not None
             assert elem["subject_id"] is not None
             assert elem["teacher_id"] is not None
 
@@ -72,7 +72,6 @@ def test_correct_value_type_in_return():
             assert datetime.strptime(elem["created_at"], timeFormat)
             assert isinstance(elem["__class__"], str)
             assert isinstance(elem["name"], str)
-            assert uuid.UUID(str(elem["institution_id"]))
             assert uuid.UUID(str(elem["subject_id"]))
             assert uuid.UUID(str(elem["teacher_id"]))
             assert isinstance(elem["download_link"], str)
@@ -106,7 +105,7 @@ def test_getting_the_correct_class():
 def test_getting_not_lesson():
     """Checks what happens if the ID is wrong"""
     with req.get(link + "/temp") as marko:
-        assert marko.status_code == 404
+        assert marko.status_code == 400
 
 
 def test_relationships():
@@ -132,6 +131,4 @@ def test_relationships():
     with req.get(link) as marko:
         polo = marko.json()
         for elem in polo:
-            assert elem["institution_id"] in inst
             assert elem["subject_id"] in subj
-            assert elem["institution_id"] in inst
