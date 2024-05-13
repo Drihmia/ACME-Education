@@ -10,23 +10,28 @@ from models.state import State
 from models.city import City
 
 
-with open('state_cities.json', 'r') as file:
+with open('state_cities.json', 'r', encoding="utf-8") as file:
     json_data = load(file)
 
     cities_by_region = json_data.get('cities-by-region')
-    # Data is a list
+    # "data" is a list
     data = cities_by_region.get('data')
 
     for state in data:
         state_name = state.get('region-name')
+
+        # Create a state object.
         state_obj = State(name=state_name)
         storage.new(state_obj)
         storage.save()
 
         state_id = state_obj.id
-        # Cities is a list
+        # "cities" is a list
         for city in state.get('cities'):
+            # I ve chosed Frensh names.
             city_name = city.get('names').get('en')
+
+            # Create a city object.
             city_obj = City(name=city_name, state_id=state_id)
             try:
                 storage.new(city_obj)

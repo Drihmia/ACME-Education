@@ -8,16 +8,12 @@ Mohammed Omer - [Github](https://github.com/MegaChie) / [LinkedIn](www.linkedin.
 
 
 
-to populate the database, run those in order:
+to populate the database:
 ```bash
-python3 main_test_2.py
+./pop.bash
 ```
-```bash
-python3 populate_states_cities_1.py
-```
-```bash
-python3 populate_states_cities_2.py
-```
-```bash
-python3 populate_institutions.py
-```
+
+the script will ask for passwords:
+
+1st one for sudo (usually, your computer password)
+2nd for the user's password for database

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # populate database
+echo "drop database if exists ACME" | sudo mysql
 echo "Enter your Database's password"
 read -r pwd
 # Execute each command, and ensure that the next command is executed only if the previous one succeeds

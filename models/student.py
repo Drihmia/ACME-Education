@@ -62,10 +62,10 @@ class Student(BaseModel, Base):
 
     # -------------------------------------------------------------
     # many to many relationship's attributes.
-    subjects = relationship("Subject", secondary=subject_student,
-                            viewonly=True)
     lessons = relationship("Lesson", secondary=student_lesson,
                            viewonly=False)
+    subjects = relationship("Subject", secondary=subject_student,
+                            viewonly=True)
     teachers = relationship("Teacher", secondary=teacher_student,
                             viewonly=True)
 

@@ -207,25 +207,36 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
                               gender=gender,
                               phone_number=phone_number)
 
-            storage.new(student)
+            try:
+                storage.new(student)
+                storage.save()
+            except IntegrityError:
+                return jsonify({'error': 'exists'}), 400
 
-            # institution.students.append(student)
             # update student's relations
             if teacher:
-                student.lessons.extend(teacher.lessons)
+                student.lessons.extend(
+                    [l for l in teacher.lessons
+                     if student.classes.id in  # A student has 1 class.
+                     # A lesson can have 1 class if teacher provide a class
+                     # +otherwise a lesson can have all teacher's classes.
+                     [c.id for c in l.classes]]
+                )
 
-                #for subject in teacher.subjects:
-                    # subject.students.append(student)
-                    # try:
-                        # subject.save()
-                    # except IntegrityError:
-                        # storage.rollback()
+                try:
+                    student.save()
+                except IntegrityError:
+                    storage.rollback()
 
                 teacher.students.append(student)
                 try:
                     teacher.save()
                 except IntegrityError:
                     storage.rollback()
+            else:
+                student.lessons.extend(
+                    [lesson for teacher in storage.all(Teacher).values()
+                     for lesson in teacher.lessons if lesson.public == True])
 
         except IntegrityError:
             # storage.rollback()
@@ -240,14 +251,13 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
             except IntegrityError:
                 pass
 
-        try:
-            storage.new(student)
-            storage.save()
-        except IntegrityError:
-            return jsonify({'error': 'exists'}), 400
+        # try:
+        # storage.new(student)
+        # storage.save()
+        # except IntegrityError:
+        # return jsonify({'error': 'exists'}), 400
 
         try:
-            institution.save()
             if teacher:
                 teacher.save()
         except IntegrityError:
@@ -290,12 +300,12 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
             c_pwd = data.get('confirm_password')
 
             if not isinstance(pwd, str):
-                data.update({'password': '123'})
+                data.update({'password': '1'})
 
             if not isinstance(c_pwd, str):
-                data.update({'confirm_password': '456'})
+                data.update({'confirm_password': '4'})
 
-            elif len(pwd) >= 8 and len(c_pwd) >= 8:
+            elif len(pwd) >= 3 and len(c_pwd) >= 3:
                 if data.get('confirm_password').strip() != data.get(
                         'password').strip():
                     return jsonify({'error': 'password do not match'}), 400
@@ -314,14 +324,23 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
             if k in normal_attr:
                 # Accept only attr that already part of object
                 # +and ignore 0 length values
+                if not isinstance(v, str):
+                    try:
+                        v = str(v)
+                    except TypeError as e:
+                        print(e)
+                        continue
+
                 if v == student_dict.get(k, "Not Found") or not len(v):
                     continue
                 if k == 'gender' and len(v) != 1:
                     return jsonify({'error': 'gender must be M/F'}), 400
                 setattr(student, k.strip(), v.strip())
 
+        wrong_teachers_email = []
+
         if 'teachers_email' in data.keys():
-            teachers_email = data.get('teachers_email').strip()
+            teachers_email = data.get('teachers_email')
 
             # Make sure that teachers_email is an actual list.
             if not isinstance(teachers_email, list):
@@ -337,40 +356,40 @@ of teacher's IDs"}), 400
             for teacher_email in teachers_email:
                 teacher = storage.query(Teacher).filter(
                     Teacher.email == teacher_email).first()
+
                 # I'm not sure which policy  I should adopte,
                 # +forgiven or strict.
-                # I chose to be strict.
+                # I chose to be forgiven.
                 if not teacher:
-                    # If techer object with one of the teacher's emails
-                    # +provided not in our database or it's misspelled
-                    # all the list will be rejected.
-                    return jsonify({
-                        'error': f'UNKNOWN TEACHER with {teacher_email}'}), 400
+                    wrong_teachers_email.append(teacher_email)
+                    continue
 
                 if teacher.id in student_teacher_ids:
                     continue
 
                 # Add a teacher to the student's list of teachers.
                 teacher.students.append(student)
-
-                # Append new subjects/lessons related to new teacher to
-                # +student.
-                # and avoid duplications
-                st_sub = set(student.subjects + teacher.subjects)
-                student.subjects.extend(st_sub)
+                teacher.save()
 
                 # Making sure that student get assigned only lessons of
-                # +the classes he studies in.
+                # +the classes he studies in & the institution he belongs to.
+
+                # Filtring teacher's lessons that have same institution and
+                # +same class as the student.
                 teacher_lessons = [lesson for lesson in teacher.lessons
-                                   if lesson.classes.id in
-                                   [c.id for c in student.classes] and
-                                   lesson.institutions.id ==
-                                   student.institutions.id]
+                                   if student.classes.id in  # he always 1class
+                                   [c.id for c in lesson.classes] and
+                                   student.institutions.id in
+                                   [l.id for l in lesson.institutions]]
+
                 st_lessons = set(student.lessons + teacher_lessons)
-                student.lessons.extend(st_lessons)
+                student.lessons = list(st_lessons)
 
         student.save()
         student = student.to_dict()
+
+        # Sending a feed back of misspelled emails or not in our database.
+        student.update({"wrong" : wrong_teachers_email})
 
         if 'subjects' in student:
             del student['subjects']
