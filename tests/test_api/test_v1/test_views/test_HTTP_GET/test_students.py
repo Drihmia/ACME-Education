@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from datetime import datetime
 import requests as req
 # aliasing requests to req
@@ -104,7 +105,7 @@ def test_getting_the_correct_class():
 def test_getting_not_atudent():
     """Checks what happens if the ID is wrong"""
     with req.get(link + "/temp") as marko:
-        assert marko.status_code == 404
+        assert marko.status_code == 400
 
 
 def test_institutions_of_student():
@@ -115,9 +116,9 @@ def test_institutions_of_student():
             chkID = elem["id"]
             testLink = link + "/" + chkID + "/institutions"
             with req.get(testLink) as marko2:
-             polo2 = marko.json()
-             for elem2 in polo2:
-                assert elem2["__class__"] == "Institution"
+                polo2 = marko2.json()
+                for elem2 in polo2:
+                    assert elem2["__class__"] == "Institution"
 
 
 def test_year_of_student():

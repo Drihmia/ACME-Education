@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from datetime import datetime
 import requests as req
 # aliasing requests to req
@@ -123,9 +124,10 @@ def test_state_relationship():
 
 def test_intitutes_in_city():
     """Checks the institute filter by city"""
-    testID = "d854a90d-2b7b-4cb1-ab2c-d68c6169d7d7"
+    testID = "024fa7fa-20f0-4c64-8394-684809648ff9"
     newLink = link + "/" + testID + "/institutions"
     with req.get(link + "/" + testID) as marko:
+        print(link + "/" + testID)
         polo = marko.json()
         chkName = polo["name"]
     with req.get(newLink) as marko:

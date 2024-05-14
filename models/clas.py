@@ -40,6 +40,8 @@ class Clas(BaseModel, Base):
     # Normal attributes
     name = Column(String(128, collation='utf8mb4_unicode_ci'),
                   nullable=False, unique=True)
+    alias = Column(String(10, collation='utf8mb4_unicode_ci'),
+                  nullable=True)
 
     # one to Many relationship's attributes.
     students = relationship("Student",

@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """This module contains teacher'S IP"""
+from flask_cors import cross_origin
 from flask import jsonify, request
 from werkzeug.exceptions import BadRequest
 from sqlalchemy.exc import IntegrityError
@@ -16,6 +17,7 @@ from models.teacher import Teacher
 @app_views.route('/teachers', methods=['GET', 'POST'], strict_slashes=False)
 @app_views.route('/teachers/<id>', methods=["GET", 'PUT', 'DELETE'],
                  strict_slashes=False)
+@cross_origin()
 def teachers_list(id=None):
     """
     Get: return teacher object by id if provided otherwise a
@@ -50,7 +52,7 @@ def teachers_list(id=None):
         if id:
             teacher = storage.get(Teacher, id)
             if not teacher:
-                return jsonify({'error': "UNKNOWN TEACHER"}), 403
+                return jsonify({'error': "UNKNOWN TEACHER"}), 400
             return jsonify(teacher.to_dict()), 200
         teachers_list = [teacher.to_dict() for teacher in
                          storage.all(Teacher).values()]
@@ -215,11 +217,12 @@ def teachers_list(id=None):
         if not data:
             return jsonify({'error': 'No data'}), 422
 
-        if 'password' in data.keys() and 'confirm_password' not in data.keys():
+        data_keys = data.keys()
+        if 'password' in data_keys and 'confirm_password' not in data_keys:
             del data['password']
-        elif 'password' not in data.keys() and 'confirm_password' in data.keys():
+        elif 'password' not in data_keys and 'confirm_password' in data_keys:
             del data['confirm_password']
-        elif 'password' in data.keys() and 'confirm_password' in data.keys():
+        elif 'password' in data_keys and 'confirm_password' in data_keys:
             pwd = data.get('password')
             c_pwd = data.get('confirm_password')
 
@@ -406,7 +409,7 @@ def teachers_list_lessons(id):
     # Match faster if the maching is faster and less overload on database.
     teacher = storage.get(Teacher, id)
     if not teacher:
-        return jsonify({'error': "UNKNOWN TEACHER"}), 403
+        return jsonify({'error': "UNKNOWN TEACHER"}), 400
 
     lessons = teacher.lessons
     return jsonify([lesson.to_dict() for lesson in lessons]), 200
@@ -419,7 +422,7 @@ def teachers_list_subject(id):
 
     teacher = storage.get(Teacher, id)
     if not teacher:
-        return jsonify({'error': "UNKNOWN TEACHER"}), 403
+        return jsonify({'error': "UNKNOWN TEACHER"}), 400
 
     subjects = teacher.subjects
 
@@ -433,7 +436,7 @@ def teachers_list_institution(id):
 
     teacher = storage.get(Teacher, id)
     if not teacher:
-        return jsonify({'error': "UNKNOWN TEACHER"}), 403
+        return jsonify({'error': "UNKNOWN TEACHER"}), 400
 
     institutions = teacher.institutions
 
@@ -448,7 +451,7 @@ def teachers_list_class(id):
 
     teacher = storage.get(Teacher, id)
     if not teacher:
-        return jsonify({'error': "UNKNOWN TEACHER"}), 403
+        return jsonify({'error': "UNKNOWN TEACHER"}), 400
 
     classes = teacher.classes
 

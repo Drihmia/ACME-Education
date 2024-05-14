@@ -25,6 +25,8 @@ class Lesson(BaseModel, Base):
     public = Column(Boolean, nullable=True, default=True)
     subject = Column(String(64, collation='utf8mb4_unicode_ci'),
                   nullable=True)
+    class_alias = Column(String(10, collation='utf8mb4_unicode_ci'),
+                  nullable=True)
     teacher = Column(String(64, collation='utf8mb4_unicode_ci'),
                   nullable=True)
 

@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from datetime import datetime
 import requests as req
 # aliasing requests to req
@@ -92,10 +93,10 @@ def test_getting_the_correct_class():
         cls = polo["__class__"]
         assert cls == "State"
 
-def test_getting_not_teacher():
+def test_getting_not_state():
     """Checks what happens if the ID is wrong"""
     with req.get(link + "/temp") as marko:
-        assert marko.status_code == 404
+        assert marko.status_code == 400
 
 
 def test_list_cites_of_state():
