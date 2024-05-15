@@ -13,20 +13,20 @@ export const TeacherProfile = ({
   openModal: (item: any) => void;
 }) => {
   const { data: profile, error } = useSWR(
-    `http://${process.env.NEXT_API_ADDRESS}/api/v1/${user.class.toLowerCase()}s/${user.user_id}`,
+    `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${user.class.toLowerCase()}s/${user.user_id}`,
     fetcher
   );
 
   const { data: subjects } = useSWR(
-    `http://${process.env.NEXT_API_ADDRESS}/api/v1/teachers/${user.user_id}/subjects`,
+    `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${user.user_id}/subjects`,
     fetcher
   );
   const { data: classes } = useSWR(
-    `http://${process.env.NEXT_API_ADDRESS}/api/v1/teachers/${user.user_id}/classes`,
+    `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${user.user_id}/classes`,
     fetcher
   );
   const { data: institutions } = useSWR(
-    `http://${process.env.NEXT_API_ADDRESS}/api/v1/teachers/${user.user_id}/institutions`,
+    `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${user.user_id}/institutions`,
     fetcher
   );
 

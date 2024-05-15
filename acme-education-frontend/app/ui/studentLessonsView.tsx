@@ -15,7 +15,7 @@ export const StudentLessonsView = ({
 }) => {
   const { data: lessons } = useSWR(
     user
-      ? `http://${process.env.NEXT_API_ADDRESS}/api/v1/${user.class.toLowerCase()}s/${
+      ? `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${user.class.toLowerCase()}s/${
           user.user_id
         }/lessons`
       : null,
@@ -24,7 +24,7 @@ export const StudentLessonsView = ({
 
   const { data: subjects } = useSWR(
     user
-      ? `http://${process.env.NEXT_API_ADDRESS}/api/v1/${user.class.toLowerCase()}s/${
+      ? `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${user.class.toLowerCase()}s/${
           user.user_id
         }/subjects`
       : null,

@@ -63,7 +63,7 @@
 //   useEffect(() => {
 //     if (selectedCity.id != "") {
 //       fetch(
-//         `http://${process.env.NEXT_API_ADDRESS}/api/v1/cities/${selectedCity.id}/institutions`
+//         `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/cities/${selectedCity.id}/institutions`
 //       )
 //         .then((res) => res.json())
 //         .then((data) => setInstitutionsData(data));
@@ -81,13 +81,13 @@
 //   };
 
 //   const { data: citiesData } = useSWR(
-//     `http://${process.env.NEXT_API_ADDRESS}/api/v1/cities`,
+//     `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/cities`,
 //     fetcher
 //   );
 
 //   // clearCache()
-//   const subjectsUrl = `http://${process.env.NEXT_API_ADDRESS}/api/v1/subjects`;
-//   const profileUrl = `http://${process.env.NEXT_API_ADDRESS}/api/v1/teachers/${profile.id}`;
+//   const subjectsUrl = `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/subjects`;
+//   const profileUrl = `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${profile.id}`;
 
 //   const { data: subjectsList } = useSWR(subjectsUrl, fetcher);
 
@@ -108,7 +108,7 @@
 
 //     try {
 //       const response = await fetch(
-//         `http://${process.env.NEXT_API_ADDRESS}/api/v1/${
+//         `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${
 //           values.isTeacher == "true" ? "teachers" : "students"
 //         }/${action == "update" ? profile.id : ""}`,
 //         {
