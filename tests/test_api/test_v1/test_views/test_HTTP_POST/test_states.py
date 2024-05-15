@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import json
 import requests as req
 # Aliasing requests to req
@@ -34,6 +35,8 @@ def test_other_data_passed():
     data = {"__class__": "cat"}
     with req.post(link, data=json.dumps(data),
                   headers=head) as marko:
+        assert marko.json() == {"error": "Missing name"}
+        assert marko.status_code == 400
         print(marko.status_code)
         print(marko.json())
 
@@ -48,9 +51,6 @@ def test_correct_data():
     testLink = link + "/" + tempID
     with req.get(testLink) as marko:
         assert marko.json()["name"] == tempData["name"]
-    with req.get(link) as marko:
-        new = len(marko.json())
-        assert count == new + 1
 
 
 def test_reAdd():

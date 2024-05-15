@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import json
 import requests as req
 # Aliasing requests to req
@@ -5,6 +6,15 @@ import requests as req
 
 base = "http://54.157.156.176/"
 toTest = "teachers"
+tempData = {"first_name": "Catz",
+            "last_name": "Candy",
+            "email": "temp@catvill.com",
+            "password": "Mirage",
+            "confirm_password": "Mirage",
+            "institution_id": "00014fb3-eed2-43e8-a99d-2845be4c4f4f",
+            "city_id": "f5f202a7-4de8-4173-a7e9-9b0d94b9f6dei",
+            "gender": "M"
+            }
 head = {"Content-Type": "application/json"}
 link = base + toTest
 
