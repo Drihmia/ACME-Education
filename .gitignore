@@ -2,6 +2,7 @@
 # Python
 *.pyc
 *.py_x
+*test*.py
 */*.pyc
 *.txt
 
