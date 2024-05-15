@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import json
 import requests as req
 # Aliasing requests to req
@@ -5,7 +6,7 @@ import requests as req
 base = "http://54.157.156.176/"
 toTest = "cities"
 tempData = {"name": "Cat  Vills",
-            "state_id": "5e21a8d6-a018-4e09-8243-f0228ecb86b9"}
+            "state_id": "aa44e339-77ca-4532-b169-2fab14b9a133"}
 head = {"Content-Type": "application/json"}
 link = base + toTest
 
@@ -62,10 +63,6 @@ def test_correct_data():
     with req.post(link, data=json.dumps(tempData),
                   headers=head) as marko:
         assert marko.status_code == 201
-        assert marko.json()["name"] == tempData["name"]
-        assert marko.json()["state_id"] == tempData["state_id"]
-    testLink = link + "/" + tempData["state_id"]
-    with req.get(testLink) as marko:
         assert marko.json()["name"] == tempData["name"]
         assert marko.json()["state_id"] == tempData["state_id"]
     with req.get(link) as marko:

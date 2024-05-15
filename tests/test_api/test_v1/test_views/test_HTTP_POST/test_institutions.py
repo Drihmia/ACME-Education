@@ -1,12 +1,12 @@
+#!/usr/bin/python3
 import json
 import requests as req
 # Aliasing requests to req
 
 base = "http://54.157.156.176/"
 toTest = "cities"
-tempData = {"name": "Cat  Vills",
-            "city": "Al Haouz",
-            "city_id": "a51ec686-4ee4-4c1a-82cd-09543a123467"}
+tempData = {"name": "Catz",
+            "city_id": "f5f202a7-4de8-4173-a7e9-9b0d94b9f6de"}
 head = {"Content-Type": "application/json"}
 link = base + toTest
 
@@ -41,7 +41,7 @@ def test_no_name():
         assert marko.json() == {"error": "Missing name"}
 
 
-def test_no_city_name():
+def test_no_institute_name():
     """Checks when the city name is missing"""
     # Unexpectanly passing
     data = {"name": "Cat  Vills",
@@ -65,6 +65,16 @@ def test_missing_city_ID():
         assert marko.json() == {"error": "Missing state_id"}
         print(marko.status_code)
         print(marko.json())
+
+
+def test_fake_city_ID():
+    """Checks when the city ID is wrong"""
+    data = {"name": "Cat  Vills",
+            "city_id": "temp"}
+    with req.post(link, data=json.dumps(data),
+                  headers=head) as marko:
+        assert marko.status_code == 400
+        assert marko.json() == {"error": "UNKNOWN CITY"}
 
 
 def test_only_name_passed():
