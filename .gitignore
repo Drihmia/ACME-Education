@@ -3,7 +3,6 @@
 *.pyc
 *.py_x
 */*.pyc
-*test*.py
 *.txt
 
 # MySQL

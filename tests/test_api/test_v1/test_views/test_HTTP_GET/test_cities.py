@@ -1,4 +1,19 @@
 #!/usr/bin/python3
+"""
+Test casses for the cities API. It cover for approx. all sensitive cases.
+
+Variable naming conviction:
+    - marko: Statnds for the responce object when using "requests" library.
+    - polo: The object created when using methods of on "marko".
+            Usually is the human readable version of "marko"
+            or the content we intend on doing further processing on.
+            The both originate from the famous childrens' hide and seek game,
+            where one child screems "MARKO!" and the other one replies "POLO!"
+            in response to his call.
+    - elem: Short for element. This looping variable is used to hold
+            the content of the current iteration object
+            that we will do proccessing on.
+"""
 from datetime import datetime
 import requests as req
 # aliasing requests to req
@@ -27,7 +42,7 @@ def test_return_type():
 
 
 def test_json_and_list():
-    """Checks if the endpoint returned the correct types"""
+    """Checks if the endpoint returned the correct data types"""
     with req.get(link) as marko:
         polo = marko.json()
         assert isinstance(polo, list)
@@ -40,8 +55,7 @@ def test_class_addherence():
     with req.get(link) as marko:
         polo = marko.json()
         for elem in polo:
-           cls = elem["__class__"]
-           assert cls == "City"
+            assert elem["__class__"] == "City"
 
 
 def test_values_availability():
@@ -76,10 +90,13 @@ def test_getting_one_city():
     """Checks when we pick a city"""
     with req.get(link) as marko:
         polo = marko.json()
+        # Selecting the last city
         got = polo[-1]
+        # Saving the ID of the selected city
         slct = polo[-1]["id"]
     with req.get(link + "/" + slct) as marko:
         polo = marko.json()
+        # Saving the resulting ID to assert it
         chkSlct = polo["id"]
         assert chkSlct == slct
         assert polo == got
@@ -89,11 +106,11 @@ def test_getting_the_correct_class():
     """Checks if the class of the reuturn"""
     with req.get(link) as marko:
         polo = marko.json()
+        # Selecting the first city
         slct = polo[1]["id"]
     with req.get(link + "/" + slct) as marko:
         polo = marko.json()
-        cls = polo["__class__"]
-        assert cls == "City"
+        assert polo["__class__"] == "City"
 
 def test_getting_not_city():
     """Checks what happens if the ID is wrong"""
@@ -103,16 +120,16 @@ def test_getting_not_city():
 
 def test_getting_not_city_response():
     """Checks the response when ID is wrong"""
-    valu = {"error": "UNKNOWN CITY"}
     with req.get(link + "/temp") as marko:
         polo = marko.json()
-        assert polo == valu
+        assert polo == {"error": "UNKNOWN CITY"}
 
 
 def test_state_relationship():
     """Checks if a city is from on of the states"""
     with req.get(base + "states") as marko:
         polo = marko.json()
+        # List of states IDs
         state = []
         for elem in polo:
             state.append(elem["id"])
@@ -124,11 +141,12 @@ def test_state_relationship():
 
 def test_intitutes_in_city():
     """Checks the institute filter by city"""
+    # ID randomly checked from the database
     testID = "024fa7fa-20f0-4c64-8394-684809648ff9"
     newLink = link + "/" + testID + "/institutions"
     with req.get(link + "/" + testID) as marko:
-        print(link + "/" + testID)
         polo = marko.json()
+        # Saving the name to check
         chkName = polo["name"]
     with req.get(newLink) as marko:
         polo = marko.json()
@@ -146,7 +164,9 @@ def test_state_of_this_city():
     with req.get(link) as marko:
         polo = marko.json()
         for elem in polo:
+            # Saving the ID
             chkID = elem["id"]
+            # Saving the state ID
             chkState = elem["state_id"]
             with req.get(link + "/" + chkID + "/state") as marko2:
                 polo2 = marko2.json()

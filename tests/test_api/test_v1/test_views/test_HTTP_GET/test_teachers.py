@@ -1,4 +1,19 @@
 #!/usr/bin/python3
+"""
+Test casses for the teachers API. It cover for approx. all sensitive cases.
+
+Variable naming conviction:
+    - marko: Statnds for the responce object when using "requests" library.
+    - polo: The object created when using methods of on "marko".
+            Usually is the human readable version of "marko"
+            or the content we intend on doing further processing on.
+            The both originate from the famous childrens' hide and seek game,
+            where one child screems "MARKO!" and the other one replies "POLO!"
+            in response to his call.
+    - elem: Short for element. This looping variable is used to hold
+            the content of the current iteration object
+            that we will do proccessing on.
+"""
 from datetime import datetime
 import requests as req
 # aliasing requests to req
@@ -40,8 +55,7 @@ def test_class_addherence():
     with req.get(link) as marko:
         polo = marko.json()
         for elem in polo:
-           cls = elem["__class__"]
-           assert cls == "Teacher"
+           assert elem["__class__"] == "Teacher"
 
 
 def test_values_availability():
@@ -78,10 +92,13 @@ def test_getting_one_teacher():
     """Checks when we pick a teacher"""
     with req.get(link) as marko:
         polo = marko.json()
+        # Saving the last teacher
         got = polo[-1]
+        # Saving its ID
         slct = polo[-1]["id"]
     with req.get(link + "/" + slct) as marko:
         polo = marko.json()
+        # Saving the branch ID crawl
         chkSlct = polo["id"]
         assert chkSlct == slct
         assert polo == got
@@ -91,6 +108,7 @@ def test_getting_the_correct_class():
     """Checks if the class of the reuturn"""
     with req.get(link) as marko:
         polo = marko.json()
+        # Saving the first teacher ID
         slct = polo[1]["id"]
     with req.get(link + "/" + slct) as marko:
         polo = marko.json()
@@ -105,7 +123,9 @@ def test_getting_not_teacher():
 
 def test_lesson_of_teacher():
     """Checks filter of lessons by teachers"""
+    # Chosen ID from the database
     chkID = "d3acda2d-f7f1-40f2-bada-fa810f1ecdfb"
+    # Formulating link based on it
     testLink = link + "/" + chkID + "/lessons"
     with req.get(testLink) as marko:
         polo = marko.json()
@@ -115,7 +135,9 @@ def test_lesson_of_teacher():
 
 def test_subject_of_teacher():
     """Checks filter of subjects by teachers"""
+    # Chosen ID from the database
     chkID = "d3acda2d-f7f1-40f2-bada-fa810f1ecdfb"
+    # Formulating link based on it
     testLink = link + "/" + chkID + "/subjects"
     with req.get(testLink) as marko:
         polo = marko.json()
@@ -125,7 +147,9 @@ def test_subject_of_teacher():
 
 def test_institutions_of_teacher():
     """Checks filter of institutions by teachers"""
+    # Chosen ID from the database
     chkID = "d3acda2d-f7f1-40f2-bada-fa810f1ecdfb"
+    # Formulating link based on it
     testLink = link + "/" + chkID + "/institutions"
     with req.get(testLink) as marko:
         polo = marko.json()
@@ -135,7 +159,9 @@ def test_institutions_of_teacher():
 
 def test_years_of_teacher():
     """Checks filter of years by teachers"""
+    # Chosen ID from the database
     chkID = "d3acda2d-f7f1-40f2-bada-fa810f1ecdfb"
+    # Formulating link based on it
     testLink = link + "/" + chkID + "/classes"
     with req.get(testLink) as marko:
         polo = marko.json()

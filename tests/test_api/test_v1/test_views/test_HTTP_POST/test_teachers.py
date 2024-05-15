@@ -1,11 +1,26 @@
 #!/usr/bin/python3
+"""
+Test casses for the teachers API. It cover for approx. all sensitive cases.
+
+Variable naming conviction:
+    - marko: Statnds for the responce object when using "requests" library.
+    - polo: The object created when using methods of on "marko".
+            Usually is the human readable version of "marko"
+            or the content we intend on doing further processing on.
+            The both originate from the famous childrens' hide and seek game,
+            where one child screems "MARKO!" and the other one replies "POLO!"
+            in response to his call.
+    - elem: Short for element. This looping variable is used to hold
+            the content of the current iteration object
+            that we will do proccessing on.
+"""
 import json
 import requests as req
 # Aliasing requests to req
-# Need to add data for that
 
 base = "http://54.157.156.176/"
 toTest = "teachers"
+# The information for the new institute that will be created
 tempData = {"first_name": "Catz",
             "last_name": "Candy",
             "email": "temp@catvill.com",
@@ -15,6 +30,7 @@ tempData = {"first_name": "Catz",
             "city_id": "f5f202a7-4de8-4173-a7e9-9b0d94b9f6dei",
             "gender": "M"
             }
+# Headers needed by the application
 head = {"Content-Type": "application/json"}
 link = base + toTest
 
@@ -41,7 +57,6 @@ def test_other_data_passed():
     with req.post(link, data=json.dumps(data),
                   headers=head) as marko:
         assert marko.status_code == 400
-        print(marko.json())
 
 
 def test_correct_data():
@@ -50,17 +65,21 @@ def test_correct_data():
                   headers=head) as marko:
         assert marko.status_code == 201
         assert marko.json()["name"] == tempData["name"]
+        # Saving the ID
         tempID = marko.json()["id"]
+    # Formulating a link using it
     testLink = link + "/" + tempID
     with req.get(testLink) as marko:
         assert marko.json()["name"] == tempData["name"]
     with req.get(link) as marko:
+        # Getting count after object creation
         new = len(marko.json())
         assert count == new + 1
 
 
 def test_missing_email():
     """Checks when email is missing"""
+    # Data needed for the test case
     data = {"first_name": "Mani",
             "last_name": "Cat",
             "city": "Al Haouz",
@@ -70,11 +89,11 @@ def test_missing_email():
                   headers=head) as marko:
         assert marko.status_code == 400
         assert marko.json() == {"error": "Missing email"}
-        print(marko.json())
 
 
 def test_email_exists():
     """Checks when email is repeated"""
+    # Data needed for the test case
     data = {"first_name": "Mani",
             "last_name": "Cat",
             "city": "Al Haouz",
@@ -85,11 +104,11 @@ def test_email_exists():
                   headers=head) as marko:
         assert marko.status_code == 400
         assert marko.json() == {"error": "teacher exists"}
-        print(marko.json())
 
 
 def test_missing_name():
     """Checks when one of the names is missing"""
+    # Data needed for the test case
     data = {"first_name": "Mani",
             "city": "Al Haouz",
             "email": "omer2@gmail.rk",
@@ -100,11 +119,11 @@ def test_missing_name():
                   headers=head) as marko:
         assert marko.status_code == 400
         assert marko.json() == {"error": "Missing last_name"}
-        print(marko.json())
 
 
 def test_missing_name2():
     """Checks when one of the names is missing"""
+    # Data needed for the test case
     data = {"last_name": "Mani",
             "city": "Al Haouz",
             "email": "omer2@gmail.rk",
@@ -115,11 +134,11 @@ def test_missing_name2():
                   headers=head) as marko:
         assert marko.status_code == 400
         assert marko.json() == {"error": "Missing first_name"}
-        print(marko.json())
 
 
 def test_missing_password():
     """Checks when password is missing"""
+    # Data needed for the test case
     data = {"first_name": "Mani",
             "last_name": "Cat",
             "city": "Al Haouz",
@@ -130,11 +149,11 @@ def test_missing_password():
                   headers=head) as marko:
         assert marko.status_code == 400
         assert marko.json() == {"error": "Missing password"}
-        print(marko.json())
 
 
 def test_create_found_institute():
     """Checks when creating in an existing institute"""
+    # Data needed for the test case
     data = {"first_name": "Mani",
             "last_name": "Cat",
             "city": "Al Haouz",
@@ -144,7 +163,6 @@ def test_create_found_institute():
             "password": "temp"}
     with req.post(link, data=json.dumps(data),
                   headers=head) as marko:
-        print(marko.status_code)
 
 
 def test_reAdd():
@@ -160,4 +178,3 @@ def test_reAdd():
                   headers=head) as marko:
         assert marko.status_code == 400
         assert marko.json() == {"error": "exists"}
-        print(marko.json())

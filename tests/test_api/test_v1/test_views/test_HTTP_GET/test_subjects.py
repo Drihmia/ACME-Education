@@ -1,4 +1,19 @@
 #!/usr/bin/python3`
+"""
+Test casses for the subjects API. It cover for approx. all sensitive cases.
+
+Variable naming conviction:
+    - marko: Statnds for the responce object when using "requests" library.
+    - polo: The object created when using methods of on "marko".
+            Usually is the human readable version of "marko"
+            or the content we intend on doing further processing on.
+            The both originate from the famous childrens' hide and seek game,
+            where one child screems "MARKO!" and the other one replies "POLO!"
+            in response to his call.
+    - elem: Short for element. This looping variable is used to hold
+            the content of the current iteration object
+            that we will do proccessing on.
+"""
 from datetime import datetime
 import requests as req
 # aliasing requests to req
@@ -40,8 +55,7 @@ def test_class_addherence():
     with req.get(link) as marko:
         polo = marko.json()
         for elem in polo:
-           cls = elem["__class__"]
-           assert cls == "Subject"
+           assert elem["__class__"] == "Subject"
 
 
 def test_values_availability():
@@ -74,10 +88,13 @@ def test_getting_one_subject():
     """Checks when we pick a subject"""
     with req.get(link) as marko:
         polo = marko.json()
+        # Saving the last subject
         got = polo[-1]
+        # Saving its ID
         slct = polo[-1]["id"]
     with req.get(link + "/" + slct) as marko:
         polo = marko.json()
+        # Saving the branch crawl ID
         chkSlct = polo["id"]
         assert chkSlct == slct
         assert polo == got
@@ -87,11 +104,11 @@ def test_getting_the_correct_class():
     """Checks if the class of the reuturn"""
     with req.get(link) as marko:
         polo = marko.json()
+        # Saving the first subject's ID
         slct = polo[1]["id"]
     with req.get(link + "/" + slct) as marko:
         polo = marko.json()
-        cls = polo["__class__"]
-        assert cls == "Subject"
+        assert polo["__class__"] == "Subject"
 
 def test_getting_not_subject():
     """Checks what happens if the ID is wrong"""
@@ -104,7 +121,9 @@ def test_subject_of_institute():
     with req.get(link) as marko:
         polo = marko.json()
         for elem in polo:
+            # Saving the ID
             chkID = elem["id"]
+            # Formulating a link based on it
             testLink = link + "/" + chkID + "/institutions"
             with req.get(testLink) as marko2:
                 polo2 = marko2.json()
@@ -114,7 +133,9 @@ def test_subject_of_institute():
 
 def test_subject_of_lessons():
     """Checks filter of institute by lessons"""
+    # ID chosen form the database
     chkID = "7424627e-8f0d-4273-ad4e-b2e69215b526"
+    # Formulating a link based on it
     testLink = link + "/" + chkID + "/lessons"
     with req.get(testLink) as marko2:
         polo2 = marko2.json()
@@ -127,9 +148,10 @@ def test_teacher_of_subject():
     with req.get(link) as marko:
         polo = marko.json()
         for elem in polo:
+            # Saving the ID
             chkID = elem["id"]
+            # Formulating a link based on it
             testLink = link + "/" + chkID + "/teachers"
-            print(testLink)
             with req.get(testLink) as marko2:
                 polo2 = marko2.json()
                 for elem2 in polo2:

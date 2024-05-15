@@ -1,4 +1,19 @@
 #!/usr/bin/python3
+"""
+Test casses for the institutes API. It cover for approx. all sensitive cases.
+
+Variable naming conviction:
+    - marko: Statnds for the responce object when using "requests" library.
+    - polo: The object created when using methods of on "marko".
+            Usually is the human readable version of "marko"
+            or the content we intend on doing further processing on.
+            The both originate from the famous childrens' hide and seek game,
+            where one child screems "MARKO!" and the other one replies "POLO!"
+            in response to his call.
+    - elem: Short for element. This looping variable is used to hold
+            the content of the current iteration object
+            that we will do proccessing on.
+"""
 from datetime import datetime
 import requests as req
 # aliasing requests to req
@@ -13,7 +28,6 @@ limit = 32
 testID = ""
 
 
-# Tests HTTP GET all
 def test_endpoint_running():
     """Checks if the api is started"""
     with req.get(link) as marko:
@@ -42,8 +56,7 @@ def test_class_addherence():
     with req.get(link) as marko:
         polo = marko.json()
         for elem in polo:
-           cls = elem["__class__"]
-           assert cls == "Institution"
+           assert elem["__class__"] == "Institution"
 
 
 def test_values_availability():
@@ -80,10 +93,13 @@ def test_getting_one_institute():
     """Checks when we pick a institute"""
     with req.get(link) as marko:
         polo = marko.json()
+        # Saving the last institute
         got = polo[-1]
+        # Saving its ID
         slct = polo[-1]["id"]
     with req.get(link + "/" + slct) as marko:
         polo = marko.json()
+        # Saving the ID from the branching crawl
         chkSlct = polo["id"]
         assert chkSlct == slct
         assert polo == got
@@ -93,6 +109,7 @@ def test_getting_the_correct_class():
     """Checks if the class of the reuturn"""
     with req.get(link) as marko:
         polo = marko.json()
+        # Saving the first institute
         slct = polo[1]["id"]
     with req.get(link + "/" + slct) as marko:
         polo = marko.json()
@@ -111,7 +128,9 @@ def test_relationships():
     """
     with req.get(base + "cities") as marko:
         polo = marko.json()
+        # List to contain city names
         city = []
+        # List to contain city IDs
         cityID = []
     for elem in polo:
         city.append(elem["name"])
@@ -125,6 +144,7 @@ def test_relationships():
 
 def test_correct_relationship():
     """Check if the information is correct"""
+    # Limit variable inroduced to as the number of institutes is huge
     i = 0
     with req.get(link) as marko:
         polo = marko.json()
@@ -141,7 +161,9 @@ def test_correct_relationship():
 
 def test_lesson_from_institute():
     """Checks the filter of lessons from the same institute"""
+    # Chosen ID from database
     testID = "d48256df-47f8-4c51-9e77-a380bbe208b8"
+    # Link formulated using the saved ID
     testLink = link + "/" + testID + "/lessons"
     with req.get(testLink) as marko:
         polo = marko.json()
@@ -152,7 +174,9 @@ def test_lesson_from_institute():
 
 def test_teacher_by_institute():
     """Checks the teachers in same institute filter"""
+    # Chosen ID from database
     testID = "d48256df-47f8-4c51-9e77-a380bbe208b8"
+    # Link formulated using the saved ID
     testLink = link + "/" + testID + "/teachers"
     with req.get(testLink) as marko:
         polo = marko.json()
@@ -162,7 +186,9 @@ def test_teacher_by_institute():
 
 def test_subjct_by_institute():
     """Checks the filter of subjects from the same institute"""
+    # Chosen ID from database
     testID = "d48256df-47f8-4c51-9e77-a380bbe208b8"
+    # Link formulated using the saved ID
     testLink = link + "/" + testID + "/subjects"
     with req.get(testLink) as marko:
         polo = marko.json()
@@ -172,7 +198,9 @@ def test_subjct_by_institute():
 
 def test_year_by_institute():
     """Checks the filter of years from the same institute"""
+    # Chosen ID from database
     testID = "d48256df-47f8-4c51-9e77-a380bbe208b8"
+    # Link formulated using the saved ID
     testLink = link + "/" + testID + "/classes"
     with req.get(testLink) as marko:
         polo = marko.json()
@@ -182,7 +210,9 @@ def test_year_by_institute():
 
 def test_student_by_institute():
     """Checks the filter of students from the same institute"""
+    # Chosen ID from database
     testID = "31975d9f-08a3-445b-88aa-fc01cd05d18c"
+    # Link formulated using the saved ID
     testLink = link + "/" + testID + "/students"
     with req.get(testLink) as marko:
         polo = marko.json()
