@@ -3,10 +3,10 @@
 This application enables students and teachers to coonect with each other, helps teachers share their material with their students in a more profissional and distraction free environment, provide for a chatting place with the teacher so they can be heard and slim the chances of the teacher missing a student note, cares to those in need for knowledage but are not a part of any educational establishment.
 ## Screenshots
 
-![App Screenshot](https://photos.app.goo.gl/fya9GJAVocrwGqJK7)
-![App Screenshot](https://photos.app.goo.gl/T1EbMBuTPf5czJtf7)
-![App Screenshot](https://photos.app.goo.gl/z2iWzYADpY6mmbm26)
-![App Screenshot](https://photos.app.goo.gl/3uzQYVBLontEZMmx5)
+![App Screenshot](https://lh3.googleusercontent.com/pw/AP1GczNmGsJ6XrFnDGWR-IkemF8EQjHCk00s1z1SIqCJJLb54wkRMpW51rWN_Qs0CLrg07-ZuvBvFXIdw7XzL6RTbeRYva3kHvvCPcITGZ0MSCuXJ3EbiBAz5B4rQdUU9-tP1rYTvdQiSnq7PHQU8fe2Ahcq=w3280-h1986-s-no-gm?authuser=0)
+![App Screenshot](https://lh3.googleusercontent.com/pw/AP1GczNvs12boNWQxvkUynm87fnDDFfS2txqSjhWGWh0kYESIdp1xcqJXR-tHirZRTBFQU6Ghmy8oJa4Gen8MrjDYN3wmELBGzNp78jstJBjPmSnYO8MfFo242jnI-WmxTWvTGVyHWA5jlOe0Olwjje-9bEU=w3454-h1150-s-no-gm?authuser=0)
+![App Screenshot](https://lh3.googleusercontent.com/pw/AP1GczO6j7jJ6HuT-P0e4E22u_g-hA36XVNkSQjTMyHtPztUdwUi2jKtdpnlwUfIAzRdWXZ0WJb-oq9PU2zFIMEyMt809vRBFuwM_gETtOMMBkEUa9Sd1Z110OaCpDrpam9DnfN1CR3ALTgsvv2IodWWR6s9=w3432-h1868-s-no-gm?authuser=0)
+![App Screenshot](https://lh3.googleusercontent.com/pw/AP1GczORq7kaR2Jw5P0grfXAdiQUjyUqSFxxqxS4_8tgEPGpMdtM2mkMiKFH7Y6wQ0jb8hzViat1Uh0VhI5mT6BrqS5xrxR90n_fIpyJ_Y33KdldUxl7Abnv4qGVxIq5rJezf5HQbOOVOQr-brBJFB8VbfEV=w2902-h688-s-no-gm?authuser=0)
 
 ## Used By
 
@@ -27,8 +27,11 @@ This project is made for:
 To run this project, you will need to add the following environment variables to your .env file
 
 ```
-  SECRET_KEY='afc418492cb06c4fecc7467f1d12648a'
-  JWT_SECRET_KEY='a0aff3b1ed0d8278ba099ef6c32ba28ad054d20e64b3f16164d80bece03d8c97'
+  SECRET_KEY='defined by user'
+  JWT_SECRET_KEY='defined by user'
+  ACME_EMAIL='to send verification email'
+  FRONT_END_ROUTER="127.0.0.1:3000"
+  BACK_END_ROUTER="127.0.0.1:5000"
   p='database password'
   u='database user'
   h='ip address of database'
@@ -68,24 +71,24 @@ Install dependancies
 ```
 
 Run the fornt end
-- To run the production server
+- To run the front-end server on development mode
     ```bash
       cd ACME-Education/acme-education-frontend
       npm run dev
     ```
-- To run the frontend app
+- To run the build
     ```bash
       cd ACME-Education/acme-education-frontend
       npm run build
     ```
-- To run the app on a server
+- To run the front-end server on production mode:
     ```bash
       cd ACME-Education/acme-education-frontend
       npm run start
     ```
 
 Run the back end
-- Starting the database and populating it
+- Starting the database, populate it and run the back end
     ```bash
       cd ACME-Education
       ./pop.bash
@@ -97,13 +100,13 @@ Run the back end
     ```
 ## API Reference
 
-You can find the API documentation by following this [link](https://night-belly-22c.notion.site/ACME-Education-API-Docs-77ef7af075cd44829cdfcb8d4d45dd79?pvs=4) or see a less cooler version by navigating to `api/v1/Documentation` in the repo and see the MD file.
+You can find the API documentation by following this <a href="https://night-belly-22c.notion.site/ACME-Education-API-Docs-77ef7af075cd44829cdfcb8d4d45dd79?pvs=4" target="_blank">link</a> or see a less cooler version by navigating to `api/v1/Documentation` in the repo and see the MD file.
 
 ## Running Tests
 
-The test are devided according to the HTTP method. This way we get the advantage of isolating different casses for each endpoint. This also give the advantages of having the ability to test for a specific HTTP method without having to look for a specific case is a rather long file.
+The test are devided according to the HTTP methods. This way we get the advantage of isolating different casses for each endpoint. This also give the advantages of having the ability to test for a specific HTTP method without having to look for a specific case in a rather long file.
 
-To run tests dedicated for the API, move into the the folder containting the method you would like to test.
+To run tests dedicated for the API, move into the folder containting the method you would like to test.
 
 - Run all the test casses for all endpoints
     ```bash
@@ -120,9 +123,9 @@ To run tests dedicated for the API, move into the the folder containting the met
 
 ## Authors
 
-- DRIHMIA Redouane - [Email](drihmia.redouane@gmail.com)
+- DRIHMIA Redouane - [Email](drihmia.redouane@gmail.com) / [Github](https://github.com/Drihmia) / [LinkedIn](https://www.linkedin.com/in/rdrihmia/)
 - Mohammed Omer - [Github](https://github.com/MegaChie) / [LinkedIn](www.linkedin.com/in/mohamed-omer-63b24b21b)
-- Ubonisrael Amos Akpanudoh - [Github](https://github.com/ubonisrael) / [LinkedIn](https://linkedin.com/in/ubonisrael-akpanudoh-44ba82246/) / [Email](akpanudohubonisrael@gmail.com)
+- Ubonisrael Amos Akpanudoh - [Email](akpanudohubonisrael@gmail.com) / [Github](https://github.com/ubonisrael) / [LinkedIn](https://linkedin.com/in/ubonisrael-akpanudoh-44ba82246/)
 
 ## License
 
