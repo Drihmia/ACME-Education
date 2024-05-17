@@ -4,6 +4,7 @@ Contains the class DBStorage
 """
 
 from models.base_model import Base
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy_utils import create_database, database_exists
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -22,6 +23,7 @@ from models.student import Student
 classes = {'Institution': Institution, 'Subject': Subject,
            'Teacher': Teacher, 'Lesson': Lesson, 'Class': Clas,
            'State': State, 'City': City, 'Student': Student}
+load_dotenv()
 
 
 class DBStorage:
