@@ -2,8 +2,8 @@
 # Python
 *.pyc
 *.py_x
-*/*.pyc
 *test*.py
+*/*.pyc
 *.txt
 *.env*
 # MySQL

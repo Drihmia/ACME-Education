@@ -1,4 +1,19 @@
 #!/usr/bin/python3
+"""
+Test casses for the lessons API. It cover for approx. all sensitive cases.
+
+Variable naming conviction:
+    - marko: Statnds for the responce object when using "requests" library.
+    - polo: The object created when using methods of on "marko".
+            Usually is the human readable version of "marko"
+            or the content we intend on doing further processing on.
+            The both originate from the famous childrens' hide and seek game,
+            where one child screems "MARKO!" and the other one replies "POLO!"
+            in response to his call.
+    - elem: Short for element. This looping variable is used to hold
+            the content of the current iteration object
+            that we will do proccessing on.
+"""
 from datetime import datetime
 import requests as req
 # aliasing requests to req
@@ -40,8 +55,7 @@ def test_class_addherence():
     with req.get(link) as marko:
         polo = marko.json()
         for elem in polo:
-           cls = elem["__class__"]
-           assert cls == "Lesson"
+           assert elem["__class__"] == "Lesson"
 
 
 def test_values_availability():
@@ -83,10 +97,13 @@ def test_getting_one_lesson():
     """Checks when we pick a lesson"""
     with req.get(link) as marko:
         polo = marko.json()
+        # Saving the last lesson
         got = polo[-1]
+        # Saving its ID
         slct = polo[-1]["id"]
     with req.get(link + "/" + slct) as marko:
         polo = marko.json()
+        # Saving the resulting ID from the branch crawl
         chkSlct = polo["id"]
         assert chkSlct == slct
         assert polo == got
@@ -96,11 +113,11 @@ def test_getting_the_correct_class():
     """Checks if the class of the reuturn"""
     with req.get(link) as marko:
         polo = marko.json()
+        # Saving the first lesson's ID
         slct = polo[1]["id"]
     with req.get(link + "/" + slct) as marko:
         polo = marko.json()
-        cls = polo["__class__"]
-        assert cls == "Lesson"
+        assert polo["__class__"] == "Lesson"
 
 def test_getting_not_lesson():
     """Checks what happens if the ID is wrong"""
@@ -115,16 +132,19 @@ def test_relationships():
     """
     with req.get(base + "teachers") as marko:
         polo = marko.json()
+        # List to hold teachers IDs
         teach = []
         for elem in polo:
             teach.append(elem["id"])
     with req.get(base + "subjects") as marko:
         polo = marko.json()
+        # List to hold subjects IDs
         subj = []
     for elem in polo:
         subj.append(elem["id"])
     with req.get(base + "institutions") as marko:
         polo = marko.json()
+        # List to hold institutes IDs
         inst = []
         for elem in polo:
             inst.append(elem["id"])

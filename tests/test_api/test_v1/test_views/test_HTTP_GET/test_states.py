@@ -1,4 +1,19 @@
 #!/usr/bin/python3
+"""
+Test casses for the states API. It cover for approx. all sensitive cases.
+
+Variable naming conviction:
+    - marko: Statnds for the responce object when using "requests" library.
+    - polo: The object created when using methods of on "marko".
+            Usually is the human readable version of "marko"
+            or the content we intend on doing further processing on.
+            The both originate from the famous childrens' hide and seek game,
+            where one child screems "MARKO!" and the other one replies "POLO!"
+            in response to his call.
+    - elem: Short for element. This looping variable is used to hold
+            the content of the current iteration object
+            that we will do proccessing on.
+"""
 from datetime import datetime
 import requests as req
 # aliasing requests to req
@@ -40,8 +55,7 @@ def test_class_addherence():
     with req.get(link) as marko:
         polo = marko.json()
         for elem in polo:
-           cls = elem["__class__"]
-           assert cls == "State"
+           assert elem["__class__"] == "State"
 
 
 def test_values_availability():
@@ -74,10 +88,13 @@ def test_getting_one_state():
     """Checks when we pick a state"""
     with req.get(link) as marko:
         polo = marko.json()
+        # Saving the last state
         got = polo[-1]
+        # Saving its Its ID
         slct = polo[-1]["id"]
     with req.get(link + "/" + slct) as marko:
         polo = marko.json()
+        # Saving the ID from the branch crawl
         chkSlct = polo["id"]
         assert chkSlct == slct
         assert polo == got
@@ -87,11 +104,11 @@ def test_getting_the_correct_class():
     """Checks if the class of the reuturn"""
     with req.get(link) as marko:
         polo = marko.json()
+        # Saving the first state's ID
         slct = polo[1]["id"]
     with req.get(link + "/" + slct) as marko:
         polo = marko.json()
-        cls = polo["__class__"]
-        assert cls == "State"
+        assert polo["__class__"] == "State"
 
 def test_getting_not_state():
     """Checks what happens if the ID is wrong"""
@@ -104,7 +121,9 @@ def test_list_cites_of_state():
     with req.get(link) as marko:
         polo = marko.json()
         for elem in polo:
+            # Saving the ID to assert aganist
             chkID = elem["id"]
+            # Formulating a link based on the ID
             testLink = link + "/" + chkID + "/cities"
             with req.get(testLink) as marko2:
                 polo2 = marko2.json()
