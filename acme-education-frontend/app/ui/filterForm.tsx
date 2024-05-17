@@ -78,14 +78,14 @@ export const FilterForm = ({
             name="subject"
             data={subjects}
             type="text"
-            placeholder="e.g Mathematics"
+            placeholder="e.g Physique-Chimie"
             optional={true}
           />
           <MyTextInput
             label="Name"
             name="name"
             type="text"
-            placeholder="How to build a rocket"
+            placeholder="Chemical Transformations"
           />
           <FieldSet
             label="Public"

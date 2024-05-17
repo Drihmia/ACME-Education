@@ -5,7 +5,7 @@
 */*.pyc
 *test*.py
 *.txt
-
+*.env*
 # MySQL
 *.sql
 

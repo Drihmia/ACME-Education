@@ -137,8 +137,8 @@ export const StudentForm = ({
 
     try {
       const response = await fetch(
-        `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/students/${
-          action == "update" ? profile.id : ""
+        `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${
+          action == "update" ? "students/" + profile.id : "verify_email_send"
         }`,
         {
           method: action == "signup" ? "POST" : "PUT",
@@ -213,6 +213,7 @@ export const StudentForm = ({
             gender: action == "update" ? profile.gender : "",
             class: action == "update" ? profile.class.name : "",
             teacher_email: action == "update" ? profile.teacher_email : "",
+            is_teacher: action == "signup" ? false: false,
           }}
           validationSchema={
             action === "update" ? updateStudentSchema : signupStudentSchema
@@ -248,7 +249,7 @@ export const StudentForm = ({
                   label="Phone Number"
                   name="phone_number"
                   type="string"
-                  placeholder="+2334045002001"
+                  placeholder="+212637890987"
                 />
                 {action === "signup" && (
                   <>
@@ -272,7 +273,7 @@ export const StudentForm = ({
                   data={citiesData}
                   checkValue={checkValue("city")}
                   type="text"
-                  placeholder="e.g MarsCity"
+                  placeholder="e.g Sale"
                   disabled={profile ? true : false}
                 />
                 <MyTextAndSelectInput
@@ -282,14 +283,14 @@ export const StudentForm = ({
                   checkValue={checkValue("institute")}
                   type="text"
                   disabled={action === "signup" ? !selectedCity.status : true}
-                  placeholder="e.g Insitute of Science and Technology"
+                  placeholder="e.g Lycee Qualifiant ALMANDAR ALJAMIL"
                 />
                 <MyTextAndSelectInput
                   label="Class"
                   name="class"
                   data={classes}
                   type="text"
-                  placeholder="Class 1"
+                  placeholder="Tronc commun (French)"
                   disabled={
                     action === "signup" ? !selectedInstitute.status : true
                   }

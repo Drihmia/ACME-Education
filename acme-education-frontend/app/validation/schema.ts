@@ -14,6 +14,25 @@ const allowedDomains = [
   "protonmail.com",
   "yandex.com",
   "zoho.com",
+  "hotmail.com",
+  "live.com",
+  "mail.com",
+  "gmx.com",
+  "mail.ru",
+  "qq.com",
+  "163.com",
+  "126.com",
+  "naver.com",
+  "daum.net",
+  "hanmail.net",
+  "netease.com",
+  "tencent.com",
+  "sina.com",
+  "sohu.com",
+  "rediffmail.com",
+  "lycos.com",
+  "rocketmail.com",
+  "inbox.com"
 ];
 
 const validateEmailDomain = (value?: string) => {

@@ -94,7 +94,8 @@ export const TeacherForm = ({
 
     try {
       const response = await fetch(
-        `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${action == "update" ? profile.id : ""}`,
+        `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${
+          action == "update" ? "teachers/" + profile.id : "verify_email_send"}`,
         {
           method: action == "signup" ? "POST" : "PUT",
           body: JSON.stringify(values),
@@ -178,6 +179,7 @@ export const TeacherForm = ({
             subjects: action == "update" ? profile.subjects.map((sub: any) => sub.id) : [],
             classes: action == "update" ? profile.classes.map((cls: any) => cls.id) : [],
             institutions: action == "update" ? profile.institutions.map((ins: any) => ins.id) : [],
+            is_teacher: action == "signup" ? true : true ,
           }}
           validationSchema={action === "update" ? updateTeacherSchema : signupTeacherSchema}
           onSubmit={(values, { setSubmitting }) => {
@@ -211,7 +213,7 @@ export const TeacherForm = ({
                   label="Phone Number"
                   name="phone_number"
                   type="number"
-                  placeholder="+2334045002001"
+                  placeholder="+212637890987"
                 />
                 {action === "signup" && (
                   <>
@@ -235,7 +237,7 @@ export const TeacherForm = ({
                   data={cities}
                   checkValue={checkValue}
                   type="text"
-                  placeholder="e.g MarsCity"
+                  placeholder="e.g Sale"
                   disabled={profile ? true : false}
                 />
                 <MyTextAndSelectInput
@@ -244,7 +246,7 @@ export const TeacherForm = ({
                   data={institutions}
                   type="text"
                   disabled={!selectedCity.status}
-                  placeholder="e.g Insitute of Science and Technology"
+                  placeholder="e.g Lycee Qualifiant ALMANDAR ALJAMIL"
                 />
                 <FieldSet
                     label="Gender"

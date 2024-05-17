@@ -81,6 +81,7 @@ interface teacherSignupProps {
   institution_id?: string;
   subjects_id?: string[];
   gender: string
+  is_teacher: boolean;
 }
 
 interface studentSignupProps {
@@ -98,6 +99,7 @@ interface studentSignupProps {
   class_id?: string;
   class: string;
   teacher_email: string;
+  is_teacher: boolean;
   // teacher: string;
 }
 

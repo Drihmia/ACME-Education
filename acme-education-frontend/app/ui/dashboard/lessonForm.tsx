@@ -140,14 +140,14 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
             label="Title of lesson"
             name="name"
             type="text"
-            placeholder="you@example.com"
+            placeholder="Chemical Transformations"
           />
           <MyTextAndSelectInput
             label="Subject"
             name="subject"
             data={subjects}
             type="text"
-            placeholder="e.g Mathematics"
+            placeholder="e.g Physique-Chimie"
             disabled={action === "Add" ? false : true}
           />
           {action === "Add" && (
@@ -157,7 +157,7 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
                 name="institution"
                 data={institutions}
                 type="text"
-                placeholder="e.g Insitute of Science and Technology"
+                placeholder="e.g Lycee Qualifiant ALMANDAR ALJAMIL"
                 optional={true}
               />
               <MyTextAndSelectInput
@@ -165,7 +165,7 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
                 name="class"
                 data={classes}
                 type="text"
-                placeholder="e.g Primary One"
+                placeholder="e.g Tronc commun (French)"
                 optional={true}
               />
             </>
@@ -174,7 +174,7 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
             label="Download URL"
             name="download_link"
             type="text"
-            placeholder="you@example.com"
+            placeholder="https://drive.google.com/file"
           />
           <FieldSet
             label="Should the lesson be publicly available?"
