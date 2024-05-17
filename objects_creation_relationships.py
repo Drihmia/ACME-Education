@@ -350,16 +350,36 @@ inst_2.save()
 #  \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 # Institution: ------------------------------
-print(
-    "Setting relationship between institution and thier classes and subjects")
-institutions_db = storage.all(Institution).values()
-subjects_db = storage.all(Subject).values()
-classes_db = storage.all(Clas).values()
-for institution in institutions_db:
-    # print("------------- : ", institution.name)
-    institution.subjects.extend(subjects_db)
-    institution.classes.extend(classes_db)
-    institution.save()
+print("Do you wanna set the relationships now or latter")
+print("Setting relationships takes triple time as the creating,")
+print("Type anything to quit")
+print("Note: You can do that using: ")
+print("D='ACME' u='ur usr' h='ur host' p='ur pwd' python3 institution_relationship.py")
+print("Wanna continue? Type 'yes'")
+for_latter = 1
+while(True):
+    relation = input("")
+    if  relation.strip().lower() == 'yes':
+        break
+    else:
+        for_latter = 0
+        break
+
+if for_latter:
+    print("""Setting relationship between institution \
+          and thier classes and subjects""")
+    count = 1
+    institutions_db = storage.all(Institution).values()
+    subjects_db = storage.all(Subject).values()
+    classes_db = storage.all(Clas).values()
+    number_institution = len(institutions_db)
+
+    for institution in institutions_db:
+        print(f"{(count/number_institution)*100:0.2f} of 100")
+        institution.subjects.extend(subjects_db)
+        institution.classes.extend(classes_db)
+        institution.save()
+        count += 1
 
 # --------------------------------------------
 
