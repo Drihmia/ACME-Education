@@ -15,3 +15,4 @@ from api.v1.views.states import *
 from api.v1.views.cities import *
 from api.v1.views.login import *
 from api.v1.views.verify_email_registration import *
+from api.v1.views.api_docs import *

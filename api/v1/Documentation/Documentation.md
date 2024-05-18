@@ -6,7 +6,7 @@
         
         | Description | Fetches all the states found on the database, or one particular state when a valid ID is passed |
         | --- | --- |
-        | URL | http://domain/states |
+        | URL | http://web-01.drihmia.tech/api/v1/states |
         | Auth Required | No |
         
         | Paramater | Type  | Required | Description | Default |
@@ -76,7 +76,7 @@
             
             | Description | List all cities in a state |
             | --- | --- |
-            | URL | http://domain/states/ID/cites |
+            | URL | http://web-01.drihmia.tech/api/v1/states/6e381577-72ad-43f9-a3c9-a0e89f3d2cee/cities |
             | Auth Required | No |
             
             | Paramater | Type  | Required | Description |
@@ -138,7 +138,7 @@
         
         | Description | Fetches all the cities in the database |
         | --- | --- |
-        | URL | https://domain/cities/{ID} |
+        | URL | http://web-01.drihmia.tech/api/v1/cities |
         | Auth Required | No |
         
         | Paramater | Type  | Required | Description | Default |
@@ -211,7 +211,7 @@
             
             | Description | Fetches all the institutes residing in one city |
             | --- | --- |
-            | URL | https://domain/cities/{ID/}institutions |
+            | URL | http://web-01.drihmia.tech/api/v1/cities/bde27a09-8696-4e4d-a758-9949839a75b9/institutions |
             | Auth Required | No |
             
             | Paramater | Type  | Required | Description | Default |
@@ -284,7 +284,7 @@
             
             | Description | Fetches the state of the chosen city |
             | --- | --- |
-            | URL | https://domain/cities/ID/state |
+            | URL | http://web-01.drihmia.tech/api/v1/cities/bde27a09-8696-4e4d-a758-9949839a75b9/state |
             | Auth Required | No |
             
             | Paramater | Type  | Required | Description | Default |
@@ -316,7 +316,7 @@
         
         | Description | Fetches all the institutes in the database |
         | --- | --- |
-        | URL | HTTP://domain/institutions/{ID} |
+        | URL | http://web-01.drihmia.tech/api/v1/institutions |
         | Auth Required | No |
         
         | Paramater | Type  | Required | Place | Description |
@@ -396,7 +396,7 @@
             
             | Description | Fetches all the lessons of an institute |
             | --- | --- |
-            | URL | HTTP://domain/institutions/ID/lessons |
+            | URL | http://web-01.drihmia.tech/api/v1/institutions/cfddfd7f-c1ff-4c7d-89b4-9db1f5efdad5/lessons |
             | Auth Required | No |
             
             | Paramater | Type  | Required | Description | Default |
@@ -431,7 +431,7 @@
             
             | Description | Fetches all teachers working in an institute |
             | --- | --- |
-            | URL | HTTP://domain/institutions/ID/teachers |
+            | URL | http://web-01.drihmia.tech/api/v1/institutions/cfddfd7f-c1ff-4c7d-89b4-9db1f5efdad5/teachers |
             | Auth Required | No |
             
             | Paramater | Type  | Required | Description | Default |
@@ -458,7 +458,7 @@
             
             | Description | Fetches all teachers working in an institute |
             | --- | --- |
-            | URL | HTTP://domain/institutions/ID/subjects |
+            | URL | http://web-01.drihmia.tech/api/v1/institutions/cfddfd7f-c1ff-4c7d-89b4-9db1f5efdad5/subjects |
             | Auth Required | No |
             
             | Paramater | Type  | Required | Description | Default |
@@ -493,7 +493,7 @@
             
             | Description | Fetches all years of an institute that a student can enroll in  |
             | --- | --- |
-            | URL | HTTP://domain/institutions/ID/classes |
+            | URL | http://web-01.drihmia.tech/api/v1/institutions/cfddfd7f-c1ff-4c7d-89b4-9db1f5efdad5/classes |
             | Auth Required | No |
             
             | Paramater | Type  | Required | Description | Default |
@@ -528,7 +528,7 @@
             
             | Description | Fetches a list of enrolled students in this institute |
             | --- | --- |
-            | URL | HTTP://domain/institutions/ID/students |
+            | URL | http://web-01.drihmia.tech/api/v1/institutions/cfddfd7f-c1ff-4c7d-89b4-9db1f5efdad5/students |
             | Auth Required | No |
             
             | Paramater | Type  | Required | Description | Default |
@@ -560,7 +560,7 @@
         
         | Description | Fetches all the subjects inside the database |
         | --- | --- |
-        | URL | http://domain/subjects/{ID} |
+        | URL | http://web-01.drihmia.tech/api/v1/subjects |
         | Auth Required | No |
         
         | Paramater | Type  | Required | Place | Description |
@@ -630,7 +630,7 @@
             
             | Description | Fetches all institutes that has this subject in their curriculum |
             | --- | --- |
-            | URL | http://domain/subjects/ID/institutions |
+            | URL | http://web-01.drihmia.tech/api/v1/subjects/13d20ac5-5133-42b7-b63c-726b7fbe2997/institutions |
             | Auth Required | No |
             
             | Paramater | Type  | Required | Description | Default |
@@ -702,7 +702,7 @@
             
             | Description | Fetches all lessons in one subject |
             | --- | --- |
-            | URL | http://domain/subjects/ID/lessons |
+            | URL | http://web-01.drihmia.tech/api/v1/subjects/13d20ac5-5133-42b7-b63c-726b7fbe2997/lessons |
             | Auth Required | No |
             
             | Paramater | Type  | Required | Description | Default |
@@ -794,7 +794,7 @@
             
             | Description | Fetches all teachers of one subject |
             | --- | --- |
-            | URL | http://domain/subjects/ID/teachers |
+            | URL | http://web-01.drihmia.tech/api/v1/subjects/13d20ac5-5133-42b7-b63c-726b7fbe2997/teachers |
             | Auth Required | No |
             
             | Paramater | Type  | Required | Description | Default |
@@ -850,12 +850,345 @@
                 }
                 ```
                 
+    - `**[GET]` List All Teachers**
+        
+        
+        | Description | Fetches all the teachers inside the database |
+        | --- | --- |
+        | URL | http://web-01.drihmia.tech/api/v1/teachers |
+        | Auth Required | No |
+        
+        | Paramater | Type  | Required | Description | Default |
+        | --- | --- | --- | --- | --- |
+        | body params |  |  |  |  |
+        | ID | String | No | A UD-ID used to distinguish one Teacher from the other. Adding it to the URL queries the database and receives the teachers that have this particular ID | None |
+        - **✅ Response 200**
+            
+            ```python
+            [
+              {
+                "__class__": "Teacher",
+                "city": "Sidi Kacem",
+                "created_at": "2024-05-09T19:04:44.000000",
+                "email": "red2@gmail.com",
+                "first_name": "DRIHMIA",
+                "gender": "M",
+                "id": "4cb13c99-da57-4e31-af15-341ab83df3e4",
+                "institution": "LYCEE OUHOUD",
+                "last_name": "Redouane",
+                "main_subject": null,
+                "phone_number": "+2126123456452",
+                "updated_at": "2024-05-09T19:05:30.000000"
+              },
+              {
+                "__class__": "Teacher",
+                "city": "Sale",
+                "created_at": "2024-05-09T19:04:44.000000",
+                "email": "red1@gmail.com",
+                "first_name": "redouane",
+                "gender": "M",
+                "id": "68696e13-d591-47d6-83c3-4cc56c9d5593",
+                "institution": "LYCEE QUALIFIANT ALMANDAR ALJAMIL",
+                "last_name": "DRIHMIA",
+                "main_subject": null,
+                "phone_number": "+212683984948",
+                "updated_at": "2024-05-10T21:10:40.000000"
+              },
+              {
+                "__class__": "Teacher",
+                "city": "Sale",
+                "created_at": "2024-05-09T19:04:45.000000",
+                "email": "omer1@gmail.com",
+                "first_name": "OMER",
+                "gender": "M",
+                "id": "7159412a-c8cc-4016-b617-65bf7414840a",
+                "institution": "LYCEE QUALIFIANT ALMANDAR ALJAMIL",
+                "last_name": "Mohamed",
+                "main_subject": null,
+                "phone_number": "+212698765432",
+                "updated_at": "2024-05-09T19:05:31.000000"
+              },
+              {
+                "__class__": "Teacher",
+                "city": "Sale",
+                "created_at": "2024-05-09T19:04:46.000000",
+                "email": "omer2@gmail.com",
+                "first_name": "OMER",
+                "gender": "M",
+                "id": "fd693fc1-5945-4e7d-a695-c6cedd699eaf",
+                "institution": "LYCEE QUALIFIANT JABER IBN HAYANE",
+                "last_name": "OMER",
+                "main_subject": null,
+                "phone_number": "+212610928374",
+                "updated_at": "2024-05-09T19:05:31.000000"
+              }
+            ]
+            ```
+            
+        - **✅ Response 404**
+            
+            ```python
+            {
+            	"error": "UNKOWN TEACHER"
+            }
+            ```
+            
+        
+        ---
+        
+        - `**[GET]` Subject of a teacher**
+            
+            
+            | Description | Fetches all subjects taught by a teacher |
+            | --- | --- |
+            | URL | http://web-01.drihmia.tech/api/v1/teachers/27f396cd-50f6-4692-87a7-9e79c7fa42fb/subjects |
+            | Auth Required | No |
+            
+            | Paramater | Type  | Required | Description | Default |
+            | --- | --- | --- | --- | --- |
+            | body params |  |  |  |  |
+            | ID | String | Yes | The ID that distinguishes one institute from another. | None |
+            - **✅ Response 200**
+                
+                ```python
+                [
+                  {
+                    "__class__": "Subject",
+                    "created_at": "2024-05-09T19:04:36.000000",
+                    "id": "431aff91-1b6c-468f-9801-8025268885c2",
+                    "name": "Math\u00e9matiques",
+                    "updated_at": "2024-05-09T19:05:22.000000"
+                  },
+                  {
+                    "__class__": "Subject",
+                    "created_at": "2024-05-09T19:04:39.000000",
+                    "id": "5422b360-2315-4343-9b8e-d43a0df8ed23",
+                    "name": "\u00c9ducation Islamique",
+                    "updated_at": "2024-05-09T19:05:24.000000"
+                  },
+                  {
+                    "__class__": "Subject",
+                    "created_at": "2024-05-09T19:04:35.000000",
+                    "id": "60daf1b8-6c6d-4983-a8fc-255e30d5dd37",
+                    "name": "Sciences de la Vie et de la Terre",
+                    "updated_at": "2024-05-09T19:05:21.000000"
+                  },
+                  {
+                    "__class__": "Subject",
+                    "created_at": "2024-05-09T19:04:35.000000",
+                    "id": "85e85fe1-1910-4eb1-92e5-ec8654e65265",
+                    "name": "Physique-Chimie",
+                    "updated_at": "2024-05-09T19:05:20.000000"
+                  },...
+                ]
+                ```
+                
+            - **✅ Response 200 - No Data In Teachers**
+                
+                ```python
+                []
+                ```
+                
+            - **✅ Response 404**
+                
+                ```python
+                {
+                	"error": "UNKOWN TEACHER"
+                }
+                ```
+                
+        - `**[GET]` Lessons of a teacher**
+            
+            
+            | Description | Fetches all lessons created by a teacher |
+            | --- | --- |
+            | URL | http://web-01.drihmia.tech/api/v1/teachers/27f396cd-50f6-4692-87a7-9e79c7fa42fb/lessons |
+            | Auth Required | No |
+            
+            | Paramater | Type  | Required | Description | Default |
+            | --- | --- | --- | --- | --- |
+            | body params |  |  |  |  |
+            | ID | String | Yes | The ID that distinguishes one institute from another. | None |
+            - **✅ Response 200**
+                
+                ```python
+                [
+                  {
+                    "__class__": "Subject",
+                    "created_at": "2024-05-09T19:04:36.000000",
+                    "id": "431aff91-1b6c-468f-9801-8025268885c2",
+                    "name": "Math\u00e9matiques",
+                    "updated_at": "2024-05-09T19:05:22.000000"
+                  },
+                  {
+                    "__class__": "Subject",
+                    "created_at": "2024-05-09T19:04:39.000000",
+                    "id": "5422b360-2315-4343-9b8e-d43a0df8ed23",
+                    "name": "\u00c9ducation Islamique",
+                    "updated_at": "2024-05-09T19:05:24.000000"
+                  },
+                  {
+                    "__class__": "Subject",
+                    "created_at": "2024-05-09T19:04:35.000000",
+                    "id": "60daf1b8-6c6d-4983-a8fc-255e30d5dd37",
+                    "name": "Sciences de la Vie et de la Terre",
+                    "updated_at": "2024-05-09T19:05:21.000000"
+                  },
+                  {
+                    "__class__": "Subject",
+                    "created_at": "2024-05-09T19:04:35.000000",
+                    "id": "85e85fe1-1910-4eb1-92e5-ec8654e65265",
+                    "name": "Physique-Chimie",
+                    "updated_at": "2024-05-09T19:05:20.000000"
+                  },...
+                ]
+                ```
+                
+            - **✅ Response 200 - No Data In Teachers**
+                
+                ```python
+                []
+                ```
+                
+            - **✅ Response 404**
+                
+                ```python
+                {
+                	"error": "UNKOWN TEACHER"
+                }
+                ```
+                
+        - `**[GET]` Institutions of a teacher**
+            
+            
+            | Description | Fetches all institutions where that teacher is working |
+            | --- | --- |
+            | URL | http://web-01.drihmia.tech/api/v1/teachers/27f396cd-50f6-4692-87a7-9e79c7fa42fb/institutions |
+            | Auth Required | No |
+            
+            | Paramater | Type  | Required | Description | Default |
+            | --- | --- | --- | --- | --- |
+            | body params |  |  |  |  |
+            | ID | String | Yes | The ID that distinguishes one institute from another. | None |
+            - **✅ Response 200**
+                
+                ```python
+                [
+                  {
+                    "__class__": "Subject",
+                    "created_at": "2024-05-09T19:04:36.000000",
+                    "id": "431aff91-1b6c-468f-9801-8025268885c2",
+                    "name": "Math\u00e9matiques",
+                    "updated_at": "2024-05-09T19:05:22.000000"
+                  },
+                  {
+                    "__class__": "Subject",
+                    "created_at": "2024-05-09T19:04:39.000000",
+                    "id": "5422b360-2315-4343-9b8e-d43a0df8ed23",
+                    "name": "\u00c9ducation Islamique",
+                    "updated_at": "2024-05-09T19:05:24.000000"
+                  },
+                  {
+                    "__class__": "Subject",
+                    "created_at": "2024-05-09T19:04:35.000000",
+                    "id": "60daf1b8-6c6d-4983-a8fc-255e30d5dd37",
+                    "name": "Sciences de la Vie et de la Terre",
+                    "updated_at": "2024-05-09T19:05:21.000000"
+                  },
+                  {
+                    "__class__": "Subject",
+                    "created_at": "2024-05-09T19:04:35.000000",
+                    "id": "85e85fe1-1910-4eb1-92e5-ec8654e65265",
+                    "name": "Physique-Chimie",
+                    "updated_at": "2024-05-09T19:05:20.000000"
+                  },...
+                ]
+                ```
+                
+            - **✅ Response 200 - No Data In Teachers**
+                
+                ```python
+                []
+                ```
+                
+            - **✅ Response 404**
+                
+                ```python
+                {
+                	"error": "UNKOWN TEACHER"
+                }
+                ```
+                
+        - `**[GET]` Years of a teacher**
+            
+            
+            | Description | Fetches all teachers giving this subject in their curriculum |
+            | --- | --- |
+            | URL | http://web-01.drihmia.tech/api/v1/teachers/27f396cd-50f6-4692-87a7-9e79c7fa42fb/classes |
+            | Auth Required | No |
+            
+            | Paramater | Type  | Required | Description | Default |
+            | --- | --- | --- | --- | --- |
+            | body params |  |  |  |  |
+            | ID | String | Yes | The ID that distinguishes one institute from another. | None |
+            - **✅ Response 200**
+                
+                ```python
+                [
+                  {
+                    "__class__": "Subject",
+                    "created_at": "2024-05-09T19:04:36.000000",
+                    "id": "431aff91-1b6c-468f-9801-8025268885c2",
+                    "name": "Math\u00e9matiques",
+                    "updated_at": "2024-05-09T19:05:22.000000"
+                  },
+                  {
+                    "__class__": "Subject",
+                    "created_at": "2024-05-09T19:04:39.000000",
+                    "id": "5422b360-2315-4343-9b8e-d43a0df8ed23",
+                    "name": "\u00c9ducation Islamique",
+                    "updated_at": "2024-05-09T19:05:24.000000"
+                  },
+                  {
+                    "__class__": "Subject",
+                    "created_at": "2024-05-09T19:04:35.000000",
+                    "id": "60daf1b8-6c6d-4983-a8fc-255e30d5dd37",
+                    "name": "Sciences de la Vie et de la Terre",
+                    "updated_at": "2024-05-09T19:05:21.000000"
+                  },
+                  {
+                    "__class__": "Subject",
+                    "created_at": "2024-05-09T19:04:35.000000",
+                    "id": "85e85fe1-1910-4eb1-92e5-ec8654e65265",
+                    "name": "Physique-Chimie",
+                    "updated_at": "2024-05-09T19:05:20.000000"
+                  },...
+                ]
+                ```
+                
+            - **✅ Response 200 - No Data In Teachers**
+                
+                ```python
+                []
+                ```
+                
+            - **✅ Response 404**
+                
+                ```python
+                {
+                	"error": "UNKOWN TEACHER"
+                }
+                ```
+                
+        
+        ---
+        
     - `**[GET]` List All Students**
         
         
         | Description | Fetches all the students inside the database |
         | --- | --- |
-        | URL | http://domain/students/{ID} |
+        | URL | http://web-01.drihmia.tech/api/v1/students |
         | Auth Required | No |
         
         | Paramater | Type  | Required | Place | Description |
@@ -970,7 +1303,7 @@
             
             | Description | Fetches all the years that a particular student is in |
             | --- | --- |
-            | URL | http://domain/students/{ID}/classes |
+            | URL | http://web-01.drihmia.tech/api/v1/students/9aae4684-7f9c-4066-8592-9e4a440d097f/classes |
             | Auth Required | No |
             
             | Paramater | Type  | Required | Description |
@@ -1005,7 +1338,7 @@
             
             | Description | Fetches all the Institute that a particular student is enrolled in |
             | --- | --- |
-            | URL | http://domain/students/{ID}/institutions |
+            | URL | http://web-01.drihmia.tech/api/v1/students/9aae4684-7f9c-4066-8592-9e4a440d097f/institutions |
             | Auth Required | No |
             
             | Paramater | Type  | Required | Description |
@@ -1042,7 +1375,7 @@
             
             | Description | Fetches all the Subjects that a particular student studies |
             | --- | --- |
-            | URL | http://domain/students/{ID}/subjects |
+            | URL | http://web-01.drihmia.tech/api/v1/students/9aae4684-7f9c-4066-8592-9e4a440d097f/subjects |
             | Auth Required |  |
             
             | Paramater | Type  | Required | Description |
@@ -1106,7 +1439,7 @@
             
             | Description | Fetches all the lessons that a particular student studies |
             | --- | --- |
-            | URL | http://domain/students/{ID}/lessons |
+            | URL | http://web-01.drihmia.tech/api/v1/students/9aae4684-7f9c-4066-8592-9e4a440d097f/lessons |
             | Auth Required |  |
             
             | Paramater | Type  | Required | Description |
@@ -1162,162 +1495,12 @@
                 []
                 ```
                 
-    - `**[GET]` List All Teachers**
-        
-        
-        | Description | Fetches all the teachers inside the database |
-        | --- | --- |
-        | URL | HTTP://domain/teachers/{ID} |
-        | Auth Required | No |
-        
-        | Paramater | Type  | Required | Description | Default |
-        | --- | --- | --- | --- | --- |
-        | body params |  |  |  |  |
-        | ID | String | No | A UD-ID used to distinguish one Teacher from the other. Adding it to the URL queries the database and receives the teachers that have this particular ID | None |
-        - **✅ Response 200**
-            
-            ```python
-            [
-              {
-                "__class__": "Teacher",
-                "city": "Sidi Kacem",
-                "created_at": "2024-05-09T19:04:44.000000",
-                "email": "red2@gmail.com",
-                "first_name": "DRIHMIA",
-                "gender": "M",
-                "id": "4cb13c99-da57-4e31-af15-341ab83df3e4",
-                "institution": "LYCEE OUHOUD",
-                "last_name": "Redouane",
-                "main_subject": null,
-                "phone_number": "+2126123456452",
-                "updated_at": "2024-05-09T19:05:30.000000"
-              },
-              {
-                "__class__": "Teacher",
-                "city": "Sale",
-                "created_at": "2024-05-09T19:04:44.000000",
-                "email": "red1@gmail.com",
-                "first_name": "redouane",
-                "gender": "M",
-                "id": "68696e13-d591-47d6-83c3-4cc56c9d5593",
-                "institution": "LYCEE QUALIFIANT ALMANDAR ALJAMIL",
-                "last_name": "DRIHMIA",
-                "main_subject": null,
-                "phone_number": "+212683984948",
-                "updated_at": "2024-05-10T21:10:40.000000"
-              },
-              {
-                "__class__": "Teacher",
-                "city": "Sale",
-                "created_at": "2024-05-09T19:04:45.000000",
-                "email": "omer1@gmail.com",
-                "first_name": "OMER",
-                "gender": "M",
-                "id": "7159412a-c8cc-4016-b617-65bf7414840a",
-                "institution": "LYCEE QUALIFIANT ALMANDAR ALJAMIL",
-                "last_name": "Mohamed",
-                "main_subject": null,
-                "phone_number": "+212698765432",
-                "updated_at": "2024-05-09T19:05:31.000000"
-              },
-              {
-                "__class__": "Teacher",
-                "city": "Sale",
-                "created_at": "2024-05-09T19:04:46.000000",
-                "email": "omer2@gmail.com",
-                "first_name": "OMER",
-                "gender": "M",
-                "id": "fd693fc1-5945-4e7d-a695-c6cedd699eaf",
-                "institution": "LYCEE QUALIFIANT JABER IBN HAYANE",
-                "last_name": "OMER",
-                "main_subject": null,
-                "phone_number": "+212610928374",
-                "updated_at": "2024-05-09T19:05:31.000000"
-              }
-            ]
-            ```
-            
-        - **✅ Response 404**
-            
-            ```python
-            {
-            	"error": "UNKOWN TEACHER"
-            }
-            ```
-            
-        
-        ---
-        
-        - `**[GET]` Teachers Of A Subject**
-            
-            
-            | Description | Fetches all teachers giving this subject in their curriculum |
-            | --- | --- |
-            | URL | http://domain/teachers/ID/subjects |
-            | Auth Required | No |
-            
-            | Paramater | Type  | Required | Description | Default |
-            | --- | --- | --- | --- | --- |
-            | body params |  |  |  |  |
-            | ID | String | Yes | The ID that distinguishes one institute from another. | None |
-            - **✅ Response 200**
-                
-                ```python
-                [
-                  {
-                    "__class__": "Subject",
-                    "created_at": "2024-05-09T19:04:36.000000",
-                    "id": "431aff91-1b6c-468f-9801-8025268885c2",
-                    "name": "Math\u00e9matiques",
-                    "updated_at": "2024-05-09T19:05:22.000000"
-                  },
-                  {
-                    "__class__": "Subject",
-                    "created_at": "2024-05-09T19:04:39.000000",
-                    "id": "5422b360-2315-4343-9b8e-d43a0df8ed23",
-                    "name": "\u00c9ducation Islamique",
-                    "updated_at": "2024-05-09T19:05:24.000000"
-                  },
-                  {
-                    "__class__": "Subject",
-                    "created_at": "2024-05-09T19:04:35.000000",
-                    "id": "60daf1b8-6c6d-4983-a8fc-255e30d5dd37",
-                    "name": "Sciences de la Vie et de la Terre",
-                    "updated_at": "2024-05-09T19:05:21.000000"
-                  },
-                  {
-                    "__class__": "Subject",
-                    "created_at": "2024-05-09T19:04:35.000000",
-                    "id": "85e85fe1-1910-4eb1-92e5-ec8654e65265",
-                    "name": "Physique-Chimie",
-                    "updated_at": "2024-05-09T19:05:20.000000"
-                  },...
-                ]
-                ```
-                
-            - **✅ Response 200 - No Data In Teachers**
-                
-                ```python
-                []
-                ```
-                
-            - **✅ Response 404**
-                
-                ```python
-                {
-                	"error": "UNKOWN TEACHER"
-                }
-                ```
-                
-        
-        ---
-        
     - `**[GET]`List All Lessons**
         
         
         | Description | Fetches all the Lessons in the database |
         | --- | --- |
-        | URL | HTTP://domain/lessons/{ID} |
+        | URL | http://web-01.drihmia.tech/api/v1/lessons |
         | Auth Required | No |
         
         | Paramater | Type  | Required | Place | Description |
@@ -1414,6 +1597,67 @@
             }
             ```
             
+        - `**[GET]` Public lessons**
+            
+            
+            | Description | Fetches all public lessons in the database |
+            | --- | --- |
+            | URL | http://web-01.drihmia.tech/api/v1/public_lessons |
+            | Auth Required | No |
+            
+            | Paramater | Type  | Required | Description | Default |
+            | --- | --- | --- | --- | --- |
+            | body params |  |  |  |  |
+            | ID | String | Yes | The ID that distinguishes one institute from another. | None |
+            - **✅ Response 200**
+                
+                ```python
+                [
+                  {
+                    "__class__": "Subject",
+                    "created_at": "2024-05-09T19:04:36.000000",
+                    "id": "431aff91-1b6c-468f-9801-8025268885c2",
+                    "name": "Math\u00e9matiques",
+                    "updated_at": "2024-05-09T19:05:22.000000"
+                  },
+                  {
+                    "__class__": "Subject",
+                    "created_at": "2024-05-09T19:04:39.000000",
+                    "id": "5422b360-2315-4343-9b8e-d43a0df8ed23",
+                    "name": "\u00c9ducation Islamique",
+                    "updated_at": "2024-05-09T19:05:24.000000"
+                  },
+                  {
+                    "__class__": "Subject",
+                    "created_at": "2024-05-09T19:04:35.000000",
+                    "id": "60daf1b8-6c6d-4983-a8fc-255e30d5dd37",
+                    "name": "Sciences de la Vie et de la Terre",
+                    "updated_at": "2024-05-09T19:05:21.000000"
+                  },
+                  {
+                    "__class__": "Subject",
+                    "created_at": "2024-05-09T19:04:35.000000",
+                    "id": "85e85fe1-1910-4eb1-92e5-ec8654e65265",
+                    "name": "Physique-Chimie",
+                    "updated_at": "2024-05-09T19:05:20.000000"
+                  },...
+                ]
+                ```
+                
+            - **✅ Response 200 - No Data In Teachers**
+                
+                ```python
+                []
+                ```
+                
+            - **✅ Response 404**
+                
+                ```python
+                {
+                	"error": "UNKOWN TEACHER"
+                }
+                ```
+                
         
         ---
         
@@ -1423,7 +1667,7 @@
         
         | Description | Adds a state to the database |
         | --- | --- |
-        | URL | http://domain/states |
+        | URL | http://web-01.drihmia.tech/api/v1/states |
         | Auth Required | Yes |
         
         | Paramater | Type  | Required | Description | Default |
@@ -1481,7 +1725,7 @@
         
         | Description | Adds a city to the database |
         | --- | --- |
-        | URL | http://domain/cities |
+        | URL | http://web-01.drihmia.tech/api/v1/cities |
         | Auth Required | Yes |
         
         | Paramater | Type  | Required | Description | Default |
@@ -1549,7 +1793,7 @@
         
         | Description | Adds an institute to the database |
         | --- | --- |
-        | URL | http://domain/institutions |
+        | URL | http://web-01.drihmia.tech/api/v1/institutions |
         | Auth Required | Yes |
         
         | Paramater | Type  | Required | Description | Default |
@@ -1635,7 +1879,7 @@
         
         | Description | Adds a student to the database |
         | --- | --- |
-        | URL | http://domain/students |
+        | URL | http://web-01.drihmia.tech/api/v1/students |
         | Auth Required | Yes |
         
         | Paramater | Type  | Required | Description | Default |
@@ -1769,7 +2013,7 @@
         
         | Description | Adds a teacher to the database |
         | --- | --- |
-        | URL | http://domain/teachers |
+        | URL | http://web-01.drihmia.tech/api/v1/teachers |
         | Auth Required | Yes |
         
         | Paramater | Type  | Required | Description | Default |
@@ -1876,7 +2120,7 @@
         
         | Description | Adds a lesson to the database |
         | --- | --- |
-        | URL | http://domain/lessons |
+        | URL | http://web-01.drihmia.tech/api/v1/lessons |
         | Auth Required | Yes |
         
         | Paramater | Type  | Required | Description | Default |
@@ -1991,7 +2235,7 @@
         
         | Description | Edit specific information about a state |
         | --- | --- |
-        | URL | http://domain/states/{ID} |
+        | URL | http://web-01.drihmia.tech/api/v1/states/6e381577-72ad-43f9-a3c9-a0e89f3d2cee |
         | Auth Required | Yes |
         
         | Parameter | Type  | Required | Description | Default |
@@ -2041,7 +2285,7 @@
         
         | Description | Edit specific information about a city |
         | --- | --- |
-        | URL | http://domain/cities/{ID} |
+        | URL | http://web-01.drihmia.tech/api/v1/cities/bde27a09-8696-4e4d-a758-9949839a75b9 |
         | Auth Required | Yes |
         
         | Paramater | Type  | Required | Description | Default |
@@ -2092,7 +2336,7 @@
         
         | Description | Edit specific information about an institute |
         | --- | --- |
-        | URL | http://domain/institutions/{ID} |
+        | URL | http://web-01.drihmia.tech/api/v1/institutions/cfddfd7f-c1ff-4c7d-89b4-9db1f5efdad5 |
         | Auth Required | Yes |
         
         | Paramater | Type  | Required | Description | Default |
@@ -2146,7 +2390,7 @@
         
         | Description | Edit specific information about a teacher |
         | --- | --- |
-        | URL | http://domain/teachers/{ID} |
+        | URL | http://web-01.drihmia.tech/api/v1/teachers/27f396cd-50f6-4692-87a7-9e79c7fa42fb |
         | Auth Required | Yes |
         
         | Parameter | Type  | Required | Description | Default |
@@ -2196,7 +2440,7 @@
         
         | Description | Edit specific information about a student |
         | --- | --- |
-        | URL | http://domain/students/{ID} |
+        | URL | http://web-01.drihmia.tech/api/v1/students/9aae4684-7f9c-4066-8592-9e4a440d097f |
         | Auth Required | Yes |
         
         | Parameter | Type  | Required | Description | Default |
@@ -2251,7 +2495,7 @@
         
         | Description | Edit specific information about a lesson |
         | --- | --- |
-        | URL | http://domain/lessons/{ID} |
+        | URL | http://web-01.drihmia.tech/api/v1/lessons/084b5a7a-2099-4457-b2ab-9e9eb1f33fdb |
         | Auth Required | Yes |
         
         | Parameter | Type  | Required | Description | Default |
@@ -2305,7 +2549,7 @@
         
         | Description | Deletes a state from the database |
         | --- | --- |
-        | URL | http://domain/states/{ID} |
+        | URL | http://web-01.drihmia.tech/api/v1/states/{ID} |
         | Auth Required | Yes |
         
         | Paramater | Type  | Required | Description | Default |
@@ -2329,7 +2573,7 @@
         
         | Description | Deletes a city from the database |
         | --- | --- |
-        | URL | http://domain/cities/{ID} |
+        | URL | http://web-01.drihmia.tech/api/v1/cities/{ID} |
         | Auth Required | Yes |
         
         | Paramater | Type  | Required | Description | Default |
@@ -2353,7 +2597,7 @@
         
         | Description | Deletes an institute from the database |
         | --- | --- |
-        | URL | http://domain/institutions/{ID} |
+        | URL | http://web-01.drihmia.tech/api/v1/institutions/{ID} |
         | Auth Required | Yes |
         
         | Paramater | Type  | Required | Description | Default |
@@ -2377,7 +2621,7 @@
         
         | Description | Deletes a teacher from the database |
         | --- | --- |
-        | URL | http://domain/teachers/{ID} |
+        | URL | http://web-01.drihmia.tech/api/v1/teachers/{ID} |
         | Auth Required | Yes |
         
         | Paramater | Type  | Required | Description | Default |
@@ -2401,7 +2645,7 @@
         
         | Description | Deletes a student from the database |
         | --- | --- |
-        | URL | http://domain/students/{ID} |
+        | URL | http://web-01.drihmia.tech/api/v1/students/{ID} |
         | Auth Required | Yes |
         
         | Paramater | Type  | Required | Description | Default |
@@ -2425,7 +2669,7 @@
         
         | Description | Deletes a lesson from the database |
         | --- | --- |
-        | URL | http://domain/lessons/{ID} |
+        | URL | http://web-01.drihmia.tech/api/v1/lessons/{ID} |
         | Auth Required | Yes |
         
         | Paramater | Type  | Required | Description | Default |

@@ -38,10 +38,10 @@ def close_db(_):
 @app.errorhandler(404)
 def not_found(_):
     """Handle the 404 page"""
-    return jsonify({"error": "Not found"}), 200
+    return jsonify({"error": "Not found"}), 404
 
 
 if __name__ == "__main__":
     """Starts the API"""
     with app.app_context():
-        app.run(threaded=True, debug=True)
+        app.run(threaded=True)

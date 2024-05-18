@@ -54,7 +54,8 @@ def endpoints():
         },
         "lessons": {
             "get": {"lesson": "/lessons/<lesson_id>",
-                    "lessons": "/lessons"}
+                    "lessons": "/lessons",
+                    "public lessons": "/public_lessons"}
         }
     }
 

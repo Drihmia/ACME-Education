@@ -6,6 +6,9 @@
 */*.pyc
 *.txt
 *.env*
+*.log
+*.DS_Store
+
 # MySQL
 *.sql
 
