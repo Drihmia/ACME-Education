@@ -49,7 +49,10 @@ class DBStorage:
                                              ACME_MYSQL_PWD,
                                              ACME_MYSQL_HOST,
                                              ACME_MYSQL_DB,
-                                             CHARSET_STR))
+                                             CHARSET_STR),
+                 # Recycle connections older than 1 hour, to avoid times-out
+                                      pool_recycle=3600,    
+                                      connect_args={"connect_timeout": 10})
         if not database_exists(self.__engine.url):
             # Create the database
             create_database(self.__engine.url)
