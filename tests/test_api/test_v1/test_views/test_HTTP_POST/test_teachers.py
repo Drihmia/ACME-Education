@@ -163,7 +163,7 @@ def test_create_found_institute():
             "password": "temp"}
     with req.post(link, data=json.dumps(data),
                   headers=head) as marko:
-                      print(marko.status_code)
+        print(marko.status_code)
 
 
 def test_reAdd():
