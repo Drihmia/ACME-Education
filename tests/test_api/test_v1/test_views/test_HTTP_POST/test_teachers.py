@@ -61,6 +61,10 @@ def test_other_data_passed():
 
 def test_correct_data():
     """Checks when everything is in order"""
+    count = 0
+    with req.get(link) as marko:
+        # Getting count after object creation
+        count = len(marko.json())
     with req.post(link, data=json.dumps(tempData),
                   headers=head) as marko:
         assert marko.status_code == 201
