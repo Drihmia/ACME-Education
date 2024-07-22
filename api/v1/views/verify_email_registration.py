@@ -6,8 +6,9 @@ from flask import jsonify, request, redirect, render_template, url_for
 from itsdangerous import URLSafeTimedSerializer
 import json
 import os
-import yagmail
-from yagmail.error import YagInvalidEmailAddress
+# disabled, in DigitalOcean, I can not use PIP, and this module not in apt
+# import yagmail
+# from yagmail.error import YagInvalidEmailAddress
 from werkzeug.exceptions import BadRequest
 from api.v1.views import app_views
 
