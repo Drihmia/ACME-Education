@@ -4,22 +4,20 @@ from flask import jsonify, request
 from werkzeug.exceptions import BadRequest
 from sqlalchemy.exc import IntegrityError
 from api.v1.views import app_views
+from api.v1.views import role_required
 from models.city import City
 from models.clas import Clas
 from models.institution import Institution
 from models.student import Student
+from models.email_verification import EmailVerifier
 from models.subject import Subject
 from models.teacher import Teacher
 from models import storage
 
 
-@app_views.route('/students', methods=['GET', 'POST'], strict_slashes=False)
-@app_views.route('/students/<id>', methods=["GET", 'PUT', 'DELETE'],
-                 strict_slashes=False)
-def students_list(id=None):
-    """Get student object by id if provided otherwise a
-    full list of all students
-
+@app_views.route('/students', methods=['POST'], strict_slashes=False)
+def ctreate_student():
+    """
     POST: Create a new student
         MUST: give the institution_id
             or institution_name + city_name/city_id.
@@ -36,28 +34,7 @@ def students_list(id=None):
         teacher_email, class_id, city, institution}
 
         the 1st example is faster
-
-    PUT: Update first_name, last_name, password, and list of  email teachers...
-
-        data = {'first_name', 'last_name', 'password', institution, city,
-                'phone number', 'gender', 'confirm_password'**,
-                'teachers_email': list of email}
-
-        ** confirm_password is required if password is provided.
-        all those attributes are optional except **.
     """
-
-    # GET's method *******************************************************
-    if request.method == 'GET':
-        if id:
-            student = storage.get(Student, id)
-            if not student:
-                return jsonify({'error': "UNKNOWN STUDENT"}), 400
-            return jsonify(student.to_dict()), 200
-        students_list = [student.to_dict() for student in
-                         storage.all(Student).values()]
-        return jsonify(students_list), 200
-
     # POST's method *******************************************************
     if request.method == 'POST':
         if not request.is_json:
@@ -108,6 +85,16 @@ def students_list(id=None):
                 del data['confirm_password']
         else:
             return jsonify({'error': 'Missing confirm_password'}), 400
+
+        # # Check if email is actually real email
+        # try:
+            # email_verifier = EmailVerifier()
+            # is_verified = email_verifier.check_email_exists_zero_bounce(email)
+            # print("is_verified:", is_verified)
+            # if not is_verified:
+                # return jsonify({'error': 'Fake Email'}), 400
+        # except Exception as e:
+            # return jsonify({"error": e}), 500
 
         if 'class_id' not in data.keys():
             return jsonify({'error': 'Missing class_id'}), 400
@@ -281,6 +268,41 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
 
         return jsonify(student), 201
 
+
+
+
+@app_views.route('/students', methods=['GET'], strict_slashes=False)
+@app_views.route('/students/<id>', methods=["GET", 'PUT', 'DELETE'],
+                 strict_slashes=False)
+@role_required(['student', 'dev'])
+def students_list(id=None):
+    """
+    Get: get a student object by id if provided otherwise a
+    full list of all students
+
+    PUT: Update first_name, last_name, password, and list of  email teachers...
+
+        data = {'first_name', 'last_name', 'password', institution, city,
+                'phone number', 'gender', 'confirm_password'**,
+                'teachers_email': list of email}
+
+        ** confirm_password is required if password is provided.
+        all those attributes are optional except **.
+
+    DELETE: delete a student object by id
+    """
+
+    # GET's method *******************************************************
+    if request.method == 'GET':
+        if id:
+            student = storage.get(Student, id)
+            if not student:
+                return jsonify({'error': "UNKNOWN STUDENT"}), 400
+            return jsonify(student.to_dict()), 200
+        students_list = [student.to_dict() for student in
+                         storage.all(Student).values()]
+        return jsonify(students_list), 200
+
     # PUT's method *******************************************************
     if request.method == 'PUT':
         if not request.is_json:
@@ -436,6 +458,7 @@ of teacher's IDs"}), 400
 
 @app_views.route('/students/<id>/lessons',  methods=['GET'],
                  strict_slashes=False)
+@role_required(['student', 'dev'])
 def students_list_lessons(id):
     """return a list of all  lessons by student"""
 
@@ -451,6 +474,7 @@ def students_list_lessons(id):
 
 @app_views.route('/students/<id>/subjects',  methods=['GET'],
                  strict_slashes=False)
+@role_required(['student', 'dev'])
 def students_list_subject(id):
     """return a list of all subjects by student"""
 
@@ -469,6 +493,7 @@ def students_list_subject(id):
 
 @app_views.route('/students/<id>/institutions',  methods=['GET'],
                  strict_slashes=False)
+@role_required(['student', 'dev'])
 def students_list_institution(id):
     """return a list of all institutions by student"""
 
@@ -487,6 +512,7 @@ def students_list_institution(id):
 
 @app_views.route('/students/<id>/classes',  methods=['GET'],
                  strict_slashes=False)
+@role_required(['student', 'dev'])
 def students_list_class(id):
     """return a list of all classes by student"""
 

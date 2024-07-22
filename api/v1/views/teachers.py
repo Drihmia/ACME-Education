@@ -5,6 +5,8 @@ from flask import jsonify, request
 from werkzeug.exceptions import BadRequest
 from sqlalchemy.exc import IntegrityError
 from api.v1.views import app_views
+from api.v1.views import role_required
+from flask_jwt_extended import  jwt_required, verify_jwt_in_request
 from models.city import City
 from models.clas import Clas
 from models.institution import Institution
@@ -13,15 +15,10 @@ from models.student import Student
 from models import storage
 from models.teacher import Teacher
 
-
-@app_views.route('/teachers', methods=['GET', 'POST'], strict_slashes=False)
-@app_views.route('/teachers/<id>', methods=["GET", 'PUT', 'DELETE'],
-                 strict_slashes=False)
+@app_views.route('/teachers', methods=['POST'], strict_slashes=False)
 @cross_origin()
-def teachers_list(id=None):
+def create_teacher():
     """
-    Get: return teacher object by id if provided otherwise a
-    full list of all teachers objects.
     POST: Create a new teacher
         MUST: give the institution_id
             or institution_name + city_name/city_id.
@@ -35,29 +32,7 @@ def teachers_list(id=None):
         city_id, institution}
 
         the 1st syntax is faster
-
-    PUT: Update first_name, last_name, password, institutions, city, subjects,
-            classes.
-
-        - example:
-        data = {first_name, last_name, password, city,
-        institutions_id: list of ids,
-        subjects_id: list of ids,
-        classes_id: list of ids}
-
-        all those attributes are optional.
     """
-    # GET's method *******************************************************
-    if request.method == 'GET':
-        if id:
-            teacher = storage.get(Teacher, id)
-            if not teacher:
-                return jsonify({'error': "UNKNOWN TEACHER"}), 400
-            return jsonify(teacher.to_dict()), 200
-        teachers_list = [teacher.to_dict() for teacher in
-                         storage.all(Teacher).values()]
-        return jsonify(teachers_list), 200
-
     # POST's method *******************************************************
     if request.method == 'POST':
         if not request.is_json:
@@ -203,6 +178,39 @@ def teachers_list(id=None):
             del teacher['students']
 
         return jsonify(teacher), 201
+
+
+@app_views.route('/teachers', methods=['GET'], strict_slashes=False)
+@app_views.route('/teachers/<id>', methods=["GET", 'PUT', 'DELETE'],
+                 strict_slashes=False)
+@cross_origin()
+@role_required(['teacher', 'dev'])
+def teachers_list(id=None):
+    """
+    Get: return teacher object by id if provided otherwise a
+    full list of all teachers objects.
+
+    PUT: Update first_name, last_name, password, institutions, city, subjects,
+            classes.
+
+        - example:
+        data = {first_name, last_name, password, city,
+        institutions_id: list of ids,
+        subjects_id: list of ids,
+        classes_id: list of ids}
+
+        all those attributes are optional.
+    """
+    # GET's method *******************************************************
+    if request.method == 'GET':
+        if id:
+            teacher = storage.get(Teacher, id)
+            if not teacher:
+                return jsonify({'error': "UNKNOWN TEACHER"}), 400
+            return jsonify(teacher.to_dict()), 200
+        teachers_list = [teacher.to_dict() for teacher in
+                         storage.all(Teacher).values()]
+        return jsonify(teachers_list), 200
 
     # PUT's method *******************************************************
     if request.method == 'PUT':
@@ -403,6 +411,7 @@ def teachers_list(id=None):
 
 @app_views.route('/teachers/<id>/lessons',  methods=['GET'],
                  strict_slashes=False)
+@role_required(['teacher', 'dev'])
 def teachers_list_lessons(id):
     """return a list of all  lessons by teacher"""
 
@@ -417,6 +426,7 @@ def teachers_list_lessons(id):
 
 @app_views.route('/teachers/<id>/subjects',  methods=['GET'],
                  strict_slashes=False)
+@role_required(['teacher', 'dev'])
 def teachers_list_subject(id):
     """return a list of all subjects by teacher"""
 
@@ -431,6 +441,7 @@ def teachers_list_subject(id):
 
 @app_views.route('/teachers/<id>/institutions',  methods=['GET'],
                  strict_slashes=False)
+@role_required(['teacher', 'dev'])
 def teachers_list_institution(id):
     """return a list of all institutions by teacher"""
 
@@ -446,6 +457,7 @@ def teachers_list_institution(id):
 
 @app_views.route('/teachers/<id>/classes',  methods=['GET'],
                  strict_slashes=False)
+@role_required(['teacher', 'dev'])
 def teachers_list_class(id):
     """return a list of all classes by teacher"""
 
