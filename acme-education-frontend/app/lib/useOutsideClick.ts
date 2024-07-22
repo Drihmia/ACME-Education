@@ -15,11 +15,13 @@ export const useOutsideClick =(callback?: () => void) => {
             }
         }
 
-        document.addEventListener('click', handleClick, true)
-
-        return () => {
-            document.removeEventListener('click', handleClick, true)
+        if (typeof document !== 'undefined') {
+            document.addEventListener('click', handleClick, true);
+            return () => {
+                document.removeEventListener('click', handleClick, true);
+            };
         }
+
 
     }, [callback])
 
