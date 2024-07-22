@@ -5,16 +5,16 @@ import useSWR, { mutate } from "swr";
 
 export const Profile = ({ user, openModal }: { user: User, openModal: (item: any) => void }) => {
   const { data: profileData, error } = useSWR(
-    `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${user.class.toLowerCase()}s/${user.user_id}`,
+    `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${user.class.toLowerCase()}s/${user.user_id}`,
     fetcher, { suspense: true}
   );
   
   const { data: subjectsList } = useSWR(
-    `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${user.user_id}/subjects`,
+    `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${user.user_id}/subjects`,
     fetcher, { suspense: true}
   );
 
-  mutate(`http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${user.user_id}/subjects`)
+  mutate(`https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${user.user_id}/subjects`)
 
   // console.log(subjectsList);
   

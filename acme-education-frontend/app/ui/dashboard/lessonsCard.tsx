@@ -42,7 +42,7 @@ export const LessonCard = ({ index, lesson, openModal, user_class }: lessonCardP
                 if (res["error"]) {
                   alert("Something went wrong.");
                 } else {
-                  mutate(`http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${lesson.teacher_id}/lessons`)
+                  mutate(`https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${lesson.teacher_id}/lessons`)
                   alert("Lesson deleted");
                 }
               }
