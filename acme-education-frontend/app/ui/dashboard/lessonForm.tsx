@@ -23,21 +23,21 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
   const [lesson, setLesson] = useState<lessonFormProps | null>(null);
 
   const { data: institutions } = useSWR(
-    `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${user?.user_id}/institutions`,
+    `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${user?.user_id}/institutions`,
     fetcher
   );
   const { data: subjects } = useSWR(
-    `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${user?.user_id}/subjects`,
+    `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${user?.user_id}/subjects`,
     fetcher
   );
   const { data: classes } = useSWR(
-    `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${user?.user_id}/classes`,
+    `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${user?.user_id}/classes`,
     fetcher
   );
 
   useEffect(() => {
     if (id) {
-      fetch(`http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/lessons/${id}`)
+      fetch(`https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/lessons/${id}`)
         .then((res) => res.json())
         .then((data) => {
           const modifiedData = { ...data };
@@ -70,18 +70,38 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
 
     values.teacher_id = user?.user_id;
     values.public = values.public === "true" ? true : false;
+    
+    // For getting the CSRF cookies for POST, PUT or DELETE requests
+    function getCookie(name: string): string | undefined {
+      let value = '';
+      if (typeof document !== 'undefined') {
+        value = `; ${document.cookie}`;
+      }
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) {
+        const part = parts.pop();
+        if (part) {
+          return part.split(';').shift();
+        }
+      }
+    }
+    const csrfToken = getCookie('csrf_access_token');
 
-    console.log(values);
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    if (csrfToken) {
+      headers['X-CSRF-TOKEN'] = csrfToken;
+    }
 
     try {
       const response = await fetch(
-        `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/lessons/${id ? id : ""}`,
+        `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/lessons/${id ? id : ""}`,
         {
           method: action === "Add" ? "POST" : "PUT",
           body: JSON.stringify(values),
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: headers,
         }
       );
 
@@ -91,7 +111,7 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
         alert(res_data["error"]);
       } else {
         mutate(
-          `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${user?.class.toLowerCase()}s/${
+          `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${user?.class.toLowerCase()}s/${
             user?.user_id
           }/lessons`
         );
@@ -174,7 +194,7 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
             label="Download URL"
             name="download_link"
             type="text"
-            placeholder="https://drive.google.com/file"
+            placeholder="httpss://drive.google.com/file"
           />
           <FieldSet
             label="Should the lesson be publicly available?"
@@ -218,7 +238,7 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
                       alert("Something went wrong.");
                     } else {
                       mutate(
-                        `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${user?.class.toLowerCase()}s/${
+                        `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${user?.class.toLowerCase()}s/${
                           user?.user_id
                         }/lessons`
                       );

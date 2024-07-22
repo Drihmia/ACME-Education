@@ -97,7 +97,9 @@ export const MyTextAndSelectInput = ({
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     let value = event.target.value;
 
-    const searchRegex = new RegExp(value, "gi");
+    // escape special characteres like ( or ) ...
+    const escapeRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const searchRegex = new RegExp(escapeRegex(value), "gi");
 
     const filter = data?.filter((res) => {
       if (searchRegex.test(res.name)) return res;
@@ -138,7 +140,7 @@ export const MyTextAndSelectInput = ({
       {meta.touched && meta.error ? (
         <div className="error text-xs text-red-600">{meta.error}</div>
       ) : null}
-      {focused && filteredData.length > 0 && (
+      {focused && filteredData?.length > 0 && (
         <ul className="absolute w-full max-h-48 overflow-y-scroll top-full left-0 flex flex-col gap-1 p-1 md:p-2 bg-white rounded-md shadow-md z-10">
           {filteredData.map((item, i) => (
             <li
@@ -200,7 +202,10 @@ export const MyTextAndCheckInput = ({
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     let value = event.target.value;
 
-    const searchRegex = new RegExp(value, "gi");
+    // escape special characteres like ( or ) ...
+    const escapeRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+    const searchRegex = new RegExp(escapeRegex(value), "gi");
 
     const filter = data?.filter((res) => {
       if (searchRegex.test(res.name)) return res;
@@ -418,17 +423,40 @@ export const SignInForm = () => {
   const router = useRouter();
 
   const submitForm = async (values: siginProps) => {
+
+    // For getting the CSRF cookies for POST, PUT or DELETE requests
+    function getCookie(name: string): string | undefined {
+      let value = '';
+      if (typeof document !== 'undefined') {
+        value = `; ${document.cookie}`;
+      }
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) {
+        const part = parts.pop();
+        if (part) {
+          return part.split(';').shift();
+        }
+      }
+    }
+    const csrfToken = getCookie('csrf_access_token');
+
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    if (csrfToken) {
+      headers['X-CSRF-TOKEN'] = csrfToken;
+    }
+
     try {
       const response = await fetch(
-        `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${
+        `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${
           values.isTeacher == "true" ? "teacher_login" : "student_login"
         }`,
         {
           method: "POST",
           body: JSON.stringify(values),
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: headers,
         }
       );
 

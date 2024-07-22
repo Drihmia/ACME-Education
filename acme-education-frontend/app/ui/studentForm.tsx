@@ -14,6 +14,7 @@ import {
   responseProps,
   selectedCityProps,
   studentSignupProps,
+  classProps, 
 } from "../types";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { LoadingSkeleton } from "./skeletons";
@@ -37,6 +38,9 @@ export const StudentForm = ({
   const [institutionsData, setInstitutionsData] = useState<institutionProps[]>(
     []
   );
+  const [classesData, setClassesData] = useState<classProps[]>(
+    []
+  );
   const [classes, setClasses] = useState<any[]>([]);
   const [teachers, setTeachers] = useState<any[]>([]);
 
@@ -52,7 +56,7 @@ export const StudentForm = ({
   useEffect(() => {
     if (selectedCity.id != "") {
       fetch(
-        `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/cities/${selectedCity.id}/institutions`
+        `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/cities/${selectedCity.id}/institutions`
       )
         .then((res) => res.json())
         .then((data) => {
@@ -67,10 +71,10 @@ export const StudentForm = ({
     (async () => {
       if (selectedInstitute.id != "") {
         const fetchSchoolClasses = fetch(
-          `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/institutions/${selectedInstitute.id}/classes`
+          `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/institutions/${selectedInstitute.id}/classes`
         ).then((res) => res.json());
         const fetchSchoolTeachers = fetch(
-          `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/institutions/${selectedInstitute.id}/teachers`
+          `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/institutions/${selectedInstitute.id}/teachers`
         ).then((res) => res.json());
 
         const [schoolClasses, schoolTeachers] = await Promise.all([
@@ -107,7 +111,7 @@ export const StudentForm = ({
   };
 
   const { data: citiesData } = useSWR(
-    `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/cities`,
+    `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/cities`,
     fetcher
   );
 
@@ -125,7 +129,7 @@ export const StudentForm = ({
     if (institution) values.institution_id = institution.id;
 
 
-    const clas = classes.find((item: any) => item.name == values.class);
+    const clas = classes?.find((item: any) => item.name == values.class);
     if (clas) values.class_id = clas.id;
 
     if (action === "update") {
@@ -133,19 +137,41 @@ export const StudentForm = ({
       delete values.confirm_password
     }
 
-    console.log(values);
+    // For getting the CSRF cookies for POST, PUT or DELETE requests
+    function getCookie(name: string): string | undefined {
+      let value = '';
+      if (typeof document !== 'undefined') {
+        value = `; ${document.cookie}`;
+      }
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) {
+        const part = parts.pop();
+        if (part) {
+          return part.split(';').shift();
+        }
+        return "1233"
+      }
+    }
+    const csrfToken = getCookie('csrf_access_token');
 
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    if (csrfToken) {
+      headers['X-CSRF-TOKEN'] = csrfToken;
+    }
     try {
+
+
       const response = await fetch(
-        `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${
-          action == "update" ? "students/" + profile.id : "verify_email_send"
+        `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${
+          action == "update" ? "students/" + profile.id : "students/"
         }`,
         {
           method: action == "signup" ? "POST" : "PUT",
           body: JSON.stringify(values),
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: headers,
         }
       );
 
@@ -162,7 +188,7 @@ export const StudentForm = ({
             close();
           }
           if (profile)
-            mutate(`http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/students/${profile.id}`);
+            mutate(`https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/students/${profile.id}`);
         }
       }
     } catch (e) {

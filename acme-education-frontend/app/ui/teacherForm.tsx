@@ -41,13 +41,13 @@ export const TeacherForm = ({
   });
 
   useEffect(() => {
-    fetch(`http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/subjects`).then(res => res.json()).then(data => setSubjects(data))
+    fetch(`https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/subjects`).then(res => res.json()).then(data => setSubjects(data))
   }, [])
   
   useEffect(() => {
     if (selectedCity.id != "") {
       fetch(
-        `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/cities/${selectedCity.id}/institutions`
+        `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/cities/${selectedCity.id}/institutions`
       )
         .then((res) => res.json())
         .then((data) => setInstitutions(data));
@@ -65,19 +65,19 @@ export const TeacherForm = ({
   };
 
   const { data: cities } = useSWR(
-    `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/cities`,
+    `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/cities`,
     fetcher
   );
   const { data: classes } = useSWR(
-    `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/classes`,
+    `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/classes`,
     fetcher
   );
 
   useEffect(() => {
     if (profile) {
-      fetch(`http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${profile.id}/classes`).then(res => res.json()).then(data => setTeacherClasses(data))
+      fetch(`https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${profile.id}/classes`).then(res => res.json()).then(data => setTeacherClasses(data))
     }
-  }, [])
+  }, [profile])
 
   const submitForm = async (values: teacherSignupProps) => {
     const city = cities?.find(
@@ -90,18 +90,38 @@ export const TeacherForm = ({
     );
     if (institution) values.institution_id = institution.id;
 
-    console.log(values);
+    // For getting the CSRF cookies for POST, PUT or DELETE requests
+    function getCookie(name: string): string | undefined {
+      let value = '';
+      if (typeof document !== 'undefined') {
+        value = `; ${document.cookie}`;
+      }
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) {
+        const part = parts.pop();
+        if (part) {
+          return part.split(';').shift();
+        }
+        return ""
+      }
+    }
 
-    try {
+      try {
+
+      const csrfToken = getCookie('csrf_access_token');
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+      if (csrfToken) {
+        headers['X-CSRF-TOKEN'] = csrfToken;
+      }
       const response = await fetch(
-        `http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${
-          action == "update" ? "teachers/" + profile.id : "verify_email_send"}`,
+        `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${
+          action == "update" ? "teachers/" + profile.id : "teachers/"}`,
         {
           method: action == "signup" ? "POST" : "PUT",
           body: JSON.stringify(values),
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: headers,
         }
       );
 
@@ -118,10 +138,10 @@ export const TeacherForm = ({
             close();
           }
           if (profile) {
-            mutate(`http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${profile.id}`);
-            mutate(`http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${profile.id}/subjects`);
-            mutate(`http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${profile.id}/classes`);
-            mutate(`http://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${profile.id}/institutions`);
+            mutate(`https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${profile.id}`);
+            mutate(`https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${profile.id}/subjects`);
+            mutate(`https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${profile.id}/classes`);
+            mutate(`https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${profile.id}/institutions`);
           }
         }
       }
