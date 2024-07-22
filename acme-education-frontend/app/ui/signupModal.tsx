@@ -19,7 +19,7 @@ export const SignUpModal = ({
               <Icon color="green" icon="mdi:success-bold" />
               Signup succesfull
             </h2>
-            <p>Check your mail to verify your email</p>
+              {/* <p>Check your mail to verify your email</p> */}
             </>
           ) : (
             <>

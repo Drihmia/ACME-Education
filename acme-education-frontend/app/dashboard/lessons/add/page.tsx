@@ -15,7 +15,7 @@ export default function Page() {
       alert(`You do not have permission to access this route.`);
       router.push("/dashboard");
     }
-  }, []);
+  }, [router]);
 
   return <LessonForm action="Add" />;
 }
