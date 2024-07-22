@@ -1,7 +1,8 @@
 import * as yup from "yup";
 
 const emailRegex = /[a-z0-9]+@[a-z]+.[a-z]{2,3}/;
-const phoneRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+const phoneRegex = /^(?:\+?\d{12}|\d{10})$/;
+// const phoneRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
 const passwordRegex =
   /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
 
@@ -35,6 +36,11 @@ const allowedDomains = [
   "inbox.com"
 ];
 
+const validatePhoneNumber = (value?: string): boolean =>
+    /^(?:\+?\d{1,3}[ -]?)?\d{3}[ -]?\d{3}[ -]?\d{4}$/.test(value || '');
+
+  ///^\+?\d{12}$|^\d{10}$/.test(value || '');
+
 const validateEmailDomain = (value?: string) => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (value) {
@@ -58,6 +64,7 @@ export const signupTeacherSchema = yup.object().shape({
     .required("Email address is required"),
   phone_number: yup
     .string()
+    .test("is-phone-number", "Invalid phone number", validatePhoneNumber)
     .required("Phone number is required"),
   password: yup
     .string()
@@ -87,6 +94,7 @@ export const signupStudentSchema = yup.object().shape({
     .required("Email address is required"),
   phone_number: yup
     .string()
+    .test("is-phone-number", "Invalid phone number", validatePhoneNumber)
     .required("Phone number is required"),
   password: yup
     .string()
@@ -117,6 +125,7 @@ export const updateTeacherSchema = yup.object().shape({
     .required("Email address is required"),
   phone_number: yup
     .string()
+    .test("is-phone-number", "Invalid phone number", validatePhoneNumber)
     .required("Phone number is required"),
   institution: yup.string().required("Name of institution is required"),
   city: yup.string().required("Name of city is required"),
@@ -134,10 +143,11 @@ export const updateStudentSchema = yup.object().shape({
     .required("Email address is required"),
   phone_number: yup
     .string()
+    .test("is-phone-number", "Invalid phone number", validatePhoneNumber)
     .required("Phone number is required"),
   institution: yup.string().required("Name of institution is required"),
   city: yup.string().required("Name of city is required"),
-  // teacher_email: yup.string().email(),
+  teacher_email: yup.string().email(),
   // class_id: yup.string().required("Class id is required"),
   gender: yup.string().oneOf(["F", "M"], "Gender is required").required()
 });
