@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from flask import jsonify, request
 import uuid
 from werkzeug.exceptions import BadRequest
-from api.v1.views import app_views
+from api.v1.views import app_views, role_required
 from models import storage
 from models.clas import Clas
 from models.institution import Institution
@@ -17,6 +17,7 @@ from models.subject import Subject
                  strict_slashes=False)
 @app_views.route("/lessons/<id>", methods=["GET", "DELETE", "PUT"],
                  strict_slashes=False)
+@role_required(["teacher", "dev"])
 def lessons(id=None):
     """
     GET: Return the list of avaiable lessons if there is not ID.

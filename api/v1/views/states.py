@@ -3,7 +3,7 @@
 from flask import jsonify, request
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import BadRequest
-from api.v1.views import app_views
+from api.v1.views import app_views, role_required
 from models import storage
 from models.state import State
 
@@ -11,6 +11,7 @@ from models.state import State
 @app_views.route("/states", methods=["GET", "POST"], strict_slashes=False)
 @app_views.route("/states/<id>", methods=["GET", 'PUT', 'DELETE'],
                  strict_slashes=False)
+@role_required(["dev"])
 def states(id=None):
     """
     GET: Return the list of all avaiable State, if not id is provided,
@@ -91,6 +92,7 @@ def states(id=None):
 
 @app_views.route("/states/<id>/cities", methods=["GET"],
                  strict_slashes=False)
+@role_required(["dev"])
 def classes_cities(id=None):
     """
     GET: Return the list of all avaiable cities of that class.

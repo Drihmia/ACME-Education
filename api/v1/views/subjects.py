@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """Define the Subjects API"""
-from api.v1.views import app_views
+from api.v1.views import app_views, role_required
 from flask import jsonify, request
 from models import storage
 
@@ -30,6 +30,8 @@ def allSubs(id=None):
 
 @app_views.route("/subjects/<id>/institutions", methods=["GET"],
                  strict_slashes=False)
+# Not used for now
+@role_required(["dev"])
 def subject_institutions(id):
     """
     GET: Lists all the subjects tought in a particular institute.
@@ -48,6 +50,8 @@ def subject_institutions(id):
 
 @app_views.route("/subjects/<id>/lessons", methods=["GET"],
                  strict_slashes=False)
+# Not used for now
+@role_required(["dev"])
 def subject_lessons(id):
     """
     GET: List of all lessons that belong this particular subject
@@ -66,6 +70,8 @@ def subject_lessons(id):
 
 @app_views.route("/subjects/<id>/teachers", methods=["GET"],
                  strict_slashes=False)
+# Not used for now
+@role_required(["dev"])
 def subject_teachers(id):
     """
     GET: List of all teachers that teach this particular subject

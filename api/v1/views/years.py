@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """Define the Classes API"""
 from flask import jsonify
-from api.v1.views import app_views
+from api.v1.views import app_views, role_required
 from models import storage
 from models.clas import Clas
 
@@ -29,6 +29,8 @@ def classes(id=None):
 
 @app_views.route("/classes/<id>/students", methods=["GET"],
                  strict_slashes=False)
+# Not used for now
+@role_required(["dev"])
 def classes_students(id=None):
     """
     GET: Return the list of all avaiable students of that class.
@@ -45,6 +47,8 @@ def classes_students(id=None):
 
 @app_views.route("/classes/<id>/lessons", methods=["GET"],
                  strict_slashes=False)
+# Not used for now
+@role_required(["dev"])
 def classes_lessons(id=None):
     """
     GET: Return the list of all avaiable lessons of that class.
@@ -61,6 +65,8 @@ def classes_lessons(id=None):
 
 @app_views.route("/classes/<id>/teachers", methods=["GET"],
                  strict_slashes=False)
+# Not used for now
+@role_required(["dev"])
 def classes_teachers(id=None):
     """
     GET: Return the list of all avaiable teachers of that class.
@@ -77,6 +83,8 @@ def classes_teachers(id=None):
 
 @app_views.route("/classes/<id>/institutions", methods=["GET"],
                  strict_slashes=False)
+# Not used for now
+@role_required(["dev"])
 def classes_institutions(id=None):
     """
     GET: Return the list of all avaiable institutions of that class.
