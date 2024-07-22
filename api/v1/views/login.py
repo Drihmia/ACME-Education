@@ -2,14 +2,16 @@
 """Define the State API"""
 import bcrypt
 from flask import jsonify, request
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import (
+    create_access_token, create_refresh_token,
+    set_access_cookies, set_refresh_cookies,
+)
 from werkzeug.exceptions import BadRequest
 from api.v1.views import app_views
 from models import storage
 from models.teacher import Teacher
 from models.student import Student
 from hashlib import sha256
-
 
 @app_views.route("/teacher_login", methods=["POST"], strict_slashes=False)
 def teacher_login():
@@ -44,10 +46,22 @@ def teacher_login():
                       teacher.password.encode('utf-8')):
         # generate JWT token for teacher with id and user_type.
         access_token = create_access_token(identity={'id': teacher.id,
-                                                     'type': 'teacher'})
+                                                     'role': 'teacher'})
+        refresh_token = create_refresh_token(identity={'id': teacher.id,
+                                                       'role': 'teacher'})
 
-        return jsonify({'access_token': access_token,
-                        'user_id': teacher.id, 'class': 'Teacher'}), 200
+        resp =  jsonify({'access_token': access_token,
+                        'user_id': teacher.id, 'class': 'Teacher'})
+        set_access_cookies(resp, access_token)
+        set_refresh_cookies(resp, refresh_token)
+
+        # resp.set_cookie("access_token", access_token, httponly=True)
+        # resp.set_cookie("refresh_token", refresh_token,
+        # httponly=True,
+        # secure=True,
+        # samesite='Strict')
+        # resp.headers['Authorization'] = f"Bearer {access_token}"
+        return resp
     else:
         return jsonify({'status': 'ERROR'}), 401
 
@@ -85,9 +99,22 @@ def student_login():
                       student.password.encode('utf-8')):
         # Generate JWT token for student with additional information
         access_token = create_access_token(identity={'id': student.id,
-                                                     'type': 'student'})
+                                                     'role': 'student'})
+        refresh_token = create_refresh_token(identity={'id': student.id,
+                                                       'role': 'student'})
 
-        return jsonify({'access_token': access_token,
-                        'user_id': student.id, 'class': 'Student'}), 200
+        resp = jsonify({'access_token': access_token,
+                        'user_id': student.id, 'class': 'Student'})
+
+        set_access_cookies(resp, access_token)
+        set_refresh_cookies(resp, refresh_token)
+
+        # resp.set_cookie("access_token", access_token, httponly=True)
+        # resp.set_cookie("refresh_token", refresh_token,
+                        # httponly=True,
+                        # secure=True,
+                        # samesite='Strict')
+        # resp.headers['Authorization'] = f"Bearer {access_token}"
+        return resp
     else:
         return jsonify({'status': 'ERROR'}), 401
