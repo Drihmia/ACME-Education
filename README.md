@@ -100,7 +100,7 @@ Run the back end
     ```
 ## API Reference
 
-You can find the API documentation by following this <a href="https://night-belly-22c.notion.site/ACME-Education-API-Docs-77ef7af075cd44829cdfcb8d4d45dd79?pvs=4" target="_blank">link</a> or see a less cooler version by navigating to `api/v1/Documentation` in the repo and see the MD file.
+You can find the API documentation by following this <a href="https://night-belly-22c.notion.site/ACME-Education-API-Docs-77ef7af075cd44829cdfcb8d4d45dd79?pvs=4" target="_blank">link</a> or see a less cooler version by navigating to [`/docs`](https://drihmia.tech/docs) in the repo and see the MD file.
 
 ## Running Tests
 
