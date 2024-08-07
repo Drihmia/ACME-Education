@@ -468,3 +468,18 @@ def teachers_list_class(id):
     classes = teacher.classes
 
     return jsonify([classe.to_dict() for classe in classes]), 200
+
+
+@app_views.route('/teachers/<id>/students',  methods=['GET'],
+                 strict_slashes=False)
+@role_required(['teacher', 'dev'])
+def teachers_list_students(id):
+    """return a list of all students by teacher"""
+
+    teacher = storage.get(Teacher, id)
+    if not teacher:
+        return jsonify({'error': "UNKNOWN TEACHER"}), 400
+
+    students = teacher.students
+
+    return jsonify([student.to_dict() for student in students]), 200

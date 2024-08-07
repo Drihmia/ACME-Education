@@ -527,3 +527,22 @@ def students_list_class(id):
     # lessons = storage.query(Subject).filter(Subject.subject_id == id).all()
 
     return jsonify(classes.to_dict()), 200
+
+
+@app_views.route('/students/<id>/teachers',  methods=['GET'],
+                 strict_slashes=False)
+@role_required(['student', 'dev'])
+def teachers_list_teachers(id):
+    """return a list of all teachers by student"""
+
+    student = storage.get(Student, id)
+    if not student:
+        return jsonify({'error': "UNKNOWN STUDENT"}), 400
+
+    teachers = student.teachers
+
+    # two differente approach using query methode from storage.
+    # student = storage.query(Student).filter(Student.id == id).all()
+    # lessons = storage.query(Subject).filter(Subject.subject_id == id).all()
+
+    return jsonify([teacher.to_dict() for teacher in teachers]), 200
