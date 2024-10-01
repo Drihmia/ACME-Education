@@ -43,7 +43,7 @@ export const TeacherProfile = ({
       <div className="w-full flex items-center justify-between">
         <h1 className={`text-2xl md:text-3xl font-bold`}>
           My Profile{" "}
-          <span className="block text-lg font-semibold">{profile.id}</span>
+          <span className="block text-lg font-semibold">{profile.last_name} {profile.first_name}</span>
         </h1>
         <button
           onClick={() => openModal(profile)}
@@ -82,7 +82,7 @@ export const TeacherProfile = ({
         </div>
         <div className="w-full col-span-full grid gap-4">
           <div className="text-lg md:text-xl font-medium">
-            Institutions
+            Institutions:
             {profile.institutions.length > 0 ? (
               <p className="w-full grid gap-2 md:grid-cols-2 lg:grid-cols-3 p-2 md:p-4">
                 {profile.institutions.map((ins: any, i: number) => (
@@ -98,7 +98,7 @@ export const TeacherProfile = ({
             )}
           </div>
           <div className="text-lg md:text-xl font-medium">
-            Classes Taken
+            Classes Taken:
             {profile.subjects.length > 0 ? (
               <p className="w-full grid gap-2 md:grid-cols-2 lg:grid-cols-3 p-2 md:p-4">
                 {profile.classes.map((cls: any, i: number) => (
@@ -114,7 +114,7 @@ export const TeacherProfile = ({
             )}
           </div>
           <div className="text-lg md:text-xl font-medium">
-            Subjects Taught
+            Subjects Taught:
             {profile.subjects.length > 0 ? (
               <p className="w-full grid gap-2 md:grid-cols-2 lg:grid-cols-3 p-2 md:p-4">
                 {profile.subjects.map((sub: any, i: number) => (

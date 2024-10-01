@@ -44,7 +44,7 @@ export const StudentProfile = ({
       <div className="w-full flex items-center justify-between">
         <h1 className={`text-2xl md:text-3xl font-bold`}>
           My Profile{" "}
-          <span className="block text-lg font-semibold">{profile.id}</span>
+          <span className="block text-lg font-semibold">{profile.last_name} {profile.first_name}</span>
         </h1>
         <button
           onClick={() => openModal(profile)}
@@ -61,25 +61,25 @@ export const StudentProfile = ({
           <div className="w-full flex flex-col gap-2">
             <ul className="w-full flex flex-col gap-1">
               <li className="text-lg md:text-xl font-medium">
-                Name:{" "}
+                Name :{" "}
                 <span className="font-normal">
                   {profile.first_name} {profile.last_name}
                 </span>
               </li>
               <li className="text-lg md:text-xl font-medium">
-                Email: <span className="font-normal">{profile.email}</span>
+                Email : <span className="font-normal">{profile.email}</span>
               </li>
               <li className="text-lg md:text-xl font-medium">
-                Gender:{" "}
+                Gender :{" "}
                 <span className="font-normal">
                   {profile.gender === "M" ? "Male" : "Female"}
                 </span>
               </li>
               <li className="text-lg md:text-xl font-medium">
-                City: <span className="font-normal">{profile.city}</span>
+                City : <span className="font-normal">{profile.city}</span>
               </li>
               <li className="text-lg md:text-xl font-medium">
-                Institution:{" "}
+                Institution :{" "}
                 <span className="font-normal">{profile.institution}</span>
               </li>
             </ul>
@@ -87,15 +87,15 @@ export const StudentProfile = ({
         </div>
         <div className="w-full col-span-full grid gap-4">
           <div className="text-lg md:text-xl font-medium">
-            Class
+            Class :
             <p className="font-normal text-sm">{profile.class.name}</p>
           </div>
           <div className="text-lg md:text-xl font-medium">
-            Teacher
+            Teacher :
             <p className="font-normal text-sm">{profile.teacher_email}</p>
           </div>
           <div className="text-lg md:text-xl font-medium">
-            Subjects
+            Subjects :
             {profile.subjects.length > 0 ? (
               <p className="w-full grid gap-2 md:grid-cols-2 lg:grid-cols-3 p-2 md:p-4">
                 {profile.subjects.map((sub: any, i: number) => (

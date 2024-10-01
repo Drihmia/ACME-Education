@@ -34,7 +34,7 @@ export const LessonModal = ({
           <article className="w-full">
             <h3 className="text-xl md:text-2xl font-semibold">Description</h3>
             <p>{item.description}</p>
-            <Link href={item.download_link} className="text-blue-500 underline">
+            <Link href={item.download_link} target="_blank" className="text-blue-500 underline">
               Download lesson
             </Link>
           </article>
