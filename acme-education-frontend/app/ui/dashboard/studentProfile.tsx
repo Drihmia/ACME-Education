@@ -13,19 +13,19 @@ export const StudentProfile = ({
   openModal: (item: any) => void;
 }) => {
   const { data: profile, error } = useSWR(
-    `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${user.class.toLowerCase()}s/${user.user_id}`,
+    `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${user.class.toLowerCase()}s/${user.user_id}`,
     fetcher
   );
 
   const { data: subjects } = useSWR(
-    `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${user.class.toLowerCase()}s/${
+    `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${user.class.toLowerCase()}s/${
       user.user_id
     }/subjects`,
     fetcher
   );
 
   const { data: cls } = useSWR(
-    `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${user.class.toLowerCase()}s/${
+    `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${user.class.toLowerCase()}s/${
       user.user_id
     }/classes`,
     fetcher

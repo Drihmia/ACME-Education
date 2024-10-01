@@ -23,21 +23,21 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
   const [lesson, setLesson] = useState<lessonFormProps | null>(null);
 
   const { data: institutions } = useSWR(
-    `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${user?.user_id}/institutions`,
+    `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${user?.user_id}/institutions`,
     fetcher
   );
   const { data: subjects } = useSWR(
-    `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${user?.user_id}/subjects`,
+    `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${user?.user_id}/subjects`,
     fetcher
   );
   const { data: classes } = useSWR(
-    `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${user?.user_id}/classes`,
+    `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${user?.user_id}/classes`,
     fetcher
   );
 
   useEffect(() => {
     if (id) {
-      fetch(`https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/lessons/${id}`)
+      fetch(`${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/lessons/${id}`)
         .then((res) => res.json())
         .then((data) => {
           const modifiedData = { ...data };
@@ -97,7 +97,7 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
 
     try {
       const response = await fetch(
-        `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/lessons/${id ? id : ""}`,
+        `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/lessons/${id ? id : ""}`,
         {
           method: action === "Add" ? "POST" : "PUT",
           body: JSON.stringify(values),
@@ -111,7 +111,7 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
         alert(res_data["error"]);
       } else {
         mutate(
-          `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${user?.class.toLowerCase()}s/${
+          `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${user?.class.toLowerCase()}s/${
             user?.user_id
           }/lessons`
         );
@@ -238,7 +238,7 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
                       alert("Something went wrong.");
                     } else {
                       mutate(
-                        `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${user?.class.toLowerCase()}s/${
+                        `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${user?.class.toLowerCase()}s/${
                           user?.user_id
                         }/lessons`
                       );

@@ -52,7 +52,7 @@ export const StudentForm = ({
   useEffect(() => {
     if (selectedCity.id != "") {
       fetch(
-        `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/cities/${selectedCity.id}/institutions`
+        `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/cities/${selectedCity.id}/institutions`
       )
         .then((res) => res.json())
         .then((data) => {
@@ -67,10 +67,10 @@ export const StudentForm = ({
     (async () => {
       if (selectedInstitute.id != "") {
         const fetchSchoolClasses = fetch(
-          `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/institutions/${selectedInstitute.id}/classes`
+          `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/institutions/${selectedInstitute.id}/classes`
         ).then((res) => res.json());
         const fetchSchoolTeachers = fetch(
-          `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/institutions/${selectedInstitute.id}/teachers`
+          `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/institutions/${selectedInstitute.id}/teachers`
         ).then((res) => res.json());
 
         const [schoolClasses, schoolTeachers] = await Promise.all([
@@ -107,7 +107,7 @@ export const StudentForm = ({
   };
 
   const { data: citiesData } = useSWR(
-    `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/cities`,
+    `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/cities`,
     fetcher
   );
 
@@ -161,7 +161,7 @@ export const StudentForm = ({
 
 
       const response = await fetch(
-        `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${
+        `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${
           action == "update" ? "students/" + profile.id : "students/"
         }`,
         {
@@ -184,7 +184,7 @@ export const StudentForm = ({
             close();
           }
           if (profile)
-            mutate(`https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/students/${profile.id}`);
+            mutate(`${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/students/${profile.id}`);
         }
       }
     } catch (e) {

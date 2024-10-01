@@ -17,7 +17,7 @@ export const deleteLesson = async (lessonId: string) => {
     }
 
     const response = await fetch(
-      `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/lessons/${lessonId}`,
+      `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/lessons/${lessonId}`,
         {
         method: "DELETE",
         headers: headers,
