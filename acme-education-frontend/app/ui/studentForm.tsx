@@ -14,7 +14,6 @@ import {
   responseProps,
   selectedCityProps,
   studentSignupProps,
-  classProps, 
 } from "../types";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { LoadingSkeleton } from "./skeletons";
@@ -36,9 +35,6 @@ export const StudentForm = ({
   const closeModal = () => setModal(false);
 
   const [institutionsData, setInstitutionsData] = useState<institutionProps[]>(
-    []
-  );
-  const [classesData, setClassesData] = useState<classProps[]>(
     []
   );
   const [classes, setClasses] = useState<any[]>([]);
