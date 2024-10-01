@@ -1,13 +1,16 @@
 #!/usr/bin/python3
 """Define the State API"""
 import bcrypt
-from flask import jsonify, request
+from flask import jsonify, request, make_response
 from flask_jwt_extended import (
     create_access_token, create_refresh_token,
     set_access_cookies, set_refresh_cookies,
 )
 from werkzeug.exceptions import BadRequest
-from api.v1.views import app_views
+
+from flask_jwt_extended import  jwt_required
+from api.v1.views import app_views, role_required
+
 from models import storage
 from models.teacher import Teacher
 from models.student import Student
@@ -118,3 +121,32 @@ def student_login():
         return resp
     else:
         return jsonify({'status': 'ERROR'}), 401
+
+
+@app_views.route("/logout", methods=["POST"], strict_slashes=False)
+@jwt_required()
+@role_required(['dev', 'teacher', 'student'])  # type: ignore
+def logout():
+    """
+    Logout the user by revoking the JWT token and clearing the access token cookie.
+    """
+    response = make_response(jsonify({'status': 'OK'}))
+
+    response.set_cookie(
+        'access_token',
+        '',
+        expires=0,  # Expire the cookie immediately
+        httponly=True,  # Set HttpOnly for security
+        secure=True,  # Set secure if using HTTPS
+        samesite='Strict'  # Protect against CSRF
+    )
+
+    response.set_cookie(
+        'refresh_token',
+        '',
+        expires=0,
+        httponly=True,
+        secure=True,
+        samesite='Strict'
+    )
+    return response
