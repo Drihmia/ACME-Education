@@ -20,18 +20,20 @@ export const Header = () => {
         >
           ACME Education
         </Link>
-      </div>
-      {/* <div className="flex items-center font-bold">
-        <p className="md:hidden uppercase">menu</p>
-        <button
-          onClick={handleNav}
-          id="open_menu_btn"
-          aria-label="open hamburger menu"
-          className="p-2 sm:p-3 md:p-4 text-2xl md:hidden flex items-center justify-center hover:text-blue-700"
-        >
-          <Icon icon="ci:hamburger-md" />
-        </button>
-      </div> */}
+        </div>
+        {!user && (
+          <div className="flex items-center font-bold">
+            <p className="md:hidden uppercase">menu</p>
+            <button
+              onClick={handleNav}
+              id="open_menu_btn"
+              aria-label="open hamburger menu"
+              className="p-2 sm:p-3 md:p-4 text-2xl md:hidden flex items-center justify-center hover:text-blue-700"
+            >
+              <Icon icon="ci:hamburger-md" />
+            </button>
+          </div>
+        )}
       {!user && (
         <nav
           id="nav_overlay"
