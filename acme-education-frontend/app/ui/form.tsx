@@ -488,7 +488,7 @@ export const SignInForm = () => {
           initialValues={{
             email: "",
             password: "",
-            isTeacher: "",
+            isTeacher: "false",
           }}
           validationSchema={signinSchema}
           onSubmit={(values, { setSubmitting }) => {

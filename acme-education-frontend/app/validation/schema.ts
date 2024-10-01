@@ -184,7 +184,8 @@ export const signinSchema = yup.object().shape({
   isTeacher: yup
     .string()
     .oneOf(["true", "false"], "Terms must be accepted")
-    .required(),
+    .required()
+    .default("false"),
 });
 
 export const signupQuestion = yup.object().shape({
