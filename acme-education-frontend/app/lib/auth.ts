@@ -22,7 +22,7 @@ export const useLogOut = () => {
 
         // Revoking jwt token stored in access_token in cookies on server side.
         const response = await fetch(
-            `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/logout`,
+            `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/logout`,
                 {
                 method: 'POST',
                 headers: headers,

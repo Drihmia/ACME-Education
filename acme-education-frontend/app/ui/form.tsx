@@ -450,7 +450,7 @@ export const SignInForm = () => {
 
     try {
       const response = await fetch(
-        `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${
+        `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${
           values.isTeacher == "true" ? "teacher_login" : "student_login"
         }`,
         {

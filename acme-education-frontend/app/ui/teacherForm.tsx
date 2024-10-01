@@ -41,13 +41,13 @@ export const TeacherForm = ({
   });
 
   useEffect(() => {
-    fetch(`https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/subjects`).then(res => res.json()).then(data => setSubjects(data))
+    fetch(`${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/subjects`).then(res => res.json()).then(data => setSubjects(data))
   }, [])
   
   useEffect(() => {
     if (selectedCity.id != "") {
       fetch(
-        `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/cities/${selectedCity.id}/institutions`
+        `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/cities/${selectedCity.id}/institutions`
       )
         .then((res) => res.json())
         .then((data) => setInstitutions(data));
@@ -65,17 +65,17 @@ export const TeacherForm = ({
   };
 
   const { data: cities } = useSWR(
-    `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/cities`,
+    `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/cities`,
     fetcher
   );
   const { data: classes } = useSWR(
-    `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/classes`,
+    `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/classes`,
     fetcher
   );
 
   useEffect(() => {
     if (profile) {
-      fetch(`https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${profile.id}/classes`).then(res => res.json()).then(data => setTeacherClasses(data))
+      fetch(`${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${profile.id}/classes`).then(res => res.json()).then(data => setTeacherClasses(data))
     }
   }, [profile])
 
@@ -116,7 +116,7 @@ export const TeacherForm = ({
         headers['X-CSRF-TOKEN'] = csrfToken;
       }
       const response = await fetch(
-        `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${
+        `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${
           action == "update" ? "teachers/" + profile.id : "teachers/"}`,
         {
           method: action == "signup" ? "POST" : "PUT",
@@ -138,10 +138,10 @@ export const TeacherForm = ({
             close();
           }
           if (profile) {
-            mutate(`https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${profile.id}`);
-            mutate(`https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${profile.id}/subjects`);
-            mutate(`https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${profile.id}/classes`);
-            mutate(`https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${profile.id}/institutions`);
+            mutate(`${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${profile.id}`);
+            mutate(`${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${profile.id}/subjects`);
+            mutate(`${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${profile.id}/classes`);
+            mutate(`${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${profile.id}/institutions`);
           }
         }
       }
