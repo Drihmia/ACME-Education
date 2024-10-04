@@ -50,7 +50,7 @@ export const StudentForm = ({
   });
 
   useEffect(() => {
-    if (selectedCity.id != "") {
+    if (selectedCity.id != "" && (action !== 'update')) {
       fetch(
         `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/cities/${selectedCity.id}/institutions`
       )
@@ -61,11 +61,11 @@ export const StudentForm = ({
     } else {
       setInstitutionsData([]);
     }
-  }, [selectedCity]);
+  }, [selectedCity, action]);
 
   useEffect(() => {
     (async () => {
-      if (selectedInstitute.id != "") {
+      if (selectedInstitute.id != "" && (action !== 'update')) {
         const fetchSchoolClasses = fetch(
           `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/institutions/${selectedInstitute.id}/classes`
         ).then((res) => res.json());
@@ -84,7 +84,7 @@ export const StudentForm = ({
         setTeachers([]);
       }
     })();
-  }, [selectedInstitute]);
+  }, [selectedInstitute, action]);
 
   const checkValue = (value: string) => {
     if (value === "city") {
@@ -234,7 +234,8 @@ export const StudentForm = ({
             city: action == "update" ? profile.city : "",
             gender: action == "update" ? profile.gender : "",
             class: action == "update" ? profile.class.name : "",
-            teacher_email: action == "update" ? profile.teacher_email : "",
+            // teacher_email: action == "update" ? profile.teacher_email : "",
+            teacher_email: "",
             is_teacher: action == "signup" ? false: false,
           }}
           validationSchema={
@@ -318,14 +319,14 @@ export const StudentForm = ({
                   }
                 />
                 <MyTextAndSelectInput
-                  label="Teacher"
+                  label="Add a teacher"
                   name="teacher_email"
                   type="email"
                   data={teachers}
                   placeholder="teacher@example.com"
-                  disabled={
-                    action === "signup" ? !selectedInstitute.status : true
-                  }
+                  //disabled={
+                    //action === "signup" ? !selectedInstitute.status : true
+                  //}
                 />
                 <FieldSet
                   label="Gender"
