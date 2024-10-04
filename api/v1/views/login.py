@@ -5,6 +5,7 @@ from flask import jsonify, request, make_response
 from flask_jwt_extended import (
     create_access_token, create_refresh_token,
     set_access_cookies, set_refresh_cookies,
+    verify_jwt_in_request,
 )
 from werkzeug.exceptions import BadRequest
 
@@ -150,3 +151,17 @@ def logout():
         samesite='Strict'
     )
     return response
+
+@app_views.route("/checkjwt", methods=["GET"], strict_slashes=False)
+def checkjwt():
+    """
+    Check if JWT access token in the browser's cookies is valid and not expired
+    """
+    valid = False
+    try:
+        verify_jwt_in_request()
+        valid = True
+    except Exception as e:
+        print("Error while verifying jwt access token")
+
+    return jsonify({ "jwtIsValid": valid }), 200

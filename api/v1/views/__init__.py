@@ -59,7 +59,7 @@ def role_required(roles):
                     if not current_user_data:
                         return
                 except Exception as e:
-                    print(e)
+                    print("From decorator, cookies:", e)
                     return jsonify({"msg": "Forbidden access"}), 401
 
             current_user_role = current_user_data.get("role")
