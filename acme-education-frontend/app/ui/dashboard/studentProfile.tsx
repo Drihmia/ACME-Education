@@ -17,6 +17,13 @@ export const StudentProfile = ({
     fetcher
   );
 
+  const { data: teachers } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${user.class.toLowerCase()}s/${
+      user.user_id
+    }/teachers`,
+    fetcher
+  );
+
   const { data: subjects } = useSWR(
     `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${user.class.toLowerCase()}s/${
       user.user_id
@@ -91,8 +98,8 @@ export const StudentProfile = ({
             <p className="font-normal text-sm">{profile.class.name}</p>
           </div>
           <div className="text-lg md:text-xl font-medium">
-            Teacher :
-            <p className="font-normal text-sm">{profile.teacher_email}</p>
+            Teachers :
+            <p className="font-normal text-sm">{(teachers?.map((teacher: any) => `${teacher.last_name} ${teacher.first_name}`))?.join(', ')}</p>
           </div>
           <div className="text-lg md:text-xl font-medium">
             Subjects :
