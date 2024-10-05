@@ -241,7 +241,8 @@ def lessons(id=None):
 
         # ---------------------------------------------------------
         if 'class_id' in data.keys() and \
-                is_valid_uuid(data.get('class_id')):
+                is_valid_uuid(data.get('class_id')) and \
+                not public:
             class_id = data.get('class_id').strip()
             clas = storage.get(Clas, class_id)
             if not clas:
@@ -273,9 +274,10 @@ def lessons(id=None):
             if student.institutions.id not in teacher_institutions_ids:
                 continue
 
-#             teacher_classes_ids = [c.id for c in classes if c]
-            # if student_id not in teacher_classes_ids:
-                # continue
+            lesson_classes_ids = [c.id for c in classes if c]
+            if student.class_id not in lesson_classes_ids:
+                continue
+
             student.lessons.append(lesson)
             try:
                 student.save()
