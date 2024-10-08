@@ -41,12 +41,12 @@ export const LessonModal = ({
             <h3 className="text-xl md:text-2xl font-semibold">Description</h3>
             <p>{item.description}</p>
             <div className="grid">
-              <Link href={item.download_link} target="_blank" className="text-blue-500 underline">
+              {/*<Link href={item.download_link} target="_blank" className="text-blue-500 underline">
                 Preview lesson
-              </Link>
+              </Link> */}
               <Link href={downloadLink(item.download_link)} target="_blank" className="text-blue-500 underline">
                 Download lesson
-              </Link>
+                </Link>
             </div>
           </article>
         </div>
