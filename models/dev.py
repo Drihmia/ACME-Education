@@ -11,10 +11,10 @@ class Dev(BaseModel, Base):
 
     # -------------------------------------------------------------
     # Normal attributes.
-    first_name = Column(String(64), nullable=False, default='dev')  # A must
-    last_name = Column(String(64), nullable=False, default='one')  # A must
-    email = Column(String(64), nullable=False, unique=True, default='dev1@gmail.com')  # A must
-    password = Column(String(64), nullable=False, default='dev1')  # A must
+    first_name = Column(String(64), nullable=False, default='dev')
+    last_name = Column(String(64), nullable=False, default='one')
+    email = Column(String(64), nullable=False, unique=True, default='dev1@gmail.com')
+    password = Column(String(64), nullable=False, default='dev1')
 
     # -------------------------------------------------------------
     # Optional attributes.
