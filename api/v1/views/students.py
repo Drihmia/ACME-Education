@@ -16,7 +16,7 @@ from models import storage
 
 
 @app_views.route('/students', methods=['POST'], strict_slashes=False)
-def ctreate_student():
+def create_student():
     """
     POST: Create a new student
         MUST: give the institution_id
