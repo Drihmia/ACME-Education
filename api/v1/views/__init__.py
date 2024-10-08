@@ -73,6 +73,7 @@ from api.v1.views.index import *
 from api.v1.views.lessons import *
 from api.v1.views.teachers import *
 from api.v1.views.students import *
+from api.v1.views.dev import *
 from api.v1.views.subjects import *
 from api.v1.views.years import *
 from api.v1.views.institutions import *

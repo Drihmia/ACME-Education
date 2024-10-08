@@ -97,3 +97,33 @@ def create_dev():
 
         dev = dev.to_dict()
         return jsonify(dev), 201
+
+
+@app_views.route('/recently_signed_students_by_class', methods=['GET'],
+                 strict_slashes=False)
+@role_required(['dev'])
+def recently_signed_students_by_class():
+    """
+    get the the list of recently registred students by class
+    """
+
+    if request.method == 'GET':
+
+        # A list of all recently signed students:
+        RSSBCs = storage.query(Recently_signed_students_by_class).all()
+        return jsonify([RSSBC.to_dict() for RSSBC in RSSBCs]), 200
+
+
+@app_views.route('/recently_signed_teachers', methods=['GET'],
+                 strict_slashes=False)
+@role_required(['dev'])
+def recently_signed_teachers():
+    """
+    get the the list of recently registred teachers
+    """
+
+    if request.method == 'GET':
+
+        # A list of all recently signed teachers:
+        RSTs = storage.query(Recently_signed_teachers).all()
+        return jsonify([RST.to_dict() for RST in RSTs]), 200
