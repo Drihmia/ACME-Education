@@ -456,6 +456,21 @@ of teacher's IDs"}), 400
         if not student:
             return jsonify({'error': "UNKNOWN STUDENT"}), 400
 
+        for teacher in student.teachers:
+            teacher.students.remove(student)
+
+        for lesson in student.lessons:
+            lesson.students.remove(student)
+
+        for subject in student.subjects:
+            subject.students.remove(student)
+
+        if student in student.classes.students:
+            student.classes.students.remove(student)
+
+        if student in student.institutions.students:
+            student.institutions.students.remove(student)
+
         student.delete()
         storage.save()
         return jsonify({}), 200
