@@ -16,6 +16,10 @@ check_scope.py
 # JSON FILE for Oauth2 for sending mails using python
 *.com.json
 
+# Digital ocean files
+droplet_digital_ocean
+droplet_digital_ocean.pub
+
 # Frontend: -------------------------------------:
 *dynamic/
 */node_modules/
