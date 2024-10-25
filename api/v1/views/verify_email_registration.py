@@ -17,10 +17,10 @@ from tools.send_email import send_emails, generate_verification_email
 
 
 load_dotenv()
-current_datetime = datetime.now().strftime("%B %d, %Y at %I:%M %p")
+current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
 
 # Serializer for generating and validating tokens
-secret_key = os.environ.get('SECRET_KEY')
+secret_key = getenv('SECRET_KEY')
 if not secret_key:
     print("secret key, for serializer, is none")
     exit(1)
@@ -58,7 +58,7 @@ for sending verification email'}), 400
     if 'is_teacher' not in data.keys():
         return jsonify({'error': 'Missing is_teacher'}), 400
 
-    EMAIL_SEND = os.environ.get('ACME_EMAIL')
+    EMAIL_SEND = getenv('ACME_EMAIL')
     if not EMAIL_SEND:
         return jsonify(error='export ACME_EMAIL="Your_email@gmail.com" \
 into ur bashrc file')

@@ -26,10 +26,26 @@ def assign_private_lessons_to_students(student, lesson):
     if student.classes.id not in lesson_classes_ids:
         return student
 
-    # 3- Get list of lesson's subject IDs.
-    lesson_subjects_ids = {subj.id for subj in lesson.subjects}
-    if student.subjects.id not in lesson_subjects_ids:
+    # 3- Get list of student's subject IDs.
+    student_subjects_ids = {subj.id for subj in student.subjects}
+    if lesson.subjects.id not in student_subjects_ids:
         return student
 
     student.lessons.append(lesson)
     return student
+
+
+def assign_public_lessons_student_creation(student):
+    """
+    assign public lessons to the recenlty created student,
+    that have same institution as the lesson.
+    """
+    pass
+
+
+def assign_public_lessons_lesson_creation():
+    """
+    assign recenlty public lesson to all students of the same institutions
+    as the lessons.
+    """
+    pass
