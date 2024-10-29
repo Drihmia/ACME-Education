@@ -13,6 +13,10 @@ from models.email_verification import EmailVerifier
 from models.subject import Subject
 from models.teacher import Teacher
 from models import storage
+from tools.assign_lessons import (
+    assign_private_lesson_to_student,
+    assign_public_lessons_student_creation,
+)
 
 
 @app_views.route('/students', methods=['POST'], strict_slashes=False)
@@ -184,6 +188,8 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
         else:
             phone_number = 'Null'
 
+        # ------------------------ Creating Student --------------------------
+        # --------------------------------------------------------------------
         try:
             student = Student(first_name=data.get('first_name'),
                               last_name=data.get('last_name'),
@@ -203,49 +209,46 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
             except IntegrityError:
                 return jsonify({'error': 'exists'}), 400
 
-            # update student's relations
-            if teacher:
-                student.lessons.extend(
-                    [ll for ll in teacher.lessons
-                     if student.classes.id in  # A student has 1 class.
-                     # A lesson can have 1 class if teacher provide a class
-                     # +otherwise a lesson can have all teacher's classes.
-                     [c.id for c in ll.classes]]
-                )
-
-                try:
-                    student.save()
-                except IntegrityError:
-                    storage.rollback()
-
-                teacher.students.append(student)
-                try:
-                    teacher.save()
-                except IntegrityError:
-                    storage.rollback()
-            else:
-                student.lessons.extend(
-                    [lesson for teacher in storage.all(Teacher).values()
-                     for lesson in teacher.lessons if lesson.public is True])
-
         except IntegrityError:
             # storage.rollback()
             return jsonify({'error': 'exists'}), 400
 
-        # Assign all subject to student's profile.
+        # ------------------------- Assign subjects --------------------------
+        # --------------------------------------------------------------------
+        # Assign all subjects to student's profile.
         for subject in storage.all(Subject).values():
             try:
                 subject.students.append(student)
-                # storage.save()
                 subject.save()
             except IntegrityError:
                 pass
 
-        # try:
-        # storage.new(student)
-        # storage.save()
-        # except IntegrityError:
-        # return jsonify({'error': 'exists'}), 400
+        # -------------------- Assign private lessons ------------------------
+        # --------------------------------------------------------------------
+        # update student's relations
+        if teacher:
+            # student.lessons.extend(
+                # [ll for ll in teacher.lessons
+                 # if student.classes.id in  # A student has 1 class.
+                 # # A lesson can have 1 class if teacher provide a class
+                 # # +otherwise a lesson can have all teacher's classes.
+                 # [c.id for c in ll.classes]]
+            # )
+            for lesson in teacher.lessons:
+                student = assign_private_lesson_to_student(lesson, student)
+
+            try:
+                student.save()
+            except IntegrityError:
+                storage.rollback()
+
+            teacher.students.append(student)
+        # Abandonne this idea for now, Students get confused of many lessons on their board.
+        # Assign all public lessons in the institution of the student.
+        # assign_public_lessons_student_creation(student)
+            # student.lessons.extend(
+                # [lesson for teacher in storage.all(Teacher).values()
+                 # for lesson in teacher.lessons if lesson.public is True])
 
         try:
             if teacher:
@@ -253,6 +256,8 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
         except IntegrityError:
             return jsonify({'error': 'exists'}), 400
 
+        # ------------------- Remove list of objects -------------------------
+        # --------------------------------------------------------------------
         student = student.to_dict()
         if 'institutions' in student:
             del student['institutions']
@@ -455,21 +460,6 @@ of teacher's IDs"}), 400
         student = storage.get(Student, id)
         if not student:
             return jsonify({'error': "UNKNOWN STUDENT"}), 400
-
-        for teacher in student.teachers:
-            teacher.students.remove(student)
-
-        for lesson in student.lessons:
-            lesson.students.remove(student)
-
-        for subject in student.subjects:
-            subject.students.remove(student)
-
-        if student in student.classes.students:
-            student.classes.students.remove(student)
-
-        if student in student.institutions.students:
-            student.institutions.students.remove(student)
 
         student.delete()
         storage.save()
