@@ -473,13 +473,20 @@ def students_list_lessons(id):
     """return a list of all  lessons by student"""
 
     student = storage.query(Student).filter(Student.id == id).first()
-    if student:
-        lessons = student.lessons
-    else:
-        lessons = []
-    lessons = student.lessons if student else []
+    if not student:
+        return jsonify({'error': "UNKNOWN STUDENT"}), 400
 
-    return jsonify([lesson.to_dict() for lesson in lessons]), 200
+    lessons = student.lessons
+    sorted_lessons = sorted(lessons, key=lambda x : x.created_at, reverse=True)
+
+    # institution = storage.query(Institution).filter(Institution.id == student.institution_id).first()
+
+    # if institution and institution.lessons:
+        # print("institution lessons")
+        # print(", ".join([lesson.name for lesson in institution.lessons]))
+        # lessons.extend([lesson for lesson in institution.lessons if lesson.public])
+
+    return jsonify([lesson.to_dict() for lesson in sorted_lessons]), 200
 
 
 @app_views.route('/students/<id>/subjects',  methods=['GET'],

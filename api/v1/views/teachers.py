@@ -404,31 +404,6 @@ def teachers_list(id=None):
         if not teacher:
             return jsonify({'error': "UNKNOWN TEACHER"}), 400
 
-        for subject in teacher.subjects:
-            subject.teachers.remove(teacher)
-
-        for institution in teacher.institutions:
-            institution.teachers.remove(teacher)
-
-        for clas in teacher.classes:
-            clas.teachers.remove(teacher)
-
-        for student in teacher.students:
-            student.teachers.remove(teacher)
-
-        for lesson in teacher.lessons:
-            for student in lesson.students:
-                student.lessons.remove(lesson)
-
-            for clas in lesson.classes:
-                clas.lessons.remove(lesson)
-
-            for institution in lesson.institutions:
-                institution.lessons.remove(lesson)
-
-            if lesson in lesson.subjects.lessons:
-                lesson.subjects.lessons.remove(lesson)
-
         teacher.delete()
         storage.save()
         return jsonify({}), 200
@@ -446,7 +421,8 @@ def teachers_list_lessons(id):
         return jsonify({'error': "UNKNOWN TEACHER"}), 400
 
     lessons = teacher.lessons
-    return jsonify([lesson.to_dict() for lesson in lessons]), 200
+    sorted_lessons = sorted(lessons, key=lambda x : x.created_at, reverse=True)
+    return jsonify([lesson.to_dict() for lesson in sorted_lessons]), 200
 
 
 @app_views.route('/teachers/<id>/subjects',  methods=['GET'],
