@@ -16,10 +16,12 @@ export const SignUpModal = ({
           {response.status == "success" ? (
             <>
             <h2 className="flex items-center gap-2 text-xl md:text-2xl font-bold text-green-700">
-              <Icon color="green" icon="mdi:success-bold" />
-              Signup succesfull
-            </h2>
-              {/* <p>Check your mail to verify your email</p> */}
+            <Icon color="green" icon="mdi:success-bold" />
+            Verification email sent!
+          </h2>
+              <p className="text-gray-600">
+            Check your inbox to complete your registration.
+          </p>
             </>
           ) : (
             <>

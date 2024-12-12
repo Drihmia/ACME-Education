@@ -117,7 +117,7 @@ export const TeacherForm = ({
       }
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${
-          action == "update" ? "teachers/" + profile.id : "teachers/"}`,
+          action == "update" ? "teachers/" + profile.id : "verify_email_send/"}`,
         {
           method: action == "signup" ? "POST" : "PUT",
           body: JSON.stringify(values),
