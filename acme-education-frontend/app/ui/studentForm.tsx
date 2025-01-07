@@ -162,7 +162,7 @@ export const StudentForm = ({
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/${
-          action == "update" ? "students/" + profile.id : "students/"
+          action == "update" ? "students/" + profile.id : "verify_email_send/"
         }`,
         {
           method: action == "signup" ? "POST" : "PUT",

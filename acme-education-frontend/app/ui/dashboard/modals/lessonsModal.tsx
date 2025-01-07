@@ -44,9 +44,17 @@ export const LessonModal = ({
               {/*<Link href={item.download_link} target="_blank" className="text-blue-500 underline">
                 Preview lesson
               </Link> */}
-              <Link href={downloadLink(item.download_link)} target="_blank" className="text-blue-500 underline">
-                Download lesson
+              { item.download_link.includes("drive.google.com") ?
+                (
+                  <Link href={downloadLink(item.download_link)} target="_blank" className="text-blue-500 underline">
+                    Download lesson
+                  </Link>
+              ) : (
+                <Link href={item.download_link} target="_blank" className="text-blue-500 underline">
+                  View lesson
                 </Link>
+              )
+              }
             </div>
           </article>
         </div>

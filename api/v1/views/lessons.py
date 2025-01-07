@@ -11,6 +11,8 @@ from models.institution import Institution
 from models.lesson import Lesson
 from models.teacher import Teacher
 from models.subject import Subject
+from tools.send_email import send_emails, generate_lesson_notification_email
+from tools.assign_lessons import assign_private_lessons_to_students
 
 
 @app_views.route("/lessons", methods=["GET", "POST"],
@@ -111,8 +113,8 @@ def lessons(id=None):
                 'error': 'The subject is outside your area of expertise.'
             }), 400
 
-        # ****************** This is ignored for the moment *************
-        # ***************************************************************
+        # ****************** This is ignored for the moment ******************
+        # ********************************************************************
         if 'institutions_id' in data.keys():
             return jsonify({
                 'error': "institutions_id is being ignored for MVP"}), 400
@@ -137,8 +139,8 @@ def lessons(id=None):
                 if k in must and not isinstance(v, str):
                     return jsonify({'error': f'{k} is not a string'}), 400
         """
-        # ***************************************************************
-        # ***************************************************************
+        # ********************************************************************
+        # ********************************************************************
 
         # Getting attribute's value.
         name = data.get('name').strip()
@@ -187,8 +189,8 @@ def lessons(id=None):
 
             return jsonify({'error': 'lesson exists'}), 400
 
-        # ****************** This is ignored for the moment ************
-        # **************************************************************
+        # ****************** This is ignored for the moment ******************
+        # ********************************************************************
         # Looping trough list of institution's id to make many to many
         # +relationship between lesson and given institutions.
         """
@@ -216,10 +218,13 @@ def lessons(id=None):
             storage.save()
             return jsonify({'error': 'No institution has been regonized'}), 400
         """
-        # *************************************************************
-        # *************************************************************
+        # ********************************************************************
+        # ********************************************************************
 
-        # ---------------------------------------------------------
+        # ---------------------------------------------------------------------
+        # If the teacher specified the institution, the lesson will be share
+        # with the student of that institution only, otherwise, it will be 
+        # shared with students of all the teacher's institutiones.
         if 'institution_id' in data.keys() and \
                 is_valid_uuid(data.get('institution_id')):
             institution_id = data.get('institution_id').strip()
@@ -239,7 +244,10 @@ def lessons(id=None):
             except IntegrityError:
                 storage.rollback()
 
-        # ---------------------------------------------------------
+        # --------------------------------------------------------------------
+        # If the teacher specified the class, the lesson will be share
+        # with the student of that class only, otherwise, it will be 
+        # shared with students of all the teacher's classes.
         if 'class_id' in data.keys() and \
                 is_valid_uuid(data.get('class_id')) and \
                 not public:
@@ -247,6 +255,8 @@ def lessons(id=None):
             clas = storage.get(Clas, class_id)
             if not clas:
                 return jsonify({'error': "UNKNOWN CLASS"}), 400
+
+            # Setting the Class alias to the lesson.
             setattr(lesson, 'class_alias', clas.alias)
             classes = [clas]
         else:
@@ -261,24 +271,29 @@ def lessons(id=None):
             except IntegrityError:
                 storage.rollback()
 
+        # --------------------------------------------------------------------
+        # List of institution's IDs the teacher want to share the lesson with.
+        # teacher_institutions_ids = [i.id for i in institutions if i]
+
+        # List of class's IDs the teacher want to share the lesson with.
+        # lesson_classes_ids = [c.id for c in classes if c]
+
         # Assign lesson to all teacher's student that belong to the classes
         # +subjects and institutions chosen by the teacher.
         for student in teacher.students:
+            assign_private_lessons_to_students(student, lesson)
 
-            if not student.institutions:
-                continue
-
-            teacher_institutions_ids = [i.id for i in institutions if i]
+            # if not student.institutions:
+                # continue
 
             # Student has only 1 institution, please mind the 's'.
-            if student.institutions.id not in teacher_institutions_ids:
-                continue
+            # if student.institutions.id not in teacher_institutions_ids:
+                # continue
 
-            lesson_classes_ids = [c.id for c in classes if c]
-            if student.class_id not in lesson_classes_ids:
-                continue
+            # if student.class_id not in lesson_classes_ids:
+                # continue
 
-            student.lessons.append(lesson)
+            # student.lessons.append(lesson)
             try:
                 student.save()
             except IntegrityError:
@@ -290,28 +305,47 @@ def lessons(id=None):
         except IntegrityError:
             storage.rollback()
 
-        lesson = lesson.to_dict()
+        lesson_dict = lesson.to_dict()
 
+        # --------------------------------------------------------------------
         # Remove all list of objects assigned to this lesson
         # +by many to many or one to many or many to one relationship.
-        if 'classes' in lesson:
-            del lesson['classes']
+        if 'classes' in lesson_dict:
+            del lesson_dict['classes']
 
-        if 'subjects' in lesson:
-            del lesson['subjects']
+        if 'subjects' in lesson_dict:
+            del lesson_dict['subjects']
 
-        if 'students' in lesson:
-            del lesson['students']
+        if 'students' in lesson_dict:
+            del lesson_dict['students']
 
-        if 'teachers' in lesson:
-            del lesson['teachers']
+        if 'teachers' in lesson_dict:
+            del lesson_dict['teachers']
 
-        if 'institutions' in lesson:
-            del lesson['institutions']
+        if 'institutions' in lesson_dict:
+            del lesson_dict['institutions']
 
-        return jsonify(lesson), 201
+        # --------------------------------------------------------------------
+        # Send email alert to students.
+        teacher_email = teacher.email
 
-    # PUT's method *******************************************************
+        lesson_name = lesson.name
+        lesson_subject = lesson.subject
+        lesson_class =  lesson.class_alias
+        lesson_desciption = lesson.description
+
+        subject_email = 'Update from ACME EDUCATION: New Lesson Alert!'
+
+        for student in lesson.students:
+            student_full_name = student.last_name + ' ' + student.first_name
+            body = generate_lesson_notification_email(student_full_name,
+                                                      teacher_fullname, teacher_email,
+                                                      lesson_name, lesson_desciption, lesson_class, lesson_subject,
+                                                      )
+            send_emails([student.email], subject_email, body)
+        return jsonify(lesson_dict), 201
+
+    # PUT's method ***********************************************************
     if request.method == 'PUT':
         if not request.is_json:
             return jsonify({'error': 'Not a JSON'}), 400
