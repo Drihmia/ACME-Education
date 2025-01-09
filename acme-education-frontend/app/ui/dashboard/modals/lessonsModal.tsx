@@ -14,6 +14,12 @@ export const LessonModal = ({
 }) => {
   const { user } = useAuth()!;
 
+  const downloadLink = (previewLink: string) => {
+    const lessonId = previewLink.split('/')?.[5];
+    console.log('lessonId:', lessonId);
+      return `https://drive.usercontent.google.com/download?id=${lessonId}&export=download`;
+  };
+
   return (
     <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black/25">
       <div className="relative w-full max-w-2xl h-[512px] overflow-y-scroll p-4 md:p-8 flex flex-col justify-between rounded-md bg-white">
@@ -34,9 +40,22 @@ export const LessonModal = ({
           <article className="w-full">
             <h3 className="text-xl md:text-2xl font-semibold">Description</h3>
             <p>{item.description}</p>
-            <Link href={item.download_link} className="text-blue-500 underline">
-              Download lesson
-            </Link>
+            <div className="grid">
+              {/*<Link href={item.download_link} target="_blank" className="text-blue-500 underline">
+                Preview lesson
+              </Link> */}
+              { item.download_link.includes("drive.google.com") ?
+                (
+                  <Link href={downloadLink(item.download_link)} target="_blank" className="text-blue-500 underline">
+                    Download lesson
+                  </Link>
+              ) : (
+                <Link href={item.download_link} target="_blank" className="text-blue-500 underline">
+                  View lesson
+                </Link>
+              )
+              }
+            </div>
           </article>
         </div>
         {user?.class === "Teacher" && (
@@ -55,7 +74,7 @@ export const LessonModal = ({
                     alert("Something went wrong.");
                   } else {
                     mutate(
-                      `https://${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${item.teacher_id}/lessons`
+                      `${process.env.NEXT_PUBLIC_API_ADDRESS}/api/v1/teachers/${item.teacher_id}/lessons`
                     );
                     alert("Lesson deleted");
                     closeModal();

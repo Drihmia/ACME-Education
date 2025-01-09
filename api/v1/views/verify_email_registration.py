@@ -1,37 +1,42 @@
 #!/usr/bin/python3
 """This module verify if user's email is valid and fonctionnal"""
 
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 from dotenv import load_dotenv
 from flask import jsonify, request, redirect, render_template, url_for
 from itsdangerous import URLSafeTimedSerializer
-import json
-import os
-# disabled, in DigitalOcean, I can not use PIP, and this module not in apt
-# import yagmail
-# from yagmail.error import YagInvalidEmailAddress
+from json import dumps, loads
+from os import getenv
 from werkzeug.exceptions import BadRequest
+from datetime import datetime as date
 from api.v1.views import app_views
+from tools.send_email import send_emails, generate_verification_email
 
 
 load_dotenv()
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
+current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
+
+
 # Serializer for generating and validating tokens
-secret_key = os.environ.get('SECRET_KEY')
+secret_key = getenv('SECRET_KEY')
 if not secret_key:
     print("secret key, for serializer, is none")
-    exit(0)
+    exit(1)
+
 serializer = URLSafeTimedSerializer(secret_key)
 
-FRONT_END_ROUTER = os.getenv('FRONT_END_ROUTER')
+FRONT_END_ROUTER = getenv('FRONT_END_ROUTER')
 if FRONT_END_ROUTER:
-    FRONT_END_ROUTER = 'http://' + FRONT_END_ROUTER
+    FRONT_END_ROUTER = FRONT_END_ROUTER
 
-BACK_END_ROUTER = os.getenv('BACK_END_ROUTER')
+BACK_END_ROUTER = getenv('BACK_END_ROUTER')
 if BACK_END_ROUTER:
-    BACK_END_ROUTER = 'http://' + BACK_END_ROUTER
+    BACK_END_ROUTER = BACK_END_ROUTER
+
 
 @app_views.route("/verify_email_send", methods=["POST"], strict_slashes=False)
 def verify_email_send():
@@ -46,12 +51,11 @@ def verify_email_send():
     if not data:
         return jsonify({'error': 'No data'}), 422
 
-<<<<<<< Updated upstream
-=======
+
     print("send verification mail for:", data)
     current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
     print("time:", current_datetime)
->>>>>>> Stashed changes
+
     if 'email' not in data.keys():
         return jsonify({'error': 'Missing email for verification \
 for sending verification email'}), 400
@@ -59,70 +63,35 @@ for sending verification email'}), 400
     if 'is_teacher' not in data.keys():
         return jsonify({'error': 'Missing is_teacher'}), 400
 
-    EMAIL_SEND = os.environ.get('ACME_EMAIL')
+    EMAIL_SEND = getenv('ACME_EMAIL')
     if not EMAIL_SEND:
-        return jsonify(error='export ACME_EMAIL="the_email@gmail.com" \
+        return jsonify(error='export ACME_EMAIL="Your_email@gmail.com" \
 into ur bashrc file')
 
-    # All the sent data is coing to be stored in this token
+    # All the sent data is going to be stored in this token
     # +and verified by next method down bellow.
     token = serializer.dumps(data)
 
+    login = getenv('DRIHMIA_EMAIL')
+
     try:
-        # Initialize Yagmail with the OAuth2 credentials
+        # --------------------- SEND VERIFICATION EMAIL ----------------------
+        # --------------------------------------------------------------------
+        is_teacher = data.get('is_teacher')
+        user = 'Teacher' if is_teacher is True else 'Student'
+        verific_link = f"{BACK_END_ROUTER}/api/v1/verify_email_recieve/{token}?teacher={is_teacher}"
 
-        yag = yagmail.SMTP(EMAIL_SEND, oauth2_file='~/oauth2_creds.json')
+        body = generate_verification_email(user, verific_link, login)
 
-        user = 'Teacher' if data.get('is_teacher') is True else 'Student'
-        verific_link = f"{BACK_END_ROUTER}/api/v1/verify_email_recieve/{token}"
-        content = """Dear {user},
-
-        Thank you for registering with ACME EDUCATION! To complete your \
-        registration, please verify your email address by clicking the \
-        button below:
-
-        <div style="justify-content: space-around; display: flex;">
-
-        <a href="{verific_link}" style="display: inline-block; padding: \
-        10px 20px; background-color: #007bff; color: #fff; text-decoration: \
-        none; border-radius: 5px; position: absolute;">Verify Your Account</a>
-
-        </div>
-
-        If you're unable to click the button, you can copy and paste the \
-        following link into your browser:
-        {verific_link}
-
-        By verifying your email address, you'll gain access to all the \
-        features of ACME EDUCATION, including personalized learning \
-        resources, interactive courses, and collaboration tools.
-
-        If you did not register for an account with ACME EDUCATION, \
-        please ignore this email or contact us immediately at \
-        <a href="mailto:{contact_email}"> ACME EDUCATION </a> \
-        to report any unauthorized activity.
-
-        Thank you for choosing ACME EDUCATION!
-
-        Best regards,
-        The ACME EDUCATION Team"""
-        try:
-            # Send a test email
-            yag.send(
-                to=data.get('email').strip(),  # Destination.
-                subject='Confirm Your Email Address',
-                contents=content.format(
-                    token=token, user=user, contact_email=EMAIL_SEND,
-                    verific_link=verific_link)
-            )
-
-            # Close connection.
-            yag.close()
-        except YagInvalidEmailAddress:
-            return jsonify({'error': 'INVALID EMAIL'}), 400
+        # --------------------- SEND VERIFICATION EMAIL ----------------------
+        # --------------------------------------------------------------------
+        error = send_emails([data.get('email')], 'Please Verify Your Email', body)
+        if error:
+            print('e1:', error)
+            return jsonify({ 'error': 'INVALID EMAIL', 'details': error }), 400
 
     except Exception as e:
-        print(e)
+        print('e2:', e)
         return jsonify({
             'status': 'SEND VERIFICATION MAIL FAILED, Check credentials'
         }), 400
@@ -133,16 +102,21 @@ into ur bashrc file')
 @app_views.route("/verify_email_recieve/<token>", methods=["GET"],
                  strict_slashes=False)
 def verify_email_recieve(token):
+    """
+    A function that verify the token based on the SECRET_KEY.
+    """
+    is_teacher = request.args.get('teacher')
+
     try:
         data = serializer.loads(token, max_age=3600)
-<<<<<<< Updated upstream
-=======
+
         print("recieved Registration from:", data)
         current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
         print("time:", current_datetime)
->>>>>>> Stashed changes
+
     except Exception:
-        return jsonify({'status': 'VERIFICATION FAILS'}), 400
+        return redirect(url_for('app_views.token_error', is_teacher=is_teacher), code=301)
+        # return jsonify({'status': 'VERIFICATION FAILS'}), 400
 
     if 'is_teacher' not in data.keys():
         return jsonify({
@@ -156,14 +130,13 @@ def verify_email_recieve(token):
         # Making a POST request with a with context manager
         base = 'teachers'
         url = url + base
-        with requests.post(url, data=json.dumps(data), headers=headers) as res:
+        with requests.post(url, data=dumps(data), headers=headers) as res:
             if res.status_code == 201:
                 try:
                     with requests.get(FRONT_END_ROUTER) as res:
-                        print(res.status_code)
                         if res.status_code == 200:
                             return redirect(
-                                url_for('app_views.confirmation'), code=301)
+                                url_for('app_views.confirmation', is_teacher=is_teacher), code=301)
                         raise requests.exceptions.ConnectionError
                 except requests.exceptions.ConnectionError:
                     return jsonify({'status': "EMAIL VERIFIED AND \
@@ -176,35 +149,35 @@ TEACHER's PROFILE CREATED"}), 201
                         with requests.get(FRONT_END_ROUTER) as res:
                             if res.status_code == 200:
                                 return redirect(
-                                    url_for('app_views.already_exists'),
+                                    url_for('app_views.already_exists', is_teacher=is_teacher),
                                     code=301)
                             raise requests.exceptions.ConnectionError
                     except requests.exceptions.ConnectionError:
                         return jsonify(
-                            json.loads(res.text)), int(res.status_code)
+                            loads(res.text)), int(res.status_code)
                 elif res.status_code == 409:
                     try:
                         with requests.get(FRONT_END_ROUTER) as res:
                             if res.status_code == 200:
                                 return redirect(
-                                    url_for('app_views.conflict_teacher'),
+                                    url_for('app_views.conflict_teacher', is_teacher=is_teacher),
                                     code=301)
                             raise requests.exceptions.ConnectionError
                     except requests.exceptions.ConnectionError:
                         return jsonify(
-                            json.loads(res.text)), int(res.status_code)
+                            loads(res.text)), int(res.status_code)
                 return jsonify(
-                    json.loads(res.text)), int(res.status_code)
+                    loads(res.text)), int(res.status_code)
     else:
         base = 'students'
         url = url + base
-        with requests.post(url, data=json.dumps(data), headers=headers) as res:
+        with requests.post(url, data=dumps(data), headers=headers) as res:
             if res.status_code == 201:
                 try:
                     with requests.get(FRONT_END_ROUTER) as res:
                         if res.status_code == 200:
                             return redirect(
-                                url_for('app_views.confirmation'), code=301)
+                                url_for('app_views.confirmation', is_teacher=is_teacher), code=301)
                         raise requests.exceptions.ConnectionError
                 except requests.exceptions.ConnectionError:
                     return jsonify({'status': "EMAIL VERIFIED AND \
@@ -217,66 +190,58 @@ STUDENT's PROFILE CREATED"}), 201
                         with requests.get(FRONT_END_ROUTER) as res:
                             if res.status_code == 200:
                                 return redirect(
-                                    url_for('app_views.already_exists'),
+                                    url_for('app_views.already_exists', is_teacher=is_teacher),
                                     code=301)
                             raise requests.exceptions.ConnectionError
                     except requests.exceptions.ConnectionError:
                         return jsonify(
-                            json.loads(res.text)), int(res.status_code)
+                            loads(res.text)), int(res.status_code)
                 elif res.status_code == 409:
                     try:
                         with requests.get(FRONT_END_ROUTER) as res:
                             if res.status_code == 200:
                                 return redirect(
-                                    url_for('app_views.conflict_student'),
+                                    url_for('app_views.conflict_student', is_teacher=is_teacher),
                                     code=301)
                             raise requests.exceptions.ConnectionError
                     except requests.exceptions.ConnectionError:
                         return jsonify(
-                            json.loads(res.text)), int(res.status_code)
+                            loads(res.text)), int(res.status_code)
                 return jsonify(
-                    json.loads(res.text)), int(res.status_code)
+                    loads(res.text)), int(res.status_code)
 
 
 @app_views.route('/confirmation')
 def confirmation():
-<<<<<<< Updated upstream
+
     """ a function that render the confirmation template"""
-=======
-    """A function that render the confirmation template.
-    """
+
     is_teacher = request.args.get("is_teacher", '')
     print("confirmation")
+
     current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
     print("time:", current_datetime)
 
->>>>>>> Stashed changes
     url = f"{FRONT_END_ROUTER}/login?msg=success_registration"
     info = 'Registration Successful'
-    message = """Registration Confirmed! Your account has
+    message = f"""Registration Confirmed! Your{is_true(is_teacher, " Teacher's", " Student's", '')} account has
     been successfully created."""
-    login = '   Login  '
+    login = f'   Login{is_true(is_teacher, " Teacher", " Student", '')} '
     return render_template('confirme_registration.html', url=url,
                            info=info, message=message, login=login)
 
 
 @app_views.route('/already_exists')
 def already_exists():
-<<<<<<< Updated upstream
     """ a function that render the confirmation template"""
     url = f"{FRONT_END_ROUTER}/login?msg=success_registration"
-=======
-    """
-    A function that render the already exists template.
-    """
-    print("already_exists")
+
     current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
     print("time:", current_datetime)
-    url = f"{FRONT_END_ROUTER}/login"
->>>>>>> Stashed changes
+
     info = 'Account Already Exists'
-    message = """An account with this email address already exists.
-    Would you like to log in instead?"""
+    message = """An account with this email address already exists.<br>
+    <small>Would you like to log in instead?</small>"""
     login = '   Login  '
     return render_template('confirme_registration.html', url=url,
                            info=info, message=message, login=login)
@@ -284,20 +249,16 @@ def already_exists():
 
 @app_views.route('/conflict_student')
 def conflict_student():
-<<<<<<< Updated upstream
-    """ a function that render the confirmation template"""
-    url = f"{FRONT_END_ROUTER}/login?msg=success_registration"
-=======
     """A function that render the already exists template in case of conflict.
     """
     print("conflict_student")
     current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
     print("time:", current_datetime)
-    url = f"{FRONT_END_ROUTER}/login"
->>>>>>> Stashed changes
+    
+    url = f"{FRONT_END_ROUTER}/login?msg=success_registration"
     info = 'Account Already Exists As Teacher'
-    message = "this email is already registered as a teacher.\
-        <br>Cannot sign up as a student"
+    message = """This email is already registered as a Teacher.\
+        <br><small>Cannot sign up as a Student</small>"""
     login = 'Login As Teacher'
     return render_template('confirme_registration.html', url=url,
                            info=info, message=message, login=login)
@@ -306,21 +267,17 @@ def conflict_student():
 @app_views.route('/conflict_teacher')
 def conflict_teacher():
     """ a function that render the confirmation template"""
-<<<<<<< Updated upstream
-    url = f"{FRONT_END_ROUTER}/login?msg=success_registration"
-=======
     print("conflict_teacher")
     current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
     print("time:", current_datetime)
-    url = f"{FRONT_END_ROUTER}/login"
->>>>>>> Stashed changes
+    url = f"{FRONT_END_ROUTER}/login?msg=success_registration"
+
     info = 'Account Already Exists As Student'
-    message = """this email is already registered as a student"""
+    message = """This email is already registered as a Student.\
+    <br> <small>cannot sign up as Teacher</small>"""
     login = 'Login As Student '
     return render_template('confirme_registration.html', url=url,
                            info=info, message=message, login=login)
-<<<<<<< Updated upstream
-=======
 
 
 @app_views.route('/token_error')
@@ -328,6 +285,7 @@ def token_error():
     """A function that renders the token error template."""
     print("token_error")
     current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
+
     print("time:", current_datetime)
     is_teacher = request.args.get('is_teacher', '')
 
@@ -366,4 +324,3 @@ def is_true(value: str, option1: str, option2: str, option3: str):
         return option2
     else:
         return option3
->>>>>>> Stashed changes

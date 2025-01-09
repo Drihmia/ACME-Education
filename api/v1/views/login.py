@@ -1,23 +1,23 @@
 #!/usr/bin/python3
 """Define the State API"""
 import bcrypt
-from flask import jsonify, request
+from flask import jsonify, request, make_response
 from flask_jwt_extended import (
     create_access_token, create_refresh_token,
     set_access_cookies, set_refresh_cookies,
+    verify_jwt_in_request,
 )
 from werkzeug.exceptions import BadRequest
-<<<<<<< Updated upstream
+
 from api.v1.views import app_views
-=======
 
 from flask_jwt_extended import jwt_required
 from api.v1.views import app_views, role_required
 
->>>>>>> Stashed changes
 from models import storage
 from models.teacher import Teacher
 from models.student import Student
+from models.dev import Dev
 from hashlib import sha256
 
 
@@ -129,8 +129,6 @@ def student_login():
         return resp
     else:
         return jsonify({'status': 'ERROR'}), 401
-<<<<<<< Updated upstream
-=======
 
 
 @app_views.route("/dev_login", methods=["POST"], strict_slashes=False)
@@ -157,6 +155,7 @@ def dev_login():
         return jsonify({'error': 'Missing password'}), 400
 
     dev = storage.query(Dev).filter(Dev.email == data.
+
                                     get('email')).first()
 
     if not dev:
@@ -282,4 +281,3 @@ def read_logs():
         logs = logs[-int(A):-int(B)]
 
     return jsonify(logs)
->>>>>>> Stashed changes

@@ -421,7 +421,8 @@ def teachers_list_lessons(id):
         return jsonify({'error': "UNKNOWN TEACHER"}), 400
 
     lessons = teacher.lessons
-    return jsonify([lesson.to_dict() for lesson in lessons]), 200
+    sorted_lessons = sorted(lessons, key=lambda x : x.created_at, reverse=True)
+    return jsonify([lesson.to_dict() for lesson in sorted_lessons]), 200
 
 
 @app_views.route('/teachers/<id>/subjects',  methods=['GET'],

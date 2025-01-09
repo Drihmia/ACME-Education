@@ -8,6 +8,7 @@
 *.env*
 *.log
 *.DS_Store
+check_scope.py
 
 # MySQL
 *.sql
@@ -22,6 +23,8 @@ acme-education-frontend/node_modules/
 acme-education-frontend/.pnp
 acme-education-frontend/.pnp.js
 acme-education-frontend/.yarn/install-state.gz
+acme-education-frontend/app/validation/emailVerification.ts 
+
 
 # testing
 acme-education-frontend/coverage

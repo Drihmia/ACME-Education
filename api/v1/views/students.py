@@ -13,10 +13,14 @@ from models.email_verification import EmailVerifier
 from models.subject import Subject
 from models.teacher import Teacher
 from models import storage
+from tools.assign_lessons import (
+    assign_private_lesson_to_student,
+    assign_public_lessons_student_creation,
+)
 
 
 @app_views.route('/students', methods=['POST'], strict_slashes=False)
-def ctreate_student():
+def create_student():
     """
     POST: Create a new student
         MUST: give the institution_id
@@ -77,10 +81,13 @@ def ctreate_student():
         if 'password' not in data.keys():
             return jsonify({'error': 'Missing password'}), 400
 
+        pwd = data.get('password')
+        if not isinstance(pwd, str):
+            return jsonify({'error': 'password must be a string'}), 400
+
         if 'confirm_password' in data.keys():
-            if data.get('confirm_password').strip() != data.get(
-                    'password').strip():
-                return jsonify({'error': 'password do not match'}), 400
+            if data.get('confirm_password').strip() != pwd:
+                return jsonify({'error': 'password does not match'}), 400
             else:
                 del data['confirm_password']
         else:
@@ -181,11 +188,13 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
         else:
             phone_number = 'Null'
 
+        # ------------------------ Creating Student --------------------------
+        # --------------------------------------------------------------------
         try:
             student = Student(first_name=data.get('first_name'),
                               last_name=data.get('last_name'),
                               email=data.get('email'),
-                              password=data.get('password'),
+                              password=pwd,
                               class_id=data.get('class_id'),
                               institution_id=institution.id,
                               institution=institution.name,
@@ -200,49 +209,46 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
             except IntegrityError:
                 return jsonify({'error': 'exists'}), 400
 
-            # update student's relations
-            if teacher:
-                student.lessons.extend(
-                    [ll for ll in teacher.lessons
-                     if student.classes.id in  # A student has 1 class.
-                     # A lesson can have 1 class if teacher provide a class
-                     # +otherwise a lesson can have all teacher's classes.
-                     [c.id for c in ll.classes]]
-                )
-
-                try:
-                    student.save()
-                except IntegrityError:
-                    storage.rollback()
-
-                teacher.students.append(student)
-                try:
-                    teacher.save()
-                except IntegrityError:
-                    storage.rollback()
-            else:
-                student.lessons.extend(
-                    [lesson for teacher in storage.all(Teacher).values()
-                     for lesson in teacher.lessons if lesson.public is True])
-
         except IntegrityError:
             # storage.rollback()
             return jsonify({'error': 'exists'}), 400
 
-        # Assign all subject to student's profile.
+        # ------------------------- Assign subjects --------------------------
+        # --------------------------------------------------------------------
+        # Assign all subjects to student's profile.
         for subject in storage.all(Subject).values():
             try:
                 subject.students.append(student)
-                # storage.save()
                 subject.save()
             except IntegrityError:
                 pass
 
-        # try:
-        # storage.new(student)
-        # storage.save()
-        # except IntegrityError:
-        # return jsonify({'error': 'exists'}), 400
+        # -------------------- Assign private lessons ------------------------
+        # --------------------------------------------------------------------
+        # update student's relations
+        if teacher:
+            # student.lessons.extend(
+                # [ll for ll in teacher.lessons
+                 # if student.classes.id in  # A student has 1 class.
+                 # # A lesson can have 1 class if teacher provide a class
+                 # # +otherwise a lesson can have all teacher's classes.
+                 # [c.id for c in ll.classes]]
+            # )
+            for lesson in teacher.lessons:
+                student = assign_private_lesson_to_student(lesson, student)
+
+            try:
+                student.save()
+            except IntegrityError:
+                storage.rollback()
+
+            teacher.students.append(student)
+        # Abandonne this idea for now, Students get confused of many lessons on their board.
+        # Assign all public lessons in the institution of the student.
+        # assign_public_lessons_student_creation(student)
+            # student.lessons.extend(
+                # [lesson for teacher in storage.all(Teacher).values()
+                 # for lesson in teacher.lessons if lesson.public is True])
 
         try:
             if teacher:
@@ -250,6 +256,8 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
         except IntegrityError:
             return jsonify({'error': 'exists'}), 400
 
+        # ------------------- Remove list of objects -------------------------
+        # --------------------------------------------------------------------
         student = student.to_dict()
         if 'institutions' in student:
             del student['institutions']
@@ -322,8 +330,8 @@ def students_list(id=None):
         elif 'password' not in data_keys and 'confirm_password' in data_keys:
             del data['confirm_password']
         elif 'password' in data_keys and 'confirm_password' in data_keys:
-            pwd = data.get('password')
-            c_pwd = data.get('confirm_password')
+            pwd = data.get('password', '1')
+            c_pwd = data.get('confirm_password', '4')
 
             if not isinstance(pwd, str):
                 data.update({'password': '1'})
@@ -331,20 +339,22 @@ def students_list(id=None):
             if not isinstance(c_pwd, str):
                 data.update({'confirm_password': '4'})
 
-            elif len(pwd) >= 3 and len(c_pwd) >= 3:
+            if len(pwd) >= 3 and len(c_pwd) >= 3:
                 if data.get('confirm_password').strip() != data.get(
                         'password').strip():
-                    return jsonify({'error': 'password do not match'}), 400
+                    return jsonify({'error': 'password does not match'}), 400
                 else:
                     del data['confirm_password']
+            else:
+                del data['confirm_password']
+                del data['password']
 
         student = storage.get(Student, id)
         if not student:
             return jsonify({'error': "UNKNOWN STUDENT"}), 400
 
         student_dict = student.to_dict()
-        normal_attr = ['first_name', 'last_name', 'password', 'institution',
-                       'city', 'phone_number', 'gender', 'teacher_email']
+        normal_attr = {'first_name', 'last_name', 'password', 'phone_number', 'gender'}
 
         for k, v in data.items():
             if k in normal_attr:
@@ -463,13 +473,20 @@ def students_list_lessons(id):
     """return a list of all  lessons by student"""
 
     student = storage.query(Student).filter(Student.id == id).first()
-    if student:
-        lessons = student.lessons
-    else:
-        lessons = []
-    lessons = student.lessons if student else []
+    if not student:
+        return jsonify({'error': "UNKNOWN STUDENT"}), 400
 
-    return jsonify([lesson.to_dict() for lesson in lessons]), 200
+    lessons = student.lessons
+    sorted_lessons = sorted(lessons, key=lambda x : x.created_at, reverse=True)
+
+    # institution = storage.query(Institution).filter(Institution.id == student.institution_id).first()
+
+    # if institution and institution.lessons:
+        # print("institution lessons")
+        # print(", ".join([lesson.name for lesson in institution.lessons]))
+        # lessons.extend([lesson for lesson in institution.lessons if lesson.public])
+
+    return jsonify([lesson.to_dict() for lesson in sorted_lessons]), 200
 
 
 @app_views.route('/students/<id>/subjects',  methods=['GET'],

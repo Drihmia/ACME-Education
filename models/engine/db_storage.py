@@ -18,11 +18,16 @@ from models.lesson import Lesson
 from models.state import State
 from models.city import City
 from models.student import Student
+from models.dev import Dev
+from models.view import Recently_signed_students_by_class
 
 
-classes = {'Institution': Institution, 'Subject': Subject,
+classes = { 'Institution': Institution, 'Subject': Subject,
            'Teacher': Teacher, 'Lesson': Lesson, 'Class': Clas,
-           'State': State, 'City': City, 'Student': Student}
+           'State': State, 'City': City, 'Student': Student,
+           'Dev': Dev
+           }
+
 dotenv_path = find_dotenv()
 # print(f"Loading .env file from: {dotenv_path}")
 load_dotenv(dotenv_path)

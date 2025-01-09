@@ -4,6 +4,7 @@ This model contains functions to assign lessons to teachers.
 """
 
 def assign_private_lesson_to_student(lesson, student):
+
     """
     Assigns lessons to a student.
     Important Notes:
@@ -16,6 +17,7 @@ def assign_private_lesson_to_student(lesson, student):
     # Skip if students does not belong to any institutions,
     # and if the lesson is public.
     if not student.institutions or lesson.public:
+
         return student
 
     # 1- Get list of lesson's institution's IDs.
@@ -49,6 +51,7 @@ def assign_public_lessons_student_creation(student):
 
 
 def assign_public_lesson_while_its_creation(lesson):
+
     """
     assign recenlty public lesson to all students of the same institutions
     as the lessons.
@@ -61,3 +64,4 @@ def assign_public_lesson_while_its_creation(lesson):
         for student in institution.students:
             student.lessons.append(lesson)
             student.save()
+
