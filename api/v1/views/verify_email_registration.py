@@ -17,7 +17,9 @@ from tools.send_email import send_emails, generate_verification_email
 
 
 load_dotenv()
+
 current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
+
 
 # Serializer for generating and validating tokens
 secret_key = getenv('SECRET_KEY')
@@ -49,8 +51,11 @@ def verify_email_send():
     if not data:
         return jsonify({'error': 'No data'}), 422
 
+
     print("send verification mail for:", data)
+    current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
     print("time:", current_datetime)
+
     if 'email' not in data.keys():
         return jsonify({'error': 'Missing email for verification \
 for sending verification email'}), 400
@@ -104,8 +109,11 @@ def verify_email_recieve(token):
 
     try:
         data = serializer.loads(token, max_age=3600)
+
         print("recieved Registration from:", data)
+        current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
         print("time:", current_datetime)
+
     except Exception:
         return redirect(url_for('app_views.token_error', is_teacher=is_teacher), code=301)
         # return jsonify({'status': 'VERIFICATION FAILS'}), 400
@@ -205,10 +213,13 @@ STUDENT's PROFILE CREATED"}), 201
 
 @app_views.route('/confirmation')
 def confirmation():
-    """A function that render the confirmation template.
-    """
+
+    """ a function that render the confirmation template"""
+
     is_teacher = request.args.get("is_teacher", '')
     print("confirmation")
+
+    current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
     print("time:", current_datetime)
 
     url = f"{FRONT_END_ROUTER}/login?msg=success_registration"
@@ -222,12 +233,12 @@ def confirmation():
 
 @app_views.route('/already_exists')
 def already_exists():
-    """
-    A function that render the already exists template.
-    """
-    print("already_exists")
+    """ a function that render the confirmation template"""
+    url = f"{FRONT_END_ROUTER}/login?msg=success_registration"
+
+    current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
     print("time:", current_datetime)
-    url = f"{FRONT_END_ROUTER}/login"
+
     info = 'Account Already Exists'
     message = """An account with this email address already exists.<br>
     <small>Would you like to log in instead?</small>"""
@@ -241,8 +252,10 @@ def conflict_student():
     """A function that render the already exists template in case of conflict.
     """
     print("conflict_student")
+    current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
     print("time:", current_datetime)
-    url = f"{FRONT_END_ROUTER}/login"
+    
+    url = f"{FRONT_END_ROUTER}/login?msg=success_registration"
     info = 'Account Already Exists As Teacher'
     message = """This email is already registered as a Teacher.\
         <br><small>Cannot sign up as a Student</small>"""
@@ -255,8 +268,10 @@ def conflict_student():
 def conflict_teacher():
     """ a function that render the confirmation template"""
     print("conflict_teacher")
+    current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
     print("time:", current_datetime)
-    url = f"{FRONT_END_ROUTER}/login"
+    url = f"{FRONT_END_ROUTER}/login?msg=success_registration"
+
     info = 'Account Already Exists As Student'
     message = """This email is already registered as a Student.\
     <br> <small>cannot sign up as Teacher</small>"""
@@ -269,6 +284,8 @@ def conflict_teacher():
 def token_error():
     """A function that renders the token error template."""
     print("token_error")
+    current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
+
     print("time:", current_datetime)
     is_teacher = request.args.get('is_teacher', '')
 

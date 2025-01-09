@@ -27,6 +27,9 @@ print(f"Student has been found:")
 print(f"Full Name: {students.last_name} {students.first_name}")
 print(f"Class: {students.classes.alias}")
 print(f"Institution: {students.institution} ({students.city})")
+print(f"Teacher's Email: {students.teacher_email}")
+print("Subjects:", ", ".join([s.name for s in students.subjects]))
+
 print("+" * 40)
 print("+" * 40)
 
