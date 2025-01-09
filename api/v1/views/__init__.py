@@ -35,10 +35,11 @@ def role_required(roles):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            # print(request.url)
-            valid_head  =False
+            print("request url:", request.url)
+            valid_head  = False
             if "Authorization" in request.headers:
                 auth = request.headers.get("Authorization")
+                print("auth:", auth)
                 if "Bearer" in auth:
                     access_token = auth.split("Bearer")[1]
                     try:
@@ -55,7 +56,7 @@ def role_required(roles):
                     # print("after:" ,"-" * 10)
 
                     current_user_data = get_jwt_identity()
-                    # print("current_user_data:", current_user_data)
+                    print("current_user_data:", current_user_data)
                     if not current_user_data:
                         return
                 except Exception as e:
@@ -65,6 +66,15 @@ def role_required(roles):
             current_user_role = current_user_data.get("role")
             if current_user_role not in roles:
                 return jsonify({"msg": "Unauthorized access"}), 403
+            requested_path = request.path
+            if (requested_path.endswith('subjects') or
+                    requested_path.endswith('teachers') or
+                    requested_path.endswith('institutions') or
+                    requested_path.endswith('classes')):
+                    pass
+            else:
+                print('From decorator:\nCurrent user:', current_user_data)
+                print('has accessed:', request.path)
             return func(*args, **kwargs)
         return wrapper
     return decorator

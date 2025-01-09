@@ -14,6 +14,10 @@ from api.v1.views import app_views
 
 
 load_dotenv()
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 # Serializer for generating and validating tokens
 secret_key = os.environ.get('SECRET_KEY')
 if not secret_key:
@@ -42,6 +46,12 @@ def verify_email_send():
     if not data:
         return jsonify({'error': 'No data'}), 422
 
+<<<<<<< Updated upstream
+=======
+    print("send verification mail for:", data)
+    current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
+    print("time:", current_datetime)
+>>>>>>> Stashed changes
     if 'email' not in data.keys():
         return jsonify({'error': 'Missing email for verification \
 for sending verification email'}), 400
@@ -125,6 +135,12 @@ into ur bashrc file')
 def verify_email_recieve(token):
     try:
         data = serializer.loads(token, max_age=3600)
+<<<<<<< Updated upstream
+=======
+        print("recieved Registration from:", data)
+        current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
+        print("time:", current_datetime)
+>>>>>>> Stashed changes
     except Exception:
         return jsonify({'status': 'VERIFICATION FAILS'}), 400
 
@@ -224,7 +240,17 @@ STUDENT's PROFILE CREATED"}), 201
 
 @app_views.route('/confirmation')
 def confirmation():
+<<<<<<< Updated upstream
     """ a function that render the confirmation template"""
+=======
+    """A function that render the confirmation template.
+    """
+    is_teacher = request.args.get("is_teacher", '')
+    print("confirmation")
+    current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
+    print("time:", current_datetime)
+
+>>>>>>> Stashed changes
     url = f"{FRONT_END_ROUTER}/login?msg=success_registration"
     info = 'Registration Successful'
     message = """Registration Confirmed! Your account has
@@ -236,8 +262,18 @@ def confirmation():
 
 @app_views.route('/already_exists')
 def already_exists():
+<<<<<<< Updated upstream
     """ a function that render the confirmation template"""
     url = f"{FRONT_END_ROUTER}/login?msg=success_registration"
+=======
+    """
+    A function that render the already exists template.
+    """
+    print("already_exists")
+    current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
+    print("time:", current_datetime)
+    url = f"{FRONT_END_ROUTER}/login"
+>>>>>>> Stashed changes
     info = 'Account Already Exists'
     message = """An account with this email address already exists.
     Would you like to log in instead?"""
@@ -248,8 +284,17 @@ def already_exists():
 
 @app_views.route('/conflict_student')
 def conflict_student():
+<<<<<<< Updated upstream
     """ a function that render the confirmation template"""
     url = f"{FRONT_END_ROUTER}/login?msg=success_registration"
+=======
+    """A function that render the already exists template in case of conflict.
+    """
+    print("conflict_student")
+    current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
+    print("time:", current_datetime)
+    url = f"{FRONT_END_ROUTER}/login"
+>>>>>>> Stashed changes
     info = 'Account Already Exists As Teacher'
     message = "this email is already registered as a teacher.\
         <br>Cannot sign up as a student"
@@ -261,9 +306,64 @@ def conflict_student():
 @app_views.route('/conflict_teacher')
 def conflict_teacher():
     """ a function that render the confirmation template"""
+<<<<<<< Updated upstream
     url = f"{FRONT_END_ROUTER}/login?msg=success_registration"
+=======
+    print("conflict_teacher")
+    current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
+    print("time:", current_datetime)
+    url = f"{FRONT_END_ROUTER}/login"
+>>>>>>> Stashed changes
     info = 'Account Already Exists As Student'
     message = """this email is already registered as a student"""
     login = 'Login As Student '
     return render_template('confirme_registration.html', url=url,
                            info=info, message=message, login=login)
+<<<<<<< Updated upstream
+=======
+
+
+@app_views.route('/token_error')
+def token_error():
+    """A function that renders the token error template."""
+    print("token_error")
+    current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
+    print("time:", current_datetime)
+    is_teacher = request.args.get('is_teacher', '')
+
+    # Adjust the sign-up URL based on whether the user is a teacher or student
+    url = f"{FRONT_END_ROUTER}/signup" + is_true(is_teacher, "/teacher", "/student", '')
+    info = 'Error occurred during email verification'
+
+    email_address = getenv('DRIHMIA_EMAIL')
+    subject = "Token has expired or Not copied correctly"
+    body = """Describe Your Issue Here:
+    %0A- ...
+    %0A- ....
+    %0A- ...."""
+
+    mailto_link = f'mailto:{email_address}?subject={subject}&body={body}'
+    message = f"""<br>
+    Please copy and paste the verification link correctly or use the
+    'Verify Your Account' button.<br>
+    <small>If the issue persists, please <a href="{mailto_link}">contact us</small>"""
+
+    login = 'Sign up' + is_true(is_teacher, ' as a Teacher', ' as a Student', '')
+    return render_template('confirme_registration.html', url=url,
+                           info=info, message=message, login=login)
+
+def is_true(value: str, option1: str, option2: str, option3: str):
+    """ evaluate the value
+    return:
+     - option1 is value is true.
+     - option2 if value is false.
+     - option3 if value is something else, not boolen.
+    """
+
+    if value.lower() == 'true':
+        return option1
+    elif value.lower() == 'false':
+        return option2
+    else:
+        return option3
+>>>>>>> Stashed changes

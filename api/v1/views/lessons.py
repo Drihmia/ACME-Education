@@ -11,6 +11,11 @@ from models.institution import Institution
 from models.lesson import Lesson
 from models.teacher import Teacher
 from models.subject import Subject
+from tools.send_email import send_emails, generate_lesson_notification_email
+from tools.assign_lessons import (
+    assign_private_lesson_to_student,
+    assign_public_lesson_while_its_creation,
+)
 
 
 @app_views.route("/lessons", methods=["GET", "POST"],
@@ -262,23 +267,28 @@ def lessons(id=None):
 
         # Assign lesson to all teacher's student that belong to the classes
         # +subjects and institutions chosen by the teacher.
-        for student in teacher.students:
+        if not lesson.public:
+            for student in teacher.students:
+                assign_private_lesson_to_student(lesson, student)
 
-            if not student.institutions:
-                continue
+                # if not student.institutions:
+                    # continue
 
-            teacher_institutions_ids = [i.id for i in institutions if i]
+                # Student has only 1 institution, please mind the 's'.
+                # if student.institutions.id not in teacher_institutions_ids:
+                    # continue
 
-            # Student has only 1 institution, please mind the 's'.
-            if student.institutions.id not in teacher_institutions_ids:
-                continue
+                # if student.class_id not in lesson_classes_ids:
+                    # continue
 
-#             teacher_classes_ids = [c.id for c in classes if c]
-            # if student_id not in teacher_classes_ids:
-                # continue
-            student.lessons.append(lesson)
+                # student.lessons.append(lesson)
+                try:
+                    student.save()
+                except IntegrityError:
+                    storage.rollback()
+        else:
             try:
-                student.save()
+                assign_public_lesson_while_its_creation(lesson)
             except IntegrityError:
                 storage.rollback()
 
