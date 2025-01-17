@@ -11,6 +11,7 @@ from models.institution import Institution
 from models.lesson import Lesson
 from models.teacher import Teacher
 from models.subject import Subject
+from tools.tasks import send_email_task
 from tools.send_email import send_emails, generate_lesson_notification_email
 from tools.assign_lessons import (
     assign_private_lesson_to_student,
@@ -354,7 +355,12 @@ def lessons(id=None):
                                                       teacher_fullname, teacher_email,
                                                       lesson_name, lesson_desciption, lesson_class, lesson_subject,
                                                       )
-            send_emails([student.email], subject_email, body)
+            # send_emails([student.email], subject_email, body)
+            # print(f"Queuing Emails linked to {student_full_name} : Lesson {lesson_name}")
+            # print(f"       School: {student.institution}")
+
+            # Send the email asynchronously using Celery
+            send_email_task.delay([student.email], subject_email, body)
         return jsonify(lesson_dict), 201
 
     # PUT's method ***********************************************************
