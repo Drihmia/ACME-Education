@@ -57,6 +57,13 @@ class BaseModel:
     def to_dict(self, save_fs=None):
         """returns a dictionary containing all keys/values of the instance"""
         new_dict = self.__dict__.copy()
+
+        # Add institutions's name as a list to lesson's object for further use
+        institutions = []
+        if (self.__class__.__name__ == 'Lesson'):
+            institutions.extend([i.name for i in self.institutions])
+        new_dict.update({"institutions": institutions})
+
         if "created_at" in new_dict:
             new_dict["created_at"] = new_dict["created_at"].strftime(time)
         if "updated_at" in new_dict:
