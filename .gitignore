@@ -9,6 +9,10 @@
 *.log
 *.DS_Store
 check_scope.py
+*test*
+
+# Git --------------------------------------------:
+*pack*json
 
 # MySQL
 *.sql
@@ -19,6 +23,7 @@ check_scope.py
 # Frontend: -------------------------------------:
 *dynamic/
 */node_modules/
+node_modules/
 acme-education-frontend/node_modules/
 acme-education-frontend/.pnp
 acme-education-frontend/.pnp.js
