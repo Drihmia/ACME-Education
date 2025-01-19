@@ -12,10 +12,18 @@ from models.lesson import Lesson
 from models.teacher import Teacher
 from models.subject import Subject
 from tools.tasks import send_email_task
-from tools.send_email import send_emails, generate_lesson_notification_email
+from tools.send_email import (
+    send_emails,
+    generate_lesson_notification_email,
+)
 from tools.assign_lessons import (
     assign_private_lesson_to_student,
     assign_public_lesson_while_its_creation,
+)
+from tools.lesson_tools import (
+    missing_arg_create_lessons,
+    create_lesson,
+    handle_integrity_error_saving_lesson,
 )
 
 
@@ -86,20 +94,9 @@ def lessons(id=None):
             return jsonify({'error': 'No data'}), 422
 
         #                ///////\\\\\\\\\\
-        if 'name' not in data.keys():
-            return jsonify({'error': 'Missing name'}), 400
-
-        #                ///////\\\\\\\\\\
-        if 'download_link' not in data.keys():
-            return jsonify({'error': 'Missing download_link'}), 400
-
-        #                ///////\\\\\\\\\\
-        if 'subject_id' not in data.keys():
-            return jsonify({'error': 'Missing subject_id'}), 400
-
-        #                ///////\\\\\\\\\\
-        if 'teacher_id' not in data.keys():
-            return jsonify({'error': 'Missing teacher_id'}), 400
+        error_message_missing_args = missing_arg_create_lessons(data)
+        if error_message_missing_args:
+            return jsonify({ 'error': error_message_missing_args }), 400
 
         # ---------  Check if the user is a teacher.  -------------
         # ---------------------------------------------------------
@@ -147,33 +144,12 @@ def lessons(id=None):
         # ********************************************************************
         # ********************************************************************
 
-        # Getting attribute's value.
-        name = data.get('name').strip()
-        download_link = data.get('download_link').strip()
-        subject_id = data.get('subject_id').strip()
-
-        subject_obj = storage.get(Subject, subject_id)
-        if not subject_obj:
-            return jsonify({'error': 'UNKNOWN SUBJECT'}), 400
-
-        # Check if description's attribute is provided.
-        if 'description' in data.keys():
-            description = data.get('description').strip()
-        else:
-            description = 'Null'
-
-        # Check if public's attribute is provided.
-        if 'public' in data.keys():
-            public = data.get('public')
-        else:
-            public = True
-
         try:
-            lesson = Lesson(name=name, download_link=download_link,  # A must
-                            subject_id=subject_id, teacher_id=teacher_id,
-                            description=description, public=public,  # Option.
-                            subject=subject_obj.name,
-                            teacher=teacher_fullname)
+            lesson: Lesson | str = create_lesson(data, teacher_id, teacher_fullname, storage)
+
+            if isinstance(lesson, str):
+                return jsonify({'error': lesson }), 400
+
         except IntegrityError:
             storage.rollback()
             return jsonify({'error': 'lesson exists'}), 400
@@ -183,16 +159,9 @@ def lessons(id=None):
             storage.save()
         except IntegrityError as f:
             storage.rollback()
-            f = str(f)
-
-            if 'Duplicate' in f:
-                return jsonify({'error': 'lesson exists'}), 400
-            must_ids = ['teacher_id', 'subject_id']
-            for s_id in must_ids:
-                if s_id in f[:f.find('REFERENCES')]:
-                    return jsonify({'error': f'unknown: {s_id}'}), 400
-
-            return jsonify({'error': 'lesson exists'}), 400
+            return jsonify({
+                'error': handle_integrity_error_saving_lesson(f)
+            }), 400
 
         # ****************** This is ignored for the moment ******************
         # ********************************************************************
@@ -229,7 +198,7 @@ def lessons(id=None):
         # ---------------------------------------------------------------------
         # If the teacher specified the institution, the lesson will be share
         # with the student of that institution only, otherwise, it will be 
-        # shared with students of all the teacher's institutiones.
+        # shared with students of all the teacher's institutions.
         if 'institution_id' in data.keys() and \
                 is_valid_uuid(data.get('institution_id')):
             institution_id = data.get('institution_id').strip()
@@ -255,7 +224,7 @@ def lessons(id=None):
         # shared with students of all the teacher's classes.
         if 'class_id' in data.keys() and \
                 is_valid_uuid(data.get('class_id')) and \
-                not public:
+                not data.get('public', True):
             class_id = data.get('class_id').strip()
             clas = storage.get(Clas, class_id)
             if not clas:
@@ -356,8 +325,8 @@ def lessons(id=None):
                                                       lesson_name, lesson_desciption, lesson_class, lesson_subject,
                                                       )
             # send_emails([student.email], subject_email, body)
-            # print(f"Queuing Emails linked to {student_full_name} : Lesson {lesson_name}")
-            # print(f"       School: {student.institution}")
+            print(f"Queuing Emails linked to {student_full_name} : Lesson {lesson_name}")
+            print(f"       School: {student.institution}")
 
             # Send the email asynchronously using Celery
             send_email_task.delay([student.email], subject_email, body)
@@ -389,8 +358,11 @@ def lessons(id=None):
                 if isinstance(v, bool):
                     setattr(lesson, k.strip(), v)
                     continue
+
+                # Ignore the value if it has not changed or it's emtpy string
                 if v == lesson_dict.get(k) or not len(v):
                     continue
+
                 setattr(lesson, k.strip(), v.strip())
 
         lesson.save()
@@ -428,6 +400,7 @@ def lessons(id=None):
 
 @app_views.route("/public_lessons", methods=["GET"],
                  strict_slashes=False)
+@role_required(["dev"])
 def public_lessons():
     """return all public lessons"""
     lessons = storage.all(Lesson).values()
