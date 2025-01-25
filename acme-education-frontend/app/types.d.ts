@@ -54,7 +54,9 @@ export interface lessonFormProps {
   description: string;
   public: string | boolean;
   class?: string;
-  class_id?: string
+  class_id?: string;
+  class_alias?: string;
+  institutions?: string[]
 }
 
 
