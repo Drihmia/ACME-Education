@@ -98,6 +98,10 @@ def lessons(id=None):
         if error_message_missing_args:
             return jsonify({ 'error': error_message_missing_args }), 400
 
+
+        if 'description' in data:
+            data['description'] = text_to_html(data['description'])
+
         # ---------  Check if the user is a teacher.  -------------
         # ---------------------------------------------------------
         teacher_id = data.get('teacher_id').strip()
@@ -352,6 +356,9 @@ def lessons(id=None):
         lesson_dict = lesson.to_dict()
         normal_attr = ['name', 'download_link', 'description', 'public']
 
+        if 'description' in data:
+            data['description'] = text_to_html(data['description'])
+
         for k, v in data.items():
             if k in normal_attr:
                 # Accept only normal attributes and ignore 0 length values
@@ -422,3 +429,10 @@ def is_valid_uuid(s):
     except ValueError:
         print(f"{s} not uuid string")
         return False
+
+
+
+def text_to_html(text):
+    text = '<html>' + text.replace('\n', '<br>') + '</html>'
+    text = text.replace(' ', '&nbsp;')
+    return text
