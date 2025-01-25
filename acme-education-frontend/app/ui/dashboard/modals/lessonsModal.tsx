@@ -4,6 +4,7 @@ import { lessonFormProps } from "@/app/types";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Link from "next/link";
 import { mutate } from "swr";
+import DOMPurify from "dompurify";
 
 export const LessonModal = ({
   closeModal,
@@ -19,6 +20,8 @@ export const LessonModal = ({
     console.log('lessonId:', lessonId);
       return `https://drive.usercontent.google.com/download?id=${lessonId}&export=download`;
   };
+
+  const sanitizedDescription = DOMPurify.sanitize(item.description);
 
   return (
     <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black/25">
@@ -39,7 +42,7 @@ export const LessonModal = ({
           </div>
           <article className="w-full">
             <h3 className="text-xl md:text-2xl font-semibold">Description</h3>
-            <p>{item.description}</p>
+            <p dangerouslySetInnerHTML={{ __html: sanitizedDescription }} ></p>
             <div className="grid">
               {/*<Link href={item.download_link} target="_blank" className="text-blue-500 underline">
                 Preview lesson

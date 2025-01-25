@@ -131,6 +131,13 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
       // setResponse({ status: "error", message: errorMessage });
     }
   };
+  // Convert HTML to plain text
+  const htmlToPlainText = (html: any) => {
+    return html
+      .replace(/<br\s*\/?>/gi, "\n") // Convert <br> to newlines
+      .replace(/&nbsp;/gi, " ") // Convert &nbsp; to spaces
+      .replace(/<[^>]+>/g, ""); // Remove remaining HTML tags
+  };
 
   return (
     <div className="w-full max-w-5xl mx-auto flex flex-col items-center justify-center gap-4 py-8">
@@ -145,7 +152,7 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
           institution: id && lesson ? lesson.institution : "",
           name: id && lesson ? lesson.name : "",
           download_link: id && lesson ? lesson.download_link : "",
-          description: id && lesson ? lesson.description : "",
+          description: id && lesson ? htmlToPlainText(lesson?.description) : "",
           public: id && lesson ? lesson.public : "true",
           class: id && lesson ? lesson.class : "",
         }}
@@ -252,19 +259,19 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
                 <Icon icon="material-symbols:delete-outline" /> Delete
               </div>
             )}
-            <div
-              onClick={() => {
-                if (confirm("Are you sure you want to go back?")) {
-                  navigation.back();
-                }
-              }}
-              className="w-24 h-8 flex items-center justify-center p-2 bg-slate-200 hover:bg-black rounded-md hover:text-white cursor-pointer"
-            >
-              <Icon icon="material-symbols:delete-outline" /> Cancel
-            </div>
+          <div
+            onClick={() => {
+              if (confirm("Are you sure you want to go back?")) {
+                navigation.back();
+              }
+            }}
+            className="w-24 h-8 flex items-center justify-center p-2 bg-slate-200 hover:bg-black rounded-md hover:text-white cursor-pointer"
+          >
+            <Icon icon="material-symbols:delete-outline" /> Cancel
           </div>
-        </Form>
-      </Formik>
+        </div>
+      </Form>
+    </Formik>
     </div>
   );
 };
