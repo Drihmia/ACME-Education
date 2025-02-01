@@ -14,25 +14,39 @@ def assign_private_lesson_to_student(lesson, student):
         - Assigned lessons must have same subject as the student.
     """
 
-    # Skip if students does not belong to any institutions,
-    # and if the lesson is public.
+    # Skip:
+     # If students is institution-less.
+     # If the lesson is public.
     if not student.institutions or lesson.public:
 
         return student
 
     # 1- Get list of lesson's institution's IDs.
     lesson_institutions_ids = {ins.id for ins in lesson.institutions}
+
+    # Make sure that the student's institution is one of the lesson's institutions.
     if student.institutions.id not in lesson_institutions_ids:
         return student
 
     # 2- Get list of lesson's class IDs.
     lesson_classes_ids = {clas.id for clas in lesson.classes}
+
+    # Make sure that the lesson's class is a class of the student.
     if student.classes.id not in lesson_classes_ids:
         return student
 
     # 3- Get list of student's subject IDs.
     student_subjects_ids = {subj.id for subj in student.subjects}
+
+    # Make sure that the lesson's subject is a subject of the student.
     if lesson.subjects.id not in student_subjects_ids:
+        return student
+
+    # 4- Get list of student's teachers IDs.
+    student_teachers_ids = {teach.id for teach in student.teachers}
+
+    # Make sure that the lesson's author is a teacher of the student.
+    if lesson.teachers.id not in student_teachers_ids:
         return student
 
     student.lessons.append(lesson)

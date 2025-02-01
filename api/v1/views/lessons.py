@@ -98,7 +98,6 @@ def lessons(id=None):
         if error_message_missing_args:
             return jsonify({ 'error': error_message_missing_args }), 400
 
-
         if 'description' in data:
             data['description'] = text_to_html(data['description'])
 
@@ -203,15 +202,15 @@ def lessons(id=None):
         # If the teacher specified the institution, the lesson will be share
         # with the student of that institution only, otherwise, it will be 
         # shared with students of all the teacher's institutions.
-        if 'institution_id' in data.keys() and \
-                is_valid_uuid(data.get('institution_id')):
-            institution_id = data.get('institution_id').strip()
+        if 'institution_id' in data.keys():
+            institution_id = data.get('institution_id', '').strip()
             institution = storage.get(Institution, institution_id)
             if not institution:
                 return jsonify({'error': "UNKNOWN INSTITUTION"}), 400
             institutions = [institution]
         else:
             institutions = teacher.institutions
+
 
         # Associate lesson to its institution.
         for institution in institutions:
@@ -224,11 +223,9 @@ def lessons(id=None):
 
         # --------------------------------------------------------------------
         # If the teacher specified the class, the lesson will be share
-        # with the student of that class only, otherwise, it will be 
-        # shared with students of all the teacher's classes.
-        if 'class_id' in data.keys() and \
-                is_valid_uuid(data.get('class_id')) and \
-                not data.get('public', True):
+        # with the students of that class only.
+        # Otherwise, it will be shared with students of all the teacher's classes.
+        if 'class_id' in data.keys():
             class_id = data.get('class_id').strip()
             clas = storage.get(Clas, class_id)
             if not clas:
@@ -239,6 +236,7 @@ def lessons(id=None):
             classes = [clas]
         else:
             classes = teacher.classes
+
 
         # Associate lesson to its clas.
         for clas in classes:
@@ -263,23 +261,11 @@ def lessons(id=None):
             for student in teacher.students:
                 assign_private_lesson_to_student(lesson, student)
 
-                # if not student.institutions:
-                    # continue
-
-                # Student has only 1 institution, please mind the 's'.
-                # if student.institutions.id not in teacher_institutions_ids:
-                    # continue
-
-                # if student.class_id not in lesson_classes_ids:
-                    # continue
-
-                # student.lessons.append(lesson)
                 try:
                     student.save()
                 except IntegrityError:
                     storage.rollback()
         else:
-
             try:
                 assign_public_lesson_while_its_creation(lesson)
             except IntegrityError:
@@ -326,9 +312,9 @@ def lessons(id=None):
             student_full_name = student.last_name + ' ' + student.first_name
             body = generate_lesson_notification_email(student_full_name,
                                                       teacher_fullname, teacher_email,
-                                                      lesson_name, lesson_desciption, lesson_class, lesson_subject,
+                                                      lesson_name, lesson_desciption,
+                                                      lesson_class, lesson_subject,
                                                       )
-            # send_emails([student.email], subject_email, body)
             print(f"Queuing Emails linked to {student_full_name} : Lesson {lesson_name}")
             print(f"       School: {student.institution}")
 
@@ -419,6 +405,13 @@ def public_lessons():
 
 
 def is_valid_uuid(s):
+    if not s:
+        return False
+
+    if not isinstance(s, str):
+        return False
+    if not len(s):
+        return False
     try:
         uuid_obj = uuid.UUID(s)
         # Check if the string representation matches the original string
@@ -434,5 +427,5 @@ def is_valid_uuid(s):
 
 def text_to_html(text):
     text = '<html>' + text.replace('\n', '<br>') + '</html>'
-    text = text.replace(' ', '&nbsp;')
+    text = text.replace(' ', '&ensp;')
     return text

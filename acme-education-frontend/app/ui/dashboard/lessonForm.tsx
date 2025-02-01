@@ -135,7 +135,7 @@ export const LessonForm = ({ id, action }: { id?: string; action: string }) => {
   const htmlToPlainText = (html: any) => {
     return html
       .replace(/<br\s*\/?>/gi, "\n") // Convert <br> to newlines
-      .replace(/&nbsp;/gi, " ") // Convert &nbsp; to spaces
+      .replace(/&ensp;/gi, " ") // Convert &ensp; to spaces
       .replace(/<[^>]+>/g, ""); // Remove remaining HTML tags
   };
 
