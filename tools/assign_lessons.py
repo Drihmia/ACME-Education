@@ -50,6 +50,7 @@ def assign_private_lesson_to_student(lesson, student):
         return student
 
     student.lessons.append(lesson)
+    student.save()
     return student
 
 
