@@ -149,7 +149,7 @@ def generate_verification_email(user: str, verific_link: str, contact_email: str
             <p>Best regards,<br>The ACME EDUCATION Team</p>
 
             <div class="footer">
-                <p>strong>ACME EDUCATION</strong><br>
+                <p><strong>ACME EDUCATION</strong><br>
                 <a href="mailto:{contact_email}">{contact_email}</a></p>
             </div>
         </div>
@@ -219,7 +219,7 @@ def generate_lesson_notification_email(
         <div class="container">
             <p>Dear {student_name},</p>
 
-            <p>A new lesson has been released! Please log in to your account on strong>ACME EDUCATION</strong> to check the details.</p>
+            <p>A new lesson has been released! Please log in to your account on <strong>ACME EDUCATION</strong> to check the details.</p>
 
             <div class="lesson-info">
                 <h3>Lesson Information</h3>
@@ -243,7 +243,7 @@ def generate_lesson_notification_email(
             <p>Best regards,<br>The ACME EDUCATION Team</p>
 
             <div class="footer">
-                <p>strong>ACME EDUCATION</strong><br>
+                <p><strong>ACME EDUCATION</strong><br>
                 <a href="mailto:{contact_email}">{contact_email}</a></p>
             </div>
         </div>
@@ -259,7 +259,15 @@ if __name__ == "__main__":
     """
     dests = ['newonerad@gmail.com', 'drihmia.redouane@gmail.com']
     sub = 'Testing my function: send_emails'
-    content = generate_verification_email('Teacher', 'ref', 're')
+    content = generate_verification_email('Teacher', 'ref', getenv('DRIHMIA_EMAIL'))
+
+    send_emails(dests, sub, content)
+
+    content = generate_lesson_notification_email(
+        'John Doe student', 'Jane Doe teacher',
+        'drihmia.redouane@gmail.com', 'Mathematics', 'This is a test lesson',
+        'Grade 10', 'Mathematics'
+    )
 
     send_emails(dests, sub, content)
 
