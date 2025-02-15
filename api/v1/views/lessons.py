@@ -259,10 +259,9 @@ def lessons(id=None):
 
         if not lesson.public:
             for student in teacher.students:
-                assign_private_lesson_to_student(lesson, student)
 
                 try:
-                    student.save()
+                    assign_private_lesson_to_student(lesson, student)
                 except IntegrityError:
                     storage.rollback()
         else:
