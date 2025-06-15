@@ -12,30 +12,33 @@ from json import dumps, loads
 from os import getenv
 from werkzeug.exceptions import BadRequest
 from datetime import datetime as date
+from zoneinfo import ZoneInfo
+
 from api.v1.views import app_views
 from tools.send_email import send_emails, generate_verification_email
+from tools.utils import (
+    get_current_datetime,
+    is_true,
+)
 
 
 load_dotenv()
 
-current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
-
-
-# Serializer for generating and validating tokens
+# Get the secret key from the environment variables
 secret_key = getenv('SECRET_KEY')
 if not secret_key:
     print("secret key, for serializer, is none")
     exit(1)
 
+# Salt for the serializer.
+SALT = "email-verification"
+
+# Serializer for generating and validating tokens
 serializer = URLSafeTimedSerializer(secret_key)
 
+# Get the routers from the environment variables
 FRONT_END_ROUTER = getenv('FRONT_END_ROUTER')
-if FRONT_END_ROUTER:
-    FRONT_END_ROUTER = FRONT_END_ROUTER
-
 BACK_END_ROUTER = getenv('BACK_END_ROUTER')
-if BACK_END_ROUTER:
-    BACK_END_ROUTER = BACK_END_ROUTER
 
 
 @app_views.route("/verify_email_send", methods=["POST"], strict_slashes=False)
@@ -51,17 +54,15 @@ def verify_email_send():
     if not data:
         return jsonify({'error': 'No data'}), 422
 
-
-    print("send verification mail for:", data)
-    current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
-    print("time:", current_datetime)
-
     if 'email' not in data.keys():
         return jsonify({'error': 'Missing email for verification \
 for sending verification email'}), 400
 
     if 'is_teacher' not in data.keys():
         return jsonify({'error': 'Missing is_teacher'}), 400
+
+    print("send verification mail for:", data.get('email'), 'as:', data.get('is_teacher'))
+    print("time:", get_current_datetime())
 
     EMAIL_SEND = getenv('ACME_EMAIL')
     if not EMAIL_SEND:
@@ -70,7 +71,7 @@ into ur bashrc file')
 
     # All the sent data is going to be stored in this token
     # +and verified by next method down bellow.
-    token = serializer.dumps(data)
+    token = serializer.dumps(data, salt=SALT)
 
     login = getenv('DRIHMIA_EMAIL')
 
@@ -78,10 +79,13 @@ into ur bashrc file')
         # --------------------- SEND VERIFICATION EMAIL ----------------------
         # --------------------------------------------------------------------
         is_teacher = data.get('is_teacher')
-        user = 'Teacher' if is_teacher is True else 'Student'
+        if isinstance(is_teacher, str):
+            is_teacher = True if is_teacher.lower() == 'true' else False
+
+        user_type = 'Teacher' if is_teacher else 'Student'
         verific_link = f"{BACK_END_ROUTER}/api/v1/verify_email_recieve/{token}?teacher={is_teacher}"
 
-        body = generate_verification_email(user, verific_link, login)
+        body = generate_verification_email(user_type, verific_link, login)
 
         # --------------------- SEND VERIFICATION EMAIL ----------------------
         # --------------------------------------------------------------------
@@ -108,11 +112,12 @@ def verify_email_recieve(token):
     is_teacher = request.args.get('teacher')
 
     try:
-        data = serializer.loads(token, max_age=3600)
+        # The token is valid for 24 hours
+        max_age = 24 * 60 * 60
+        data = serializer.loads(token, salt=SALT, max_age=max_age)
 
-        print("recieved Registration from:", data)
-        current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
-        print("time:", current_datetime)
+        print("recieved Registration from:", data.get('email'), 'as:', data.get('is_teacher'))
+        print("time:", get_current_datetime())
 
     except Exception:
         return redirect(url_for('app_views.token_error', is_teacher=is_teacher), code=301)
@@ -126,7 +131,11 @@ def verify_email_recieve(token):
     url = f"{BACK_END_ROUTER}/api/v1/"
     headers = {'Content-Type': 'application/json'}
 
-    if data.get('is_teacher') is True:
+    is_teacher = data.get('is_teacher')
+    if isinstance(is_teacher, str):
+        is_teacher = True if is_teacher.lower() == 'true' else False
+
+    if is_teacher is True:
         # Making a POST request with a with context manager
         base = 'teachers'
         url = url + base
@@ -217,10 +226,9 @@ def confirmation():
     """ a function that render the confirmation template"""
 
     is_teacher = request.args.get("is_teacher", '')
-    print("confirmation")
 
-    current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
-    print("time:", current_datetime)
+    print("successful confirmation", "*" * 50)
+    print("time:", get_current_datetime())
 
     url = f"{FRONT_END_ROUTER}/login?msg=success_registration"
     info = 'Registration Successful'
@@ -236,8 +244,8 @@ def already_exists():
     """ a function that render the confirmation template"""
     url = f"{FRONT_END_ROUTER}/login?msg=success_registration"
 
-    current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
-    print("time:", current_datetime)
+    print("already_exists", "*" * 50)
+    print("time:", get_current_datetime())
 
     info = 'Account Already Exists'
     message = """An account with this email address already exists.<br>
@@ -251,10 +259,9 @@ def already_exists():
 def conflict_student():
     """A function that render the already exists template in case of conflict.
     """
-    print("conflict_student")
-    current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
-    print("time:", current_datetime)
-    
+    print("conflict_student", "*" * 50)
+    print("time:", get_current_datetime())
+
     url = f"{FRONT_END_ROUTER}/login?msg=success_registration"
     info = 'Account Already Exists As Teacher'
     message = """This email is already registered as a Teacher.\
@@ -267,9 +274,8 @@ def conflict_student():
 @app_views.route('/conflict_teacher')
 def conflict_teacher():
     """ a function that render the confirmation template"""
-    print("conflict_teacher")
-    current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
-    print("time:", current_datetime)
+    print("conflict_teacher", "*" * 50)
+    print("time:", get_current_datetime())
     url = f"{FRONT_END_ROUTER}/login?msg=success_registration"
 
     info = 'Account Already Exists As Student'
@@ -283,10 +289,10 @@ def conflict_teacher():
 @app_views.route('/token_error')
 def token_error():
     """A function that renders the token error template."""
-    print("token_error")
-    current_datetime = date.now().strftime("%B %d, %Y at %I:%M %p")
 
-    print("time:", current_datetime)
+    print("token_error", "*" * 50)
+    print("time:", get_current_datetime())
+
     is_teacher = request.args.get('is_teacher', '')
 
     # Adjust the sign-up URL based on whether the user is a teacher or student
@@ -309,18 +315,3 @@ def token_error():
     login = 'Sign up' + is_true(is_teacher, ' as a Teacher', ' as a Student', '')
     return render_template('confirme_registration.html', url=url,
                            info=info, message=message, login=login)
-
-def is_true(value: str, option1: str, option2: str, option3: str):
-    """ evaluate the value
-    return:
-     - option1 is value is true.
-     - option2 if value is false.
-     - option3 if value is something else, not boolen.
-    """
-
-    if value.lower() == 'true':
-        return option1
-    elif value.lower() == 'false':
-        return option2
-    else:
-        return option3

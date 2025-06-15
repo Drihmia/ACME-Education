@@ -1,11 +1,13 @@
 #!/usr/bin/python3
 """ Blueprint for API """
+from dotenv import load_dotenv, find_dotenv
 from flask import Blueprint, request
 from functools import wraps
 from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
-from dotenv import load_dotenv, find_dotenv
-from os import getenv
 import jwt
+from os import getenv
+
+from tools.utils import get_current_datetime
 
 app_views = Blueprint('app_views', __name__, url_prefix='/api/v1')
 app_views_docs = Blueprint('app_views_docs', __name__)
@@ -35,6 +37,7 @@ def role_required(roles):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
+            print("*"*20, get_current_datetime(), "*"*20)
             print("request url:", request.url)
             valid_head  = False
             if "Authorization" in request.headers:
@@ -56,7 +59,6 @@ def role_required(roles):
                     # print("after:" ,"-" * 10)
 
                     current_user_data = get_jwt_identity()
-                    print("current_user_data:", current_user_data)
                     if not current_user_data:
                         return
                 except Exception as e:
@@ -67,12 +69,10 @@ def role_required(roles):
             if current_user_role not in roles:
                 return jsonify({"msg": "Unauthorized access"}), 403
             requested_path = request.path
-            if (requested_path.endswith('subjects') or
+            if not (requested_path.endswith('subjects') or
                     requested_path.endswith('teachers') or
                     requested_path.endswith('institutions') or
                     requested_path.endswith('classes')):
-                    pass
-            else:
                 print('From decorator:\nCurrent user:', current_user_data)
                 print('has accessed:', request.path)
             return func(*args, **kwargs)

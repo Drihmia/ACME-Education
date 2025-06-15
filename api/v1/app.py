@@ -37,7 +37,7 @@ app.config['JWT_COOKIE_SECURE'] = True  # I'm using https for my webapp
 app.config['JWT_COOKIE_HTTPONLY'] = True
 app.config['JWT_COOKIE_SAMESITE'] = 'Lax'  # 'None'
 app.config['JWT_COOKIE_CSRF_PROTECT'] = True
-app.config['JWT_COOKIE_DOMAIN'] = '.drihmia.tech'
+app.config['JWT_COOKIE_DOMAIN'] = '.drihmia.me'
 # app.config['JWT_COOKIE_DOMAIN'] = '.drihmia.me'
 
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
@@ -85,4 +85,7 @@ def not_found(_):
 if __name__ == "__main__":
     """Starts the API"""
     with app.app_context():
-        app.run(threaded=True, debug=os.getenv("DEBUG", False))
+        app.run(threaded=True,
+                debug=os.getenv("DEBUG", False),
+                port=os.getenv("PORT", 5000),
+                )

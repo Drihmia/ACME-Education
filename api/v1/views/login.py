@@ -7,6 +7,7 @@ from flask_jwt_extended import (
     set_access_cookies, set_refresh_cookies,
     verify_jwt_in_request,
 )
+from hashlib import sha256
 from werkzeug.exceptions import BadRequest
 
 from api.v1.views import app_views
@@ -18,7 +19,11 @@ from models import storage
 from models.teacher import Teacher
 from models.student import Student
 from models.dev import Dev
-from hashlib import sha256
+
+from tools.utils import (
+    get_current_datetime,
+    log_file,
+)
 
 
 @app_views.route("/teacher_login", methods=["POST"], strict_slashes=False)
@@ -44,16 +49,13 @@ def teacher_login():
     if 'password' not in data.keys():
         return jsonify({'error': 'Missing password'}), 400
 
-    print("Teacher logging...")
-    print("Email:", data.get("email"))
 
     teacher = storage.query(Teacher).filter(Teacher.email == data.
                                             get('email')).first()
 
     if not teacher:
         return jsonify({'error': 'UNKNOWN TEACHER'}), 404
-    from datetime import datetime as date
-    print(f"Teacher {teacher.last_name} {teacher.first_name} has logged in at {str(date.now())}")
+
 
     if bcrypt.checkpw(data.get('password', '').encode('utf-8'),
                       teacher.password.encode('utf-8')):
@@ -74,8 +76,10 @@ def teacher_login():
         # secure=True,
         # samesite='Strict')
         # resp.headers['Authorization'] = f"Bearer {access_token}"
+        log_file(f"Teacher success login: ({data.get('email')}) {teacher.last_name} {teacher.first_name} has logged in.")
         return resp
     else:
+        log_file(f"Teacher failed login: {data.get('email', 'no email')}")
         return jsonify({'status': 'ERROR'}), 401
 
 
@@ -102,16 +106,12 @@ def student_login():
     if 'password' not in data.keys():
         return jsonify({'error': 'Missing password'}), 400
 
-    print("Student logging...")
-    print("Email:", data.get("email"))
     student = storage.query(Student).filter(Student.email == data.
                                             get('email')).first()
 
     if not student:
         return jsonify({'error': 'UNKNOWN STUDENT'}), 404
 
-    from datetime import datetime as date
-    print(f"Student {student.last_name} {student.first_name} has logged in at {str(date.now())}, From {student.classes.alias}")
     if bcrypt.checkpw(data.get('password', '').encode('utf-8'),
                       student.password.encode('utf-8')):
         # Generate JWT token for student with additional information
@@ -125,9 +125,11 @@ def student_login():
 
         set_access_cookies(resp, access_token)
         set_refresh_cookies(resp, refresh_token)
+        log_file(f"Student success login: ({data.get('email')}) {student.last_name} {student.first_name} ({student.classes.alias}) has logged in.")
 
         return resp
     else:
+        log_file(f"Student failed login: {data.get('email', 'no email')}")
         return jsonify({'status': 'ERROR'}), 401
 
 
@@ -281,3 +283,24 @@ def read_logs():
         logs = logs[-int(A):-int(B)]
 
     return jsonify(logs)
+
+
+@app_views.route("/login_logs", methods=["GET"], strict_slashes=False)
+@jwt_required()
+@role_required(['dev'])  # type: ignore
+def login_logs():
+    """
+    Read the login logs for the application.
+    """
+
+    with open('logins.txt', 'r', encoding='utf-8') as file:
+        logs_list = file.read().split('\n')
+
+    logs = []
+    for line in logs_list:
+        if not line:
+            continue
+
+        logs.append(line)
+
+    return jsonify(logs), 200

@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from celery import Celery
 from tools.send_email import send_emails
 
@@ -8,7 +9,12 @@ app = Celery(
     backend='redis://localhost:6379/1',  # Redis result backend
 )
 
-@app.task(bind=True, max_retries=3, default_retry_delay=60)  # 3 retries, 60 seconds delay
+app.conf.update(
+    broker_connection_retry_on_startup=True,
+)
+
+
+@app.task(bind=True, max_retries=5, default_retry_delay=500)  # 3 retries, 60 seconds delay
 def send_email_task(self, destinations: list[str], subject: str, body: str):
     """
     Celery task to send emails asynchronously with retry logic.
@@ -25,3 +31,8 @@ def send_email_task(self, destinations: list[str], subject: str, body: str):
         # If an error occurs, retry the task
         raise self.retry(exc=exc)
 
+
+if __name__ == '__main__':
+
+    print("Running as main — starting Celery worker manually.")
+    app.worker_main(argv=['worker', '--loglevel=info'])

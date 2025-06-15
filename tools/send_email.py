@@ -23,7 +23,7 @@ def send_emails(destinations: List[str], subject: str, body: str) -> str | int:
     :param body: HTML content of the email body.
     """
     smtp_host = getenv('SMTP_HOST')
-    smtp_port = int(getenv('SMTP_PORT', 587))
+    smtp_port = int(getenv('SMTP_PORT', 2525))
     sender = getenv('DRIHMIA_EMAIL')
     password = getenv('DRIHMIA_PASSWORD')
 
@@ -253,22 +253,79 @@ def generate_lesson_notification_email(
     return body
 
 
+def welcome_message_upon_successfull_registration(email, password, user_type):
+    """
+    Generate the HTML email body for welcoming a new user upon successful registration.
+
+    Args:
+        email (str): The email address of the user.
+        first_name (str): The first name of the user.
+        last_name (str): The last name of the user.
+        password (str): The password of the user.
+        user_type (str): The type of user ("Teacher" or "Student").
+
+    Returns:
+        str: The HTML email body as a string.
+    """
+    contact_email = getenv('DRIHMIA_EMAIL')
+
+    body = f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9; line-height: 1.6;">
+        <div class="container" style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+            <p>Dear {user_type},</p>
+
+            <p>Welcome to <strong>ACME EDUCATION</strong>! Your account has been successfully created.</p>
+
+            <div class="user-info" style="border: 1px solid #ddd; padding: 15px; border-radius: 5px; background-color: #fff; margin-top: 20px;">
+                <h3>Your Account Information</h3>
+                <p><strong>Email:</strong> {email}</p>
+                <p><strong>Password:</strong> {password}</p>
+            </div>
+
+            <div>Thank you for choosing <strong>ACME EDUCATION</strong>! You can now log in to your <a href="https://drihmia.me/login">account</a> and start exploring the platform.</div>
+
+            <p>Happy learning!</p>
+
+            <p>Best regards,<br>The ACME EDUCATION Team</p>
+            <div class="footer" style="margin-top: 30px; font-size: 12px; color: #777;">
+            <p><strong>ACME EDUCATION</strong><br>
+            <a href="mailto:{contact_email}">{contact_email}</a></p>
+            </div>
+        </div>
+    </body>
+    </html>
+
+        """
+
+    return body
+
+
 if __name__ == "__main__":
     """
     For testing purposes, I may run this module as a script.
     """
-    dests = ['newonerad@gmail.com', 'drihmia.redouane@gmail.com']
-    sub = 'Testing my function: send_emails'
-    content = generate_verification_email('Teacher', 'ref', getenv('DRIHMIA_EMAIL'))
+    # dests = ['newonerad@outlook.com']
+    # sub = 'Testing my function: send_emails'
+    # content_general = generate_verification_email('Teacher', 'ref', getenv('DRIHMIA_EMAIL'))
 
-    send_emails(dests, sub, content)
+    # content_new_lesson = generate_lesson_notification_email(
+        # 'John Doe student', 'Jane Doe teacher',
+        # 'drihmia.redouane@gmail.com', 'Mathematics', 'This is a test lesson',
+        # 'Grade 10', 'Mathematics'
+    # )
 
-    content = generate_lesson_notification_email(
-        'John Doe student', 'Jane Doe teacher',
-        'drihmia.redouane@gmail.com', 'Mathematics', 'This is a test lesson',
-        'Grade 10', 'Mathematics'
-    )
+    # send_emails(dests, sub, content_general)
 
-    send_emails(dests, sub, content)
+    # send_emails(dests, sub, content_new_lesson)
 
+    email = 'drihmia.redouane@gmail.com'
+    content_welcome = welcome_message_upon_successfull_registration(email, '1234567887654', 'Student')
+
+    send_emails([email], 'Welcome to ACME EDUCATION', content_welcome)
 

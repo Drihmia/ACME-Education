@@ -14,6 +14,8 @@ from models.subject import Subject
 from models.student import Student
 from models import storage
 from models.teacher import Teacher
+from tools.tasks import send_email_task
+from tools.send_email import welcome_message_upon_successfull_registration
 
 @app_views.route('/teachers', methods=['POST'], strict_slashes=False)
 @cross_origin()
@@ -163,21 +165,26 @@ def create_teacher():
         except IntegrityError:
             return jsonify({'error': 'teacher exists'}), 700
 
-        teacher = teacher.to_dict()
+        teacher_dict = teacher.to_dict()
 
-        if 'subjects' in teacher:
-            del teacher['subjects']
+        if 'subjects' in teacher_dict:
+            del teacher_dict['subjects']
 
-        if 'institutions' in teacher:
-            del teacher['institutions']
+        if 'institutions' in teacher_dict:
+            del teacher_dict['institutions']
 
-        if 'classes' in teacher:
-            del teacher['classes']
+        if 'classes' in teacher_dict:
+            del teacher_dict['classes']
 
-        if 'students' in teacher:
-            del teacher['students']
+        if 'students' in teacher_dict:
+            del teacher_dict['students']
+        # ------------------- Send Welcome Email -----------------------------
+        content = welcome_message_upon_successfull_registration(teacher.email, data.get('password', 'Something Went Wrong').strip(), 'Teacher')
+        print("Sending email to: ", teacher.email)
+        send_email_task.delay([teacher.email], 'Welcome to ACME-Education: Successful Registration', content)
 
-        return jsonify(teacher), 201
+
+        return jsonify(teacher_dict), 201
 
 
 @app_views.route('/teachers', methods=['GET'], strict_slashes=False)

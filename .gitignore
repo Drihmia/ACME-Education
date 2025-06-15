@@ -20,6 +20,9 @@ check_scope.py
 # JSON FILE for Oauth2 for sending mails using python
 *.com.json
 
+# Celery
+*.loglevel
+
 # Frontend: -------------------------------------:
 *dynamic/
 */node_modules/

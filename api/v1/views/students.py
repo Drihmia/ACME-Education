@@ -9,7 +9,6 @@ from models.city import City
 from models.clas import Clas
 from models.institution import Institution
 from models.student import Student
-from models.email_verification import EmailVerifier
 from models.subject import Subject
 from models.teacher import Teacher
 from models import storage
@@ -17,6 +16,8 @@ from tools.assign_lessons import (
     assign_private_lesson_to_student,
     assign_public_lessons_student_creation,
 )
+from tools.send_email import welcome_message_upon_successfull_registration
+from tools.tasks import send_email_task
 
 
 @app_views.route('/students', methods=['POST'], strict_slashes=False)
@@ -227,23 +228,28 @@ create new institution: provide 'city_id' and 'institution' name"}), 400
 
         # ------------------- Remove list of objects -------------------------
         # --------------------------------------------------------------------
-        student = student.to_dict()
-        if 'institutions' in student:
-            del student['institutions']
+        student_dict = student.to_dict()
+        if 'institutions' in student_dict:
+            del student_dict['institutions']
 
-        if 'classes' in student:
-            del student['classes']
+        if 'classes' in student_dict:
+            del student_dict['classes']
 
-        if 'lessons' in student:
-            del student['lessons']
+        if 'lessons' in student_dict:
+            del student_dict['lessons']
 
-        if 'teachers' in student:
-            del student['teachers']
+        if 'teachers' in student_dict:
+            del student_dict['teachers']
 
-        if 'subjects' in student:
-            del student['subjects']
+        if 'subjects' in student_dict:
+            del student_dict['subjects']
 
-        return jsonify(student), 201
+        # ------------------- Send Welcome Email -----------------------------
+        content = welcome_message_upon_successfull_registration(student.email, data.get('password', 'Something Went Wrong'), 'Student')
+        print("Sending email to: ", student.email)
+        send_email_task.delay([student.email], 'Welcome to ACME-Education: Successful Registration', content)
+
+        return jsonify(student_dict), 201
 
 
 
